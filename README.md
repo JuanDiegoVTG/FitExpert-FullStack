@@ -10,12 +10,12 @@ de **Spring Boot** para el backend principal y **Flask** para una API especializ
 
 El repositorio está organizado en dos componentes principales:
 
-### 1.  Backend Principal (Spring Boot)
+### 1. 🟢 Backend Principal (Spring Boot)
 Ubicado en la carpeta `EmiLite_5to-main`.
 - **Tecnologías:** Java, Spring Boot, Maven.
 - **Función:** Gestión de usuarios, persistencia de datos y lógica de negocio principal.
 
-### 2.  API de Rutinas (Flask)
+### 2. 🐍  API de Rutinas (Flask)
 Ubicada en la carpeta `fit_expert_api_py`.
 - **Tecnologías:** Python, Flask.
 - **Función:** Generación y manejo de rutinas personalizadas a través de una API REST.
