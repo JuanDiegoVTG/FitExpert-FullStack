@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Panel de Administración - Emi-Lite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Tus estilos habituales aquí */
+        :root {
+            --primary: #3e007b; /* Morado principal */
+            --primary-dark: #340061; /* Morado oscuro */
+            --secondary: #0F0F1E; /* Fondo principal oscuro */
+            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
+            --text: #E0E0E0; /* Texto principal */
+            --text-light: #A0A0A0; /* Texto secundario */
+            --border: #2D2D3D; /* Bordes */
+            --success: #28A745;
+            --error: #FF4757;
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
+            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-dark);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .menu {
+            width: 250px;
+            background-color: var(--secondary-light);
+            padding: 30px 20px;
+            height: 100vh;
+            position: fixed;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+        }
+
+        .menu h3 {
+            color: white;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu h3 i {
+            color: var(--primary);
+        }
+
+        .menu h4 {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 25px 0 15px 0;
+            padding-left: 10px;
+            font-weight: 500;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid transparent;
+        }
+
+        .menu a:hover {
+            background-color: var(--primary-light);
+            color: white;
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .menu a i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 40px;
+            width: calc(100% - 250px);
+            min-height: 100vh;
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            font-size: 1.4rem;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .user-details h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .user-details p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .welcome-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .welcome-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .welcome-card h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: white;
+            background: linear-gradient(to right, #fff 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .welcome-card p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .role-badge i {
+            font-size: 1rem;
+        }
+
+        .btn-purple {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-purple:hover {
+            background: var(--gradient-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-purple-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .btn-purple-outline:hover {
+            background: var(--primary-light);
+            transform: translateY(-3px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .stat-card p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .menu {
+                width: 220px;
+            }
+            
+            .content {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .menu {
+                transform: translateX(-100%);
+                width: 280px;
+                z-index: 100;
+            }
+            
+            .menu.active {
+                transform: translateX(0);
+            }
+            
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu" id="menu">
+        <h3><i class="fas fa-dumbbell"></i> Emi-Lite Admin</h3>
+        
+        <h4>Gestión</h4>
+        <a href="/admin/usuarios">
+            <i class="fas fa-users"></i>
+            <span>Usuarios</span>
+        </a>
+        <a href="/admin/servicios">
+            <i class="fas fa-dumbbell"></i>
+            <span>Servicios</span>
+        </a>
+        <a href="/admin/promociones">
+            <i class="fas fa-tags"></i>
+            <span>Promociones</span>
+        </a>
+        <a href="/admin/pagos">
+            <i class="fas fa-receipt"></i>
+            <span>Pagos</span>
+        </a>
+
+        <h4>Reportes</h4>
+        <a href="/reportes">
+            <i class="fas fa-chart-bar"></i>
+            <span>Reporte de Usuarios</span>
+        </a>
+
+        <form th:action="@{/logout}" method="post" style="margin-top: 30px;">
+            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="btn-purple" style="width: 100%; justify-content: center;">
+                <i class="fas fa-sign-out-alt"></i>
+                Cerrar Sesión
+            </button>
+        </form>
+    </div>
+
+    <div class="content">
+        <div class="user-header">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <span sec:authentication="principal.username" th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">A</span>
+                </div>
+                <div class="user-details">
+                    <h2 sec:authentication="principal.username">Admin</h2>
+                    <p>Panel de administración</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="welcome-card">
+            <div class="welcome-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h1>Panel de Administración</h1>
+            <p>Bienvenido al centro de control del sistema Emi-Lite.</p>
+            
+            <div class="role-badge">
+                <i class="fas fa-user-shield"></i>
+                <span sec:authentication="principal.authorities">ADMIN</span>
+            </div>
+            
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                <a href="/admin/usuarios" class="btn-purple">
+                    <i class="fas fa-users"></i>
+                    Gestionar Usuarios
+                </a>
+                <a href="/admin/servicios" class="btn-purple">
+                    <i class="fas fa-dumbbell"></i>
+                    Gestionar Servicios
+                </a>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Usuarios Totales</h3>
+                <p>Cantidad de usuarios registrados</p>
+                <div class="stat-value">152</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <h3>Servicios Activos</h3>
+                <p>Servicios disponibles para clientes</p>
+                <div class="stat-value">24</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <h3>Pagos Recientes</h3>
+                <p>Pagos procesados en las últimas 24 horas</p>
+                <div class="stat-value">8</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Ingresos Hoy</h3>
+                <p>Total recaudado hoy</p>
+                <div class="stat-value">$ 450.000 COP</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Mis Rutinas - Emi-Lite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Variables de tema oscuro y colores de Emi-Lite */
+        :root {
+            --primary: #3e007b; /* Morado principal */
+            --primary-dark: #340061; /* Morado oscuro */
+            --secondary: #0F0F1E; /* Fondo principal oscuro */
+            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
+            --text: #E0E0E0; /* Texto principal */
+            --text-light: #A0A0A0; /* Texto secundario */
+            --border: #2D2D3D; /* Bordes */
+            --success: #28A745;
+            --error: #FF4757;
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
+            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-dark);
+            color: var(--text);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px 35px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 1000px; /* Ancho más grande para la tabla */
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 3.5rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 15px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: var(--primary-dark); /* Fondo morado oscuro para encabezados */
+            color: var(--text);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        tbody tr {
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.05); /* Fondo ligeramente más claro al pasar el mouse */
+        }
+
+        .no-data {
+            color: var(--text-light);
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 12px 25px;
+            background: var(--gradient-primary); /* Botón con gradiente morado */
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(62, 0, 123, 0.3);
+        }
+
+        .back-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(62, 0, 123, 0.4);
+        }
+
+        .logout-link {
+            color: #dc3545; /* Rojo para logout */
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .logout-link:hover {
+            color: #a71e2a;
+        }
+
+        button.logout-link {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0 10px;
+            font: inherit;
+            cursor: pointer;
+            color: #dc3545;
+            text-decoration: underline;
+        }
+
+        button.logout-link:hover {
+            color: #a71e2a;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-dumbbell"></i> <!-- Icono representativo para rutinas -->
+            <span class="logo-text">Emi-Lite</span>
+        </div>
+
+        <h2>Mis Rutinas</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Tipo</th>
+                    <th>Nivel</th>
+                    <th>Duración (sem)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="rutina : ${rutinas}">
+                    <td th:text="${rutina.id}"></td>
+                    <td th:text="${rutina.nombre}"></td>
+                    <td th:text="${rutina.descripcion}"></td>
+                    <td th:text="${rutina.tipo}"></td>
+                    <td th:text="${rutina.nivelDificultad}"></td>
+                    <td th:text="${rutina.duracionSemanas}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Mensaje si no hay rutinas -->
+        <div th:if="${#lists.isEmpty(rutinas)}" class="no-data">
+            <p>No tienes rutinas asignadas.</p>
+        </div>
+
+        <span sec:authorize="hasRole('ADMIN')">
+            <a href="/admin/dashboard" class="back-link">Volver al Panel</a>
+        </span>
+        <span sec:authorize="hasRole('ENTRENADOR')">
+            <a href="/entrenador/dashboard" class="back-link">Volver al Panel</a>
+        </span>
+        <span sec:authorize="hasRole('CLIENTE')">
+            <a href="/cliente/dashboard" class="back-link">Volver al Panel</a>
+        </span>
+        <span sec:authorize="isAnonymous() or !hasAnyRole('ADMIN','ENTRENADOR','CLIENTE')">
+            <a href="/dashboard" class="back-link">Volver al Panel</a>
+        </span>
+
+        <!-- Formulario para cerrar sesión -->
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <button type="submit" class="logout-link">Cerrar sesión</button>
+        </form>
+    </div>
+</body>
+</html>

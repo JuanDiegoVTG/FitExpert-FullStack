@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title th:if="${promocionId}">Editar Promoción - Emi-Lite</title>
+    <title th:unless="${promocionId}">Crear Nueva Promoción - Emi-Lite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Variables de tema oscuro y colores de Emi-Lite */
+        :root {
+            --primary: #3e007b; /* Morado principal */
+            --primary-dark: #340061; /* Morado oscuro */
+            --secondary: #0F0F1E; /* Fondo principal oscuro */
+            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
+            --text: #E0E0E0; /* Texto principal */
+            --text-light: #A0A0A0; /* Texto secundario */
+            --border: #2D2D3D; /* Bordes */
+            --error: #FF4757; /* Rojo para errores */
+            --success: #28A745;
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
+            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-dark);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px 35px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 500px; /* Ancho un poco más grande para el formulario */
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 3.5rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary); /* Borde morado al enfocar */
+            box-shadow: 0 0 0 3px rgba(62, 0, 123, 0.2); /* Sombra morada */
+        }
+
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-primary); /* Botón con gradiente morado */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(62, 0, 123, 0.4); /* Sombra más intensa */
+        }
+
+        .btn-submit:active {
+            transform: translateY(-1px);
+        }
+
+        .error {
+            color: var(--error); /* Color rojo para errores */
+            font-size: 0.9rem;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: var(--primary); /* Color morado para el enlace */
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+            color: #5a00a8; /* Morado más claro al hover */
+        }
+
+        .logout-link {
+            color: #dc3545; /* Rojo para logout */
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .logout-link:hover {
+            color: #a71e2a;
+        }
+
+        button.logout-link {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0 10px;
+            font: inherit;
+            cursor: pointer;
+            color: #dc3545;
+            text-decoration: underline;
+        }
+
+        button.logout-link:hover {
+            color: #a71e2a;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-percentage"></i> <!-- Icono representativo para promociones -->
+            <span class="logo-text">Emi-Lite</span>
+        </div>
+
+        <h2 th:if="${promocionId}">Editar Promoción</h2>
+        <h2 th:unless="${promocionId}">Crear Nueva Promoción</h2>
+
+        <form th:action="${promocionId} ? @{/promociones/{id}(id=${promocionId})} : @{/promociones}" th:object="${promocionForm}" method="post">
+            <div class="form-group">
+                <label for="codigo">Código:</label>
+                <input type="text" id="codigo" th:field="*{codigo}" placeholder="Código de la promoción (único)" required>
+                <div class="error" th:if="${#fields.hasErrors('codigo')}" th:errors="*{codigo}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" th:field="*{descripcion}" placeholder="Breve descripción de la promoción..."></textarea>
+                <!-- No validación aquí a menos que la agregues al DTO -->
+            </div>
+
+            <div class="form-group">
+                <label for="descuentoPorcentaje">Descuento (%):</label>
+                <input type="number" id="descuentoPorcentaje" th:field="*{descuentoPorcentaje}" step="0.01" placeholder="Ej: 15.00" required min="0.00" max="100.00">
+                <div class="error" th:if="${#fields.hasErrors('descuentoPorcentaje')}" th:errors="*{descuentoPorcentaje}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaInicio">Fecha Inicio:</label>
+                <input type="date" id="fechaInicio" th:field="*{fechaInicio}" required>
+                <div class="error" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaFin">Fecha Fin:</label>
+                <input type="date" id="fechaFin" th:field="*{fechaFin}" required>
+                <div class="error" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="maxUsos">Máximo de Usos:</label>
+                <input type="number" id="maxUsos" th:field="*{maxUsos}" placeholder="Ej: 100" required min="1">
+                <div class="error" th:if="${#fields.hasErrors('maxUsos')}" th:errors="*{maxUsos}"></div>
+            </div>
+
+            <!-- Opcional: Campo para 'activa' -->
+            <!--
+            <div class="form-group">
+                <label for="activa">
+                    <input type="checkbox" id="activa" th:field="*{activa}"> Activa
+                </label>
+            </div>
+            -->
+
+            <button type="submit" class="btn-submit" th:text="${promocionId} ? 'Actualizar Promoción' : 'Crear Promoción'"></button>
+        </form>
+
+        <a href="/promociones" class="back-link">Volver a la Lista</a>
+
+        <!-- Formulario para cerrar sesión -->
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <button type="submit" class="logout-link">Cerrar sesión</button>
+        </form>
+    </div>
+</body>
+</html>

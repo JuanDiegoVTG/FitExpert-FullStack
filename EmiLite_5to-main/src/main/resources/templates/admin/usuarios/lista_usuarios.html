@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Lista de Usuarios - Emi-Lite Admin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Tus estilos modernos y cohesivos con el tema morado */
+        :root {
+            --primary: #3e007b; /* Morado principal */
+            --primary-dark: #340061; /* Morado oscuro */
+            --secondary: #0F0F1E; /* Fondo principal oscuro */
+            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
+            --text: #E0E0E0; /* Texto principal */
+            --text-light: #A0A0A0; /* Texto secundario */
+            --border: #2D2D3D; /* Bordes */
+            --success: #28A745;
+            --error: #FF4757;
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
+            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-dark);
+            color: var(--text);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px 35px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 1200px; /* Ancho más grande para la tabla */
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 3.5rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* Estilos para el formulario de filtros */
+        .filters-form {
+            background-color: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: end; /* Alinear los elementos al final (abajo) */
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .filter-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .filter-group select, .filter-group input[type="text"] {
+            width: 200px; /* Ancho fijo para los selects */
+            padding: 12px 14px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .filter-group select:focus, .filter-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(62, 0, 123, 0.2);
+        }
+
+        .btn-filter {
+            padding: 12px 25px;
+            background: var(--gradient-primary); /* Botón con gradiente morado */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            /* margin-top: 28px; */ /* Ya no es necesario con align-items: end */
+        }
+
+        .btn-filter:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(62, 0, 123, 0.4);
+        }
+
+        /* Estilos para la tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 15px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: var(--primary-dark); /* Fondo morado oscuro para encabezados */
+            color: var(--text);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        tbody tr {
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.05); /* Fondo ligeramente más claro al pasar el mouse */
+        }
+
+        .btn-actions {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-weight: 600;
+            margin: 0 2px;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 5px;
+        }
+
+        .no-data {
+            color: var(--text-light);
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 12px 25px;
+            background: var(--gradient-primary); /* Botón con gradiente morado */
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(62, 0, 123, 0.3);
+        }
+
+        .back-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(62, 0, 123, 0.4);
+        }
+
+        .logout-link {
+            color: #dc3545; /* Rojo para logout */
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .logout-link:hover {
+            color: #a71e2a;
+        }
+
+        button.logout-link {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0 10px;
+            font: inherit;
+            cursor: pointer;
+            color: #dc3545;
+            text-decoration: underline;
+        }
+
+        button.logout-link:hover {
+            color: #a71e2a;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-users"></i> <!-- Icono representativo para usuarios -->
+            <span class="logo-text">Emi-Lite Admin</span>
+        </div>
+
+        <h2>Gestión de Usuarios</h2>
+
+        <!-- Formulario de Filtros -->
+        <form class="filters-form" th:action="@{/admin/usuarios}" method="get"> <!-- Asegúrate que la acción apunte a tu AdminUsuarioController -->
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="rolNombre">Filtrar por Rol:</label>
+                    <select id="rolNombre" name="rolNombre">
+                        <option value="">Todos los roles</option>
+                        <option th:each="rol : ${roles}"
+                                th:value="${rol.nombre}"
+                                th:text="${rol.nombre}"
+                                th:selected="${rol.nombre == filtroRol}"> <!-- Mantiene el valor seleccionado -->
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="activo">Filtrar por Estado:</label>
+                    <select id="activo" name="activo">
+                        <option value="">Todos los estados</option>
+                        <option value="true" th:selected="${filtroActivo == 'true'}">Activos</option>
+                        <option value="false" th:selected="${filtroActivo == 'false'}">Inactivos</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-filter">Aplicar Filtros</button>
+            </div>
+        </form>
+
+        <!-- Tabla de Usuarios -->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Rol</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="usuario : ${usuarios}">
+                    <td th:text="${usuario.id}"></td>
+                    <td th:text="${usuario.userName}"></td>
+                    <td th:text="${usuario.nombres}"></td>
+                    <td th:text="${usuario.apellidos}"></td>
+                    <td th:text="${usuario.email != null ? usuario.email : 'N/A'}"></td>
+                    <td th:text="${usuario.telefono != null ? usuario.telefono : 'N/A'}"></td>
+                    <td th:text="${usuario.rol.nombre}"></td> <!-- Accede al nombre del rol -->
+                    <td th:text="${usuario.activo ? 'Sí' : 'No'}"></td>
+                    <td class="button-group">
+                        <a th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" class="btn-actions btn-edit">Editar</a>
+                        <form th:action="@{/admin/usuarios/{id}/eliminar(id=${usuario.id})}" method="post" style="display: inline;" onsubmit="return confirm('¿Eliminar usuario?');">
+                            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn-actions btn-delete">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Mensaje si no hay usuarios -->
+        <div th:if="${#lists.isEmpty(usuarios)}" class="no-data">
+            <p>No hay usuarios que coincidan con los filtros aplicados.</p>
+        </div>
+
+        <a href="/admin/dashboard" class="back-link">Volver al Panel</a>
+
+        <!-- Formulario para cerrar sesión -->
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="logout-link">Cerrar sesión</button>
+        </form>
+    </div>
+</body>
+</html>

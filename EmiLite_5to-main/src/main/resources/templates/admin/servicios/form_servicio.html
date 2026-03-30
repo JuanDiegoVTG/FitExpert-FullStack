@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title th:if="${servicioId}">Editar Servicio - Emi-Lite</title>
+    <title th:unless="${servicioId}">Crear Nuevo Servicio - Emi-Lite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Variables de tema oscuro y colores de Emi-Lite */
+        :root {
+            --primary: #3e007b; /* Morado principal */
+            --primary-dark: #340061; /* Morado oscuro */
+            --secondary: #0F0F1E; /* Fondo principal oscuro */
+            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
+            --text: #E0E0E0; /* Texto principal */
+            --text-light: #A0A0A0; /* Texto secundario */
+            --border: #2D2D3D; /* Bordes */
+            --success: #28A745;
+            --error: #FF4757; /* Rojo para errores */
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
+            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-dark);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px 35px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 500px; /* Ancho un poco más grande para el formulario */
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 3.5rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary); /* Borde morado al enfocar */
+            box-shadow: 0 0 0 3px rgba(62, 0, 123, 0.2); /* Sombra morada */
+        }
+
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-primary); /* Botón con gradiente morado */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(62, 0, 123, 0.4); /* Sombra más intensa */
+        }
+
+        .btn-submit:active {
+            transform: translateY(-1px);
+        }
+
+        .error {
+            color: var(--error); /* Color rojo para errores */
+            font-size: 0.9rem;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: var(--primary); /* Color morado para el enlace */
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+            color: #5a00a8; /* Morado más claro al hover */
+        }
+
+        .logout-link {
+            color: #dc3545; /* Rojo para logout */
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .logout-link:hover {
+            color: #a71e2a;
+        }
+
+        button.logout-link {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0 10px;
+            font: inherit;
+            cursor: pointer;
+            color: #dc3545;
+            text-decoration: underline;
+        }
+
+        button.logout-link:hover {
+            color: #a71e2a;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-concierge-bell"></i> <!-- Icono representativo para servicios -->
+            <span class="logo-text">Emi-Lite</span>
+        </div>
+
+        <h2 th:if="${servicioId}">Editar Servicio</h2>
+        <h2 th:unless="${servicioId}">Crear Nuevo Servicio</h2>
+
+        <form th:action="${servicioId} ? @{/servicios/{id}(id=${servicioId})} : @{/servicios}" th:object="${servicioForm}" method="post">
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" th:field="*{nombre}" placeholder="Nombre del servicio" required>
+                <div class="error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" th:field="*{descripcion}" placeholder="Describe el servicio..."></textarea>
+                <!-- No validación aquí a menos que la agregues al DTO -->
+            </div>
+
+            <div class="form-group">
+                <label for="duracionMinutos">Duración (minutos):</label>
+                <input type="number" id="duracionMinutos" th:field="*{duracionMinutos}" placeholder="Ej: 60" required min="1">
+                <div class="error" th:if="${#fields.hasErrors('duracionMinutos')}" th:errors="*{duracionMinutos}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="precio">Precio (COP):</label>
+                <input type="number" id="precio" th:field="*{precio}" step="0.01" placeholder="Ej: 50000.00" required min="0.01">
+                <div class="error" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></div>
+            </div>
+
+            <!-- Opcional: Campo para 'activo' -->
+            <!--
+            <div class="form-group">
+                <label for="activo">
+                    <input type="checkbox" id="activo" th:field="*{activo}"> Activo
+                </label>
+            </div>
+            -->
+
+            <button type="submit" class="btn-submit" th:text="${servicioId} ? 'Actualizar Servicio' : 'Crear Servicio'"></button>
+        </form>
+
+        <a href="/admin/servicios" class="back-link">Volver a la Lista</a>
+
+        <!-- Formulario para cerrar sesión -->
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <button type="submit" class="logout-link">Cerrar sesión</button>
+        </form>
+    </div>
+</body>
+</html>

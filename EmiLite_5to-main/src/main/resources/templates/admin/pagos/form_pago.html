@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title th:if="${pagoId}">Editar Pago - Emi-Lite</title>
+    <title th:unless="${pagoId}">Registrar Nuevo Pago - Emi-Lite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Variables de tema oscuro y colores de Emi-Lite */
+        :root {
+            --primary: #3e007b; /* Morado principal */
+            --primary-dark: #340061; /* Morado oscuro */
+            --secondary: #0F0F1E; /* Fondo principal oscuro */
+            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
+            --text: #E0E0E0; /* Texto principal */
+            --text-light: #A0A0A0; /* Texto secundario */
+            --border: #2D2D3D; /* Bordes */
+            --success: #28A745;
+            --error: #FF4757; /* Rojo para errores */
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
+            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-dark);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px 35px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 3.5rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary); /* Borde morado al enfocar */
+            box-shadow: 0 0 0 3px rgba(62, 0, 123, 0.2); /* Sombra morada */
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-primary); /* Botón con gradiente morado */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(62, 0, 123, 0.4); /* Sombra más intensa */
+        }
+
+        .btn-submit:active {
+            transform: translateY(-1px);
+        }
+
+        .error {
+            color: var(--error); /* Color rojo para errores */
+            font-size: 0.9rem;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: var(--primary); /* Color morado para el enlace */
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+            color: #5a00a8; /* Morado más claro al hover */
+        }
+
+        .logout-link {
+            color: #dc3545; /* Rojo para logout */
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .logout-link:hover {
+            color: #a71e2a;
+        }
+
+        button.logout-link {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0 10px;
+            font: inherit;
+            cursor: pointer;
+            color: #dc3545;
+            text-decoration: underline;
+        }
+
+        button.logout-link:hover {
+            color: #a71e2a;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-credit-card"></i> <!-- Icono representativo para pagos -->
+            <span class="logo-text">Emi-Lite</span>
+        </div>
+
+        <h2 th:if="${pagoId}">Editar Pago</h2>
+        <h2 th:unless="${pagoId}">Registrar Nuevo Pago</h2>
+
+        <form th:action="${pagoId} ? @{/pagos/{id}(id=${pagoId})} : @{/pagos}" th:object="${pagoForm}" method="post">
+            <div class="form-group">
+                <label for="usuarioId">Cliente:</label>
+                <select id="usuarioId" th:field="*{usuarioId}" required>
+                    <option value="">Seleccione un cliente</option>
+                    <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.userName}"></option>
+                </select>
+                <div class="error" th:if="${#fields.hasErrors('usuarioId')}" th:errors="*{usuarioId}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="servicioId">Servicio (Opcional):</label>
+                <select id="servicioId" th:field="*{servicioId}">
+                    <option value="">Seleccione un servicio (opcional)</option>
+                    <option th:each="servicio : ${servicios}" th:value="${servicio.id}" th:text="${servicio.nombre}"></option>
+                </select>
+                <!-- No validación aquí a menos que lo hagas obligatorio -->
+            </div>
+
+            <div class="form-group">
+                <label for="monto">Monto:</label>
+                <input type="number" id="monto" th:field="*{monto}" step="0.01" placeholder="Ej: 50000.00" required min="0.01">
+                <div class="error" th:if="${#fields.hasErrors('monto')}" th:errors="*{monto}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="metodoPago">Método de Pago:</label>
+                <input type="text" id="metodoPago" th:field="*{metodoPago}" placeholder="Ej: Tarjeta de Crédito, PSE, Efecty" required>
+                <div class="error" th:if="${#fields.hasErrors('metodoPago')}" th:errors="*{metodoPago}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="estado">Estado:</label>
+                <select id="estado" th:field="*{estado}" required>
+                    <option value="PENDIENTE">Pendiente</option>
+                    <option value="COMPLETADO">Completado</option>
+                    <option value="FALLIDO">Fallido</option>
+                    <option value="CANCELADO">Cancelado</option>
+                </select>
+                <div class="error" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="referenciaPago">Referencia de Pago (Opcional):</label>
+                <input type="text" id="referenciaPago" th:field="*{referenciaPago}" placeholder="Ej: REF123456">
+                <!-- No validación aquí a menos que lo hagas obligatorio -->
+            </div>
+
+            <div class="form-group">
+                <label for="promocionId">Promoción (Opcional):</label>
+                <select id="promocionId" th:field="*{promocionId}">
+                    <option value="">Seleccione una promoción (opcional)</option>
+                    <option th:each="promocion : ${promociones}" th:value="${promocion.id}" th:text="${promocion.codigo}"></option>
+                </select>
+                <!-- No validación aquí a menos que lo hagas obligatorio -->
+            </div>
+
+            <button type="submit" class="btn-submit" th:text="${pagoId} ? 'Actualizar Pago' : 'Registrar Pago'"></button>
+        </form>
+
+        <a href="/pagos" class="back-link">Volver a la Lista</a>
+
+        <!-- Formulario para cerrar sesión -->
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <button type="submit" class="logout-link">Cerrar sesión</button>
+        </form>
+    </div>
+</body>
+</html>

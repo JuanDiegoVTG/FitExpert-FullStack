@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+        }
+        .logo {
+            width: 180px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            margin: 0;
+            color: #0b66c3;
+        }
+        .section {
+            margin-top: 20px;
+        }
+        .label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<img class="logo" th:src="@{/images/logo_emilite.png}" alt="Logo EMI-LITE"/>
+
+<h1>Confirmación de Pago</h1>
+
+<div class="section">
+    <p><span class="label">Nombre del Cliente:</span> <span th:text="${clienteNombre}"></span></p>
+    <p><span class="label">Correo:</span> <span th:text="${clienteEmail}"></span></p>
+    <p><span class="label">Teléfono:</span> <span th:text="${clienteTelefono}"></span></p>
+</div>
+
+<div class="section">
+    <p><span class="label">Servicio:</span> <span th:text="${nombreServicio}"></span></p>
+    <p><span class="label">Descripción:</span> <span th:text="${descripcionServicio}"></span></p>
+    <p><span class="label">Precio:</span> $<span th:text="${precio}"></span></p>
+    <p><span class="label">Duración:</span> <span th:text="${duracion}"></span> minutos</p>
+</div>
+
+<div class="section">
+    <p><span class="label">Método de Pago:</span> <span th:text="${metodoPago}"></span></p>
+    <p><span class="label">Fecha de Pago:</span> <span th:text="${fechaPago}"></span></p>
+</div>
+
+</body>
+</html>

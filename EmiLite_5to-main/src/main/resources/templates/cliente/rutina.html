@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Rutina Personalizada</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f6fa;
+            color: #2f3640;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #4b7bec;
+            margin-bottom: 20px;
+        }
+
+        pre {
+            background-color: #f1f2f6;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+            white-space: pre-wrap; /* Hace que el texto largo se ajuste al contenedor */
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 25px;
+            background-color: #4b7bec;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #3867d6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tu rutina personalizada</h1>
+        <pre th:text="${rutina}"></pre>
+        <a href="/cliente/dashboard">Volver</a>
+    </div>
+</body>
+</html>
