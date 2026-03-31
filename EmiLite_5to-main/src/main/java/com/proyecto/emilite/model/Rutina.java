@@ -46,4 +46,7 @@ public class Rutina {
 
     @Column(name = "activo", nullable = false)
     private Boolean activo = true; 
+
+    @Column(name = "favorita", nullable = false)
+    private Boolean es_favorita= true;
 }

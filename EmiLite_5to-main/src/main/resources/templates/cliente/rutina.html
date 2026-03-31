@@ -1,67 +1,197 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <title>Tu Rutina Generada - Emi-Lite</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tu Rutina Personalizada</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #3e007b;
+            --primary-light: #5a00a8;
+            --secondary: #0F0F1E;
+            --card-bg: #1E1E2E;
+            --text: #E0E0E0;
+            --text-light: #A0A0A0;
+            --border: #2D2D3D;
+            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f6fa;
-            color: #2f3640;
+            background: var(--gradient-dark);
+            color: var(--text);
             margin: 0;
-            padding: 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding: 20px;
         }
 
-        .container {
-            background-color: #ffffff;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        .rutina-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
             max-width: 600px;
-            width: 90%;
+            width: 100%;
+            box-shadow: var(--shadow);
             text-align: center;
         }
 
-        h1 {
-            color: #4b7bec;
-            margin-bottom: 20px;
-        }
-
-        pre {
-            background-color: #f1f2f6;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: left;
-            overflow-x: auto;
-            white-space: pre-wrap; /* Hace que el texto largo se ajuste al contenedor */
-        }
-
-        a {
+        .ia-badge {
             display: inline-block;
-            margin-top: 25px;
-            padding: 12px 25px;
-            background-color: #4b7bec;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: background-color 0.3s ease;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
         }
 
-        a:hover {
-            background-color: #3867d6;
+        .rutina-container h1 {
+            color: white;
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            background-color: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .ejercicios-box {
+            background-color: #151522;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            text-align: left;
+            margin-bottom: 35px;
+        }
+
+        .ejercicios-box h3 {
+            color: white;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .ejercicios-box p {
+            color: var(--text-light);
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-volver {
+            background-color: transparent;
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .btn-volver:hover {
+            background-color: rgba(255,255,255,0.05);
+            color: white;
+        }
+
+        .btn-fav {
+            background: linear-gradient(135deg, #e84393 0%, #d63031 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(232, 67, 147, 0.3);
+        }
+
+        .btn-fav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 67, 147, 0.5);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Tu rutina personalizada</h1>
-        <pre th:text="${rutina}"></pre>
-        <a href="/cliente/dashboard">Volver</a>
+
+    <div class="rutina-container">
+        <div class="ia-badge"><i class="fas fa-magic"></i> GENERADA POR IA</div>
+        
+        <h1 th:text="${rutinaGeneradaIA.nombre}">Nombre de la Rutina</h1>
+
+        <div class="stats-row">
+            <div class="stat-item">
+                <span class="stat-label">Nivel</span>
+                <span class="stat-value" th:text="${rutinaGeneradaIA.nivelDificultad}">Media</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Duración</span>
+                <span class="stat-value" th:text="${rutinaGeneradaIA.duracionSemanas} + ' Días'">4 Días</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Tipo</span>
+                <span class="stat-value" th:text="${rutinaGeneradaIA.tipo}">IA</span>
+            </div>
+        </div>
+
+        <div class="ejercicios-box">
+            <h3><i class="fas fa-dumbbell" style="color: var(--primary); margin-right: 8px;"></i> Plan de Entrenamiento</h3>
+            <p th:text="${rutinaGeneradaIA.descripcion}"></p>
+        </div>
+
+        <div class="actions">
+            <a href="/cliente/dashboard" class="btn btn-volver">
+                <i class="fas fa-arrow-left"></i> Volver al Panel
+            </a>
+            
+            <form th:action="@{/api/rutinas/{id}/favorita(id=${rutinaGeneradaIA.id})}" method="post">
+                <button type="submit" class="btn btn-fav">
+                    <i class="fas fa-heart"></i> Guardar en Favoritos
+                </button>
+            </form>
+        </div>
     </div>
+
 </body>
 </html>

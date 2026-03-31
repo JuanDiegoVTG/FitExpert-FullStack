@@ -16,4 +16,6 @@ public interface RutinaRepository extends JpaRepository<Rutina, Long> {
 
     // Método para encontrar rutinas por cliente y estado
     List<Rutina> findByClienteIdAndActivo(Long clienteId, Boolean activo);
+
+    List<Rutina> findByClienteIdAndActivoTrue(Long clienteId);
 }

@@ -24,14 +24,16 @@ def generar_rutina():
         return jsonify({
             "rutina": "HIIT + Cardio",
             "dias": 4,
-            "ejercicios": ["Burpees", "Correr", "Sentadillas"]
+            "ejercicios": ["Burpees", "Correr", "Sentadillas"],
+            "es_favorita": False
         })
     else:
         # Para cualquier otro objetivo (como ganar músculo), le damos una de fuerza
         return jsonify({
             "rutina": "Fuerza",
             "dias": 3,
-            "ejercicios": ["Pesas", "Press banca", "Dominadas"]
+            "ejercicios": ["Pesas", "Press banca", "Dominadas"],
+            "es_favorita": False
         })
 
 # Arrancamos el servidor en el puerto 8000

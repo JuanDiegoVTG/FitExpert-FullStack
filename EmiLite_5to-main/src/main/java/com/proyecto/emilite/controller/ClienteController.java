@@ -17,9 +17,10 @@ import com.proyecto.emilite.model.Rutina;
 import com.proyecto.emilite.model.Servicio;
 import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.model.dto.ClientePerfilDTO;
+import com.proyecto.emilite.repository.RutinaRepository;
+import com.proyecto.emilite.repository.UsuarioRepository;
 import com.proyecto.emilite.service.PagoService;
 import com.proyecto.emilite.service.PythonService;
-import com.proyecto.emilite.service.RutinaService;
 import com.proyecto.emilite.service.ServicioService;
 import com.proyecto.emilite.service.UsuarioService;
 
@@ -30,7 +31,7 @@ import jakarta.validation.Valid;
 public class ClienteController {
 
     @Autowired
-    private RutinaService rutinaService;
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private UsuarioService usuarioService;
@@ -43,6 +44,9 @@ public class ClienteController {
 
     @Autowired
     private PythonService pythonService;
+
+    @Autowired
+    private RutinaRepository rutinaRepository;
 
 
     // Endpoint: GET /cliente/servicios
@@ -62,21 +66,17 @@ public class ClienteController {
     // Endpoint: GET /cliente/rutinas
     // Mostrar las rutinas del cliente logueado
     @GetMapping("/cliente/rutinas")
-    public String verRutinasCliente(Model model) {
-        // Obtener el nombre de usuario del usuario autenticado
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    public String verMisRutinas(Authentication auth, Model model) {
+        // 1. Saber quién es el usuario logueado
         String username = auth.getName();
+        Usuario usuario = usuarioRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Obtener la entidad Usuario desde la base de datos
-        Usuario usuarioLogueado = usuarioService.findByUserName(username);
+        // 2. Buscar todas LAS RUTINAS de ese usuario específico
+        List<Rutina> misRutinas = rutinaRepository.findByClienteId(usuario.getId());
 
-        // Obtener las rutinas asociadas a este usuario
-        List<Rutina> rutinasDelCliente = rutinaService.findByClienteId(usuarioLogueado.getId());
-
-        // Añadir la lista de rutinas al modelo para que la vista pueda mostrarla
-        model.addAttribute("rutinas", rutinasDelCliente);
-
-        // Devolver la vista específica para las rutinas del cliente
+        // 3. Pasar la lista completa al HTML
+        model.addAttribute("rutinas", misRutinas);
         return "cliente/ver_rutinas";
     }
 
@@ -169,15 +169,12 @@ public class ClienteController {
     public String verRutina(Model model, Authentication auth) {
 
         // Le pedimos al servicio de Python que nos traiga la rutina
-        // Usamos 'auth' para que el sistema sepa automáticamente de quién es la rutina
         String rutinaJson = pythonService.generarRutinaDesdePerfil(auth);
 
-        // "Cargamos" la rutina en una maleta llamada 'model'
         // Esto sirve para que la página HTML pueda leer los datos que trajo Python
         model.addAttribute("rutina", rutinaJson);
 
         // Le decimos a Spring que abra la vista (el archivo HTML)
-        // Se encuentra en la carpeta: src/main/resources/templates/cliente/rutina.html
         return "cliente/rutina";
     }
     
