@@ -1,279 +1,227 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Mis Rutinas - Emi-Lite</title>
+    <title>Panel Entrenador - Emi-Lite</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Tus estilos habituales aquí, puedes reutilizar parte del dashboard o login */
         :root {
-            --primary: #3e007b; /* Morado principal */
-            --primary-dark: #340061; /* Morado oscuro */
-            --secondary: #0F0F1E; /* Fondo principal oscuro */
-            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
-            --text: #E0E0E0; /* Texto principal */
-            --text-light: #A0A0A0; /* Texto secundario */
-            --border: #2D2D3D; /* Bordes */
-            --success: #28A745;
-            --error: #FF4757;
-            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
-            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --primary: #3e007b;
+            --primary-light: #5a00a8;
+            --bg: #0F0F1E;
+            --card-bg: #1E1E2E;
+            --text: #E0E0E0;
+            --border: #2D2D3D;
+            --accent: #00d2d3; /* Color distintivo para el entrenador */
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--gradient-dark);
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1A1A2E 100%);
             color: var(--text);
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            padding: 30px;
+            margin: 0;
         }
 
         .container {
-            background-color: var(--card-bg);
-            padding: 50px 35px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 85%; /* Ancho más grande para la tabla */
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .logo {
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
         }
 
-        .logo i {
-            font-size: 3.5rem;
-            color: white;
-        }
-
-        .logo-text {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: white;
-            letter-spacing: 1px;
-            margin-top: 10px;
-            display: block;
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            color: var(--text);
-            font-weight: 600;
-        }
-
+        /* TABLA PRO */
+        .table-container { overflow-x: auto; }
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th, td {
-            padding: 15px 10px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
         }
 
         th {
-            background-color: var(--primary-dark); /* Fondo morado oscuro para encabezados */
-            color: var(--text);
-            font-weight: 600;
+            background: rgba(62, 0, 123, 0.2);
+            color: var(--accent);
+            text-align: left;
+            padding: 15px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.9rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--primary);
         }
 
-        tbody tr {
-            transition: var(--transition);
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
         }
 
-        tbody tr:hover {
-            background-color: rgba(255, 255, 255, 0.05); /* Fondo ligeramente más claro al pasar el mouse */
+        /* TRUCO PARA LA DESCRIPCIÓN */
+        .col-desc {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Pone los "..." automáticamente */
+            color: #A0A0A0;
         }
 
-        .btn-actions {
-            padding: 5px 12px;
+        .badge-tipo {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background: var(--primary);
+        }
+
+        /* BOTONES ACCIONES */
+        .btn-group { display: flex; gap: 8px; }
+        
+        .btn-icon {
+            padding: 8px;
             border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-            font-weight: 600;
-            margin: 0 2px;
-        }
-
-        .btn-edit {
-            background-color: #ffc107;
-            color: black;
-        }
-
-        .btn-edit:hover {
-            background-color: #e0a800;
-        }
-
-        .btn-delete {
-            background-color: #dc3545;
+            border: 1px solid var(--border);
             color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .btn-delete:hover {
-            background-color: #c82333;
-        }
+        .btn-edit { color: #ffc107; border-color: #ffc107; }
+        .btn-edit:hover { background: #ffc107; color: black; }
+        
+        .btn-delete { color: #ff4757; border-color: #ff4757; background: transparent; }
+        .btn-delete:hover { background: #ff4757; color: white; }
 
-        .button-group {
-            display: flex;
-            gap: 5px;
-        }
-
-        .no-data {
-            color: var(--text-light);
-            font-style: italic;
-            padding: 20px;
-        }
-
-        .actions {
-            margin-top: 20px;
-        }
+        .btn-view { color: var(--accent); border-color: var(--accent); }
+        .btn-view:hover { background: var(--accent); color: white; }
 
         .btn-create {
-            display: inline-block;
-            padding: 12px 25px;
-            background: var(--gradient-primary); /* Botón con gradiente morado */
-            color: white;
-            text-decoration: none;
+            background: var(--accent);
+            color: #0F0F1E;
+            padding: 10px 20px;
             border-radius: 50px;
-            font-weight: 600;
-            transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(62, 0, 123, 0.3);
-        }
-
-        .btn-create:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(62, 0, 123, 0.4);
-        }
-
-        .back-link {
-            display: inline-block;
-            padding: 12px 25px;
-            background: var(--gradient-primary); /* Botón con gradiente morado */
-            color: white;
             text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: var(--transition);
-            margin-top: 20px;
-            box-shadow: 0 4px 15px rgba(62, 0, 123, 0.3);
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .back-link:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(62, 0, 123, 0.4);
+        /* MODAL (Reutilizamos la lógica del cliente) */
+        .modal {
+            display: none; position: fixed; z-index: 1000;
+            top:0; left:0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            justify-content: center; align-items: center;
         }
-
-        .logout-link {
-            color: #dc3545; /* Rojo para logout */
-            text-decoration: none;
-            margin: 0 10px;
-        }
-
-        .logout-link:hover {
-            color: #a71e2a;
-        }
-
-        button.logout-link {
-            background: none;
-            border: none;
-            padding: 0;
-            margin: 0 10px;
-            font: inherit;
-            cursor: pointer;
-            color: #dc3545;
-            text-decoration: underline;
-        }
-
-        button.logout-link:hover {
-            color: #a71e2a;
-            text-decoration: none;
+        .modal-content {
+            background: var(--card-bg); padding: 30px; border-radius: 15px;
+            width: 90%; max-width: 500px; border: 1px solid var(--accent);
         }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <div class="logo">
-            <i class="fas fa-running"></i> <!-- Icono representativo para rutinas -->
-            <span class="logo-text">Emi-Lite Entrenador</span>
+        <div class="header-flex">
+            <div>
+                <h1 style="margin:0;"><i class="fas fa-user-tie" style="color:var(--accent);"></i> Panel de Rutinas</h1>
+                <p style="color:var(--text-light); margin:5px 0 0 0;">Gestiona los entrenamientos de tus atletas.</p>
+            </div>
+            <a href="/entrenador/rutinas/nueva" class="btn-create">
+                <i class="fas fa-plus"></i> Nueva Rutina
+            </a>
         </div>
 
-        <h2>Mis Rutinas</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Nombre Rutina</th>
+                        <th>Descripción</th>
+                        <th>Tipo</th>
+                        <th>Nivel</th>
+                        <th>Días</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="r : ${rutinas}">
+                        <td th:text="${r.id}" style="font-weight: bold; color: var(--accent);"></td>
+                        <td>
+                            <i class="fas fa-user-circle"></i> 
+                            <span th:text="${r.cliente.nombres + ' ' + r.cliente.apellidos}"></span>
+                        </td>
+                        <td th:text="${r.nombre}" style="color: white; font-weight: 500;"></td>
+                        <td class="col-desc" th:text="${r.descripcion}"></td>
+                        <td><span class="badge-tipo" th:text="${r.tipo}">IA</span></td>
+                        <td th:text="${r.nivelDificultad}"></td>
+                        <td th:text="${r.duracionSemanas}"></td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn-icon btn-view" 
+                                        th:data-nombre="${r.nombre}"
+                                        th:data-desc="${r.descripcion}"
+                                        onclick="verDetalle(this)" title="Vista Rápida">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                
+                                <a th:href="@{/entrenador/rutinas/{id}/editar(id=${r.id})}" class="btn-icon btn-edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Tipo</th>
-                    <th>Nivel</th>
-                    <th>Duración (sem)</th>
-                    <th>Cliente</th>
-                    <th>Activa</th>
-                    <th>Fecha Creación</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="rutina : ${rutinas}">
-                    <td th:text="${rutina.id}"></td>
-                    <td th:text="${rutina.nombre}"></td>
-                    <td th:text="${rutina.descripcion}"></td>
-                    <td th:text="${rutina.tipo}"></td>
-                    <td th:text="${rutina.nivelDificultad}"></td>
-                    <td th:text="${rutina.duracionSemanas}"></td>
-                    <td th:text="${rutina.cliente.nombres + ' ' + rutina.cliente.apellidos}"></td> <!-- Mostrar nombre del cliente -->
-                    <td th:text="${rutina.activo ? 'Sí' : 'No'}"></td>
-                    <td th:text="${#temporals.format(rutina.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></td>
-                    <td class="button-group">
-                        <a th:href="@{/entrenador/rutinas/{id}/editar(id=${rutina.id})}" class="btn-actions btn-edit">Editar</a>
-                        <form th:action="@{/entrenador/rutinas/{id}/eliminar(id=${rutina.id})}" method="post" style="display: inline;" onsubmit="return confirm('¿Eliminar rutina?');">
-                            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                            <button type="submit" class="btn-actions btn-delete">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <!-- Mensaje si no hay rutinas -->
-        <div th:if="${#lists.isEmpty(rutinas)}" class="no-data">
-            <p>No hay rutinas registradas aún.</p>
+                                <form th:action="@{/entrenador/rutinas/{id}/eliminar(id=${r.id})}" method="post" onsubmit="return confirm('¿Borrar rutina?');">
+                                    <button type="submit" class="btn-icon btn-delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <div class="actions">
-            <a href="/entrenador/rutinas/nueva" class="btn-create">+ Crear Nueva Rutina</a>
+        <div style="margin-top: 25px; display: flex; justify-content: space-between;">
+            <a href="/dashboard" style="color: var(--text-light); text-decoration: none;"><i class="fas fa-chevron-left"></i> Volver</a>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" style="background:none; border:none; color:#ff4757; cursor:pointer;">Cerrar Sesión</button>
+            </form>
         </div>
-
-        <a href="/dashboard" class="back-link">Volver al Panel</a>
-
-        <!-- Formulario para cerrar sesión -->
-        <form th:action="@{/logout}" method="post" style="display: inline;">
-            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="logout-link">Cerrar sesión</button>
-        </form>
     </div>
+
+    <div id="modalDetalle" class="modal">
+        <div class="modal-content">
+            <h2 id="mNombre" style="color:var(--accent); margin-top:0;"></h2>
+            <hr border="0" style="border-top:1px solid var(--border); margin:15px 0;">
+            <div id="mDesc" style="line-height: 1.6; color: #E0E0E0;"></div>
+            <button onclick="cerrar()" style="margin-top:20px; width:100%; padding:10px; border-radius:8px; border:none; background:var(--primary); color:white; cursor:pointer;">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        function verDetalle(btn) {
+            document.getElementById('mNombre').innerText = btn.getAttribute('data-nombre');
+            document.getElementById('mDesc').innerText = btn.getAttribute('data-desc');
+            document.getElementById('modalDetalle').style.display = 'flex';
+        }
+        function cerrar() { document.getElementById('modalDetalle').style.display = 'none'; }
+    </script>
 </body>
 </html>

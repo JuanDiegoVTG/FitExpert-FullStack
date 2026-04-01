@@ -1,439 +1,389 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Mi Panel - Emi-Lite</title>
+    <title>FITEXPERT - Panel de Entrenador</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* Tus estilos habituales aquí */
         :root {
-            --primary: #3e007b; /* Morado principal */
-            --primary-dark: #340061; /* Morado oscuro */
-            --secondary: #0F0F1E; /* Fondo principal oscuro */
-            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
-            --text: #E0E0E0; /* Texto principal */
-            --text-light: #A0A0A0; /* Texto secundario */
-            --border: #2D2D3D; /* Bordes */
-            --success: #28A745;
-            --error: #FF4757;
-            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
-            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
+            --bg-body: #0f172a; 
+            --bg-sidebar: #1e293b;
+            --primary: #6366f1; /* Indigo */
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --accent: #10b981; /* Emerald */
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--gradient-dark);
-            color: var(--text);
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+            color: var(--text-main);
             display: flex;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        .menu {
-            width: 250px;
-            background-color: var(--secondary-light);
-            padding: 30px 20px;
-            height: 100vh;
-            position: fixed;
-            border-right: 1px solid var(--border);
-            overflow-y: auto;
-        }
-
-        .menu h3 {
-            color: white;
-            font-size: 1.4rem;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1.5rem;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
         }
 
-        .menu h3 i {
-            color: var(--primary);
-        }
-
-        .menu h4 {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 25px 0 15px 0;
-            padding-left: 10px;
-            font-weight: 500;
-        }
-
-        .menu a {
+        .brand {
             display: flex;
             align-items: center;
             gap: 12px;
-            color: var(--text);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 3rem;
             text-decoration: none;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            transition: var(--transition);
-            font-size: 0.95rem;
-            background-color: rgba(255, 255, 255, 0.03);
-            border: 1px solid transparent;
         }
 
-        .menu a:hover {
-            background-color: var(--primary-light);
+        .brand i {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text; /* Estándar para evitar errores */
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 5px var(--primary-glow));
+        }
+
+        .nav-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-group label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+            display: block;
+            padding-left: 0.5rem;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 0.3rem;
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(99, 102, 241, 0.1);
             color: white;
-            border-color: var(--primary);
             transform: translateX(5px);
         }
 
-        .menu a i {
+        .nav-link i {
+            font-size: 1.1rem;
             width: 20px;
             text-align: center;
-            color: var(--primary);
-            font-size: 1.1rem;
         }
 
-        .content {
-            margin-left: 250px;
-            padding: 40px;
-            width: calc(100% - 250px);
-            min-height: 100vh;
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 2.5rem;
         }
 
-        .user-header {
+        /* Top Header */
+        .top-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
         }
 
-        .user-info {
+        .user-profile {
             display: flex;
             align-items: center;
             gap: 15px;
+            background: var(--card-bg);
+            padding: 8px 20px 8px 8px;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
         }
 
-        .user-avatar {
-            width: 60px;
-            height: 60px;
+        .avatar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6); /* Violeta/Azul para Coach */
             border-radius: 50%;
-            background: var(--gradient-primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            color: white;
-            font-size: 1.4rem;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            font-weight: 800;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
         }
 
-        .user-details h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: white;
+        /* Trainer Hero */
+        .trainer-hero {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(5px);
         }
 
-        .user-details p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        .welcome-card {
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: var(--shadow);
-            margin-bottom: 40px;
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .welcome-icon {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-
-        .welcome-card h1 {
+        .hero-text h1 {
             font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: white;
-            background: linear-gradient(to right, #fff 0%, var(--primary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            margin-bottom: 0.5rem;
         }
 
-        .welcome-card p {
-            font-size: 1.1rem;
-            color: var(--text-light);
-            margin-bottom: 25px;
-            line-height: 1.6;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+        .badge-coach {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
-        .role-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--gradient-primary);
-            color: white;
-            padding: 10px 25px;
-            border-radius: 50px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-        }
-
-        .role-badge i {
-            font-size: 1rem;
-        }
-
-        .btn-purple {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            font-size: 1rem;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-        }
-
-        .btn-purple:hover {
-            background: var(--gradient-hover);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
-        }
-
-        .btn-purple-outline {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            padding: 12px 28px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            font-size: 1rem;
-        }
-
-        .btn-purple-outline:hover {
-            background: var(--primary-light);
-            transform: translateY(-3px);
-        }
-
+        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
         }
 
         .stat-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px;
-            border: 1px solid var(--border);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 1.8rem;
+            border-radius: 20px;
             transition: var(--transition);
         }
 
         .stat-card:hover {
+            transform: translateY(-8px);
             border-color: var(--primary);
-            transform: translateY(-5px);
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.3);
         }
 
         .stat-icon {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 12px;
-            background: var(--gradient-primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .stat-card h3 {
+            margin-bottom: 1.2rem;
             font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: white;
-        }
-
-        .stat-card p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 15px;
         }
 
         .stat-value {
             font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
+            font-weight: 800;
+            margin-bottom: 0.2rem;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .menu {
-                width: 220px;
-            }
-            
-            .content {
-                margin-left: 220px;
-                width: calc(100% - 220px);
-            }
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
         }
 
-        @media (max-width: 576px) {
-            .menu {
-                transform: translateX(-100%);
-                width: 280px;
-                z-index: 100;
-            }
-            
-            .menu.active {
-                transform: translateX(0);
-            }
-            
-            .content {
-                margin-left: 0;
-                width: 100%;
-                padding: 20px;
-            }
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-action:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            padding: 0.8rem;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background: #ef4444;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="menu" id="menu">
-        <h3><i class="fas fa-dumbbell"></i> Emi-Lite Entrenador</h3>
-        
-        <h4>Entrenador</h4>
-        <a href="/entrenador/clientes">
-            <i class="fas fa-user-friends"></i>
-            <span>Mis Clientes</span>
-        </a>
-        <a href="/entrenador/rutinas/nueva">
-            <i class="fas fa-running"></i>
-            <span>Crear Rutina</span>
-        </a>
-        <a href="/entrenador/rutinas">
-            <i class="fas fa-list"></i>
-            <span>Ver Rutinas</span>
+
+    <nav class="sidebar">
+        <a href="#" class="brand">
+            <i class="fas fa-bolt"></i>
+            <span>FIT EXPERT</span>
         </a>
 
-        <form th:action="@{/logout}" method="post" style="margin-top: 30px;">
-            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn-purple" style="width: 100%; justify-content: center;">
-                <i class="fas fa-sign-out-alt"></i>
-                Cerrar Sesión
+        <div class="nav-group">
+            <label>Gestión Atletas</label>
+            <a href="/entrenador/dashboard" class="nav-link active">
+                <i class="fas fa-chart-line"></i>
+                <span>Mi Dashboard</span>
+            </a>
+            <a href="/entrenador/clientes" class="nav-link">
+                <i class="fas fa-users"></i>
+                <span>Mis Clientes</span>
+            </a>
+        </div>
+
+        <div class="nav-group">
+            <label>Programación</label>
+            <a href="/entrenador/rutinas/nueva" class="nav-link">
+                <i class="fas fa-plus-square"></i>
+                <span>Crear Rutina</span>
+            </a>
+            <a href="/entrenador/rutinas" class="nav-link">
+                <i class="fas fa-folder-open"></i>
+                <span>Ver Rutinas</span>
+            </a>
+        </div>
+
+        <form th:action="@{/logout}" method="post" style="margin-top: auto;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="logout-btn" style="width: 100%;">
+                <i class="fas fa-power-off"></i>
+                <span>Cerrar Sesión</span>
             </button>
         </form>
-    </div>
+    </nav>
 
-    <div class="content">
-        <div class="user-header">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <span sec:authentication="principal.username" th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">E</span>
+    <main class="main-content">
+        
+        <header class="top-header">
+            <div>
+                <h2 style="font-weight: 800; letter-spacing: -0.02em;">Panel de Coach</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Impulsando el rendimiento de tus atletas</p>
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar">
+                    <span th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">E</span>
                 </div>
-                <div class="user-details">
-                    <h2 sec:authentication="principal.username">Entrenador</h2>
-                    <p>Panel de entrenador</p>
+                <div>
+                    <div style="font-weight: 700; font-size: 0.9rem;" sec:authentication="principal.username">Coach</div>
+                    <div class="badge-coach" style="font-size: 0.6rem; padding: 2px 6px;">Certified Trainer</div>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <div class="welcome-card">
-            <div class="welcome-icon">
+        <section class="trainer-hero">
+            <div class="hero-text">
+                <h1>Hola, <span style="color: var(--primary);" sec:authentication="principal.username">Coach</span>! 🏋️‍♂️</h1>
+                <p style="color: var(--text-muted); max-width: 500px; margin-bottom: 1.5rem;">
+                    Tienes nuevas solicitudes de seguimiento. Revisa el progreso de tus clientes y ajusta sus planes de entrenamiento para esta semana.
+                </p>
+                <div class="btn-group">
+                    <a href="/entrenador/rutinas/nueva" class="btn-action">
+                        <i class="fas fa-dumbbell"></i> Asignar Rutina
+                    </a>
+                    <a href="/entrenador/clientes" class="btn-action" style="background: transparent; border: 1px solid var(--border-color);">
+                        <i class="fas fa-user-friends"></i> Ver Clientes
+                    </a>
+                </div>
+            </div>
+            <div style="font-size: 8rem; color: var(--primary); opacity: 0.1; transform: rotate(-10deg);">
                 <i class="fas fa-running"></i>
             </div>
-            <h1>Panel de Entrenador</h1>
-            <p>Administra a tus clientes y crea rutinas personalizadas.</p>
-            
-            <div class="role-badge">
-                <i class="fas fa-user-shield"></i>
-                <span sec:authentication="principal.authorities">ENTRENADOR</span>
-            </div>
-            
-            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
-                <a href="/entrenador/clientes" class="btn-purple">
-                    <i class="fas fa-users"></i>
-                    Ver Mis Clientes
-                </a>
-                <a href="/entrenador/rutinas/nueva" class="btn-purple">
-                    <i class="fas fa-plus"></i>
-                    Crear Nueva Rutina
-                </a>
-            </div>
-        </div>
+        </section>
 
-        <div class="stats-grid">
+        <section class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-user-friends"></i>
+                <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                    <i class="fas fa-user-check"></i>
                 </div>
-                <h3>Mis Clientes</h3>
-                <p>Cantidad de clientes asignados</p>
                 <div class="stat-value">8</div>
+                <div class="stat-label">Clientes Asignados</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-running"></i>
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--accent);">
+                    <i class="fas fa-clipboard-list"></i>
                 </div>
-                <h3>Rutinas Creadas</h3>
-                <p>Rutinas personalizadas generadas</p>
                 <div class="stat-value">15</div>
+                <div class="stat-label">Rutinas Creadas</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-calendar-check"></i>
+                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                    <i class="fas fa-clock"></i>
                 </div>
-                <h3>Sesiones Hoy</h3>
-                <p>Cantidad de sesiones programadas</p>
                 <div class="stat-value">4</div>
+                <div class="stat-label">Sesiones Hoy</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon">
+                <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #a78bfa;">
                     <i class="fas fa-star"></i>
                 </div>
-                <h3>Valoración Media</h3>
-                <p>Calificación promedio de clientes</p>
                 <div class="stat-value">4.8</div>
+                <div class="stat-label">Valoración Media</div>
             </div>
-        </div>
-    </div>
+        </section>
+
+    </main>
+
 </body>
 </html>

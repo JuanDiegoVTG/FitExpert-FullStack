@@ -115,6 +115,27 @@
             gap: 15px;
             justify-content: center;
         }
+        .ejercicio-item {
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 10px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 3px solid transparent;
+            transition: 0.3s;
+        }
+
+        .ejercicio-item:hover {
+            border-left-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .ejercicio-item i {
+            font-size: 0.9rem;
+        }
 
         .btn {
             padding: 12px 25px;
@@ -176,8 +197,13 @@
         </div>
 
         <div class="ejercicios-box">
-            <h3><i class="fas fa-dumbbell" style="color: var(--primary); margin-right: 8px;"></i> Plan de Entrenamiento</h3>
-            <p th:text="${rutinaGeneradaIA.descripcion}"></p>
+            <h3><i class="fas fa-list-ul" style="color: var(--primary); margin-right: 8px;"></i> Plan Detallado</h3>
+        
+            <div th:each="ejercicio : ${#strings.arraySplit(rutinaGeneradaIA.descripcion, ',')}" 
+                class="ejercicio-item">
+                <i class="fas fa-check-circle" style="color: #4cd137;"></i>
+                <span th:text="${ejercicio}">Nombre del ejercicio</span>
+            </div>
         </div>
 
         <div class="actions">

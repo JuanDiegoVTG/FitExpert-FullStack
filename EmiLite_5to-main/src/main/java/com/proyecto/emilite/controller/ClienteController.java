@@ -177,5 +177,10 @@ public class ClienteController {
         // Le decimos a Spring que abra la vista (el archivo HTML)
         return "cliente/rutina";
     }
+
+    @GetMapping("/cliente/preparar-rutina")
+    public String mostrarFormularioIA() {
+    return "cliente/preparar_rutina";
+    }
     
 }

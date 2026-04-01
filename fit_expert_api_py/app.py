@@ -1,7 +1,24 @@
+import os
+from dotenv import load_dotenv
+import google.generativeai as genai
 from flask import Flask, request, jsonify
+import json
 
-# 1. Creamos la aplicación Flask
+# Cargar las variables del archivo .env
+load_dotenv()
+
 app = Flask(__name__)
+
+# Configurar la clave usando la variable de entorno
+api_key = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=api_key)
+
+#for m in genai.list_models():
+#  if 'generateContent' in m.supported_generation_methods:
+#    print(f"Modelo disponible: {m.name}")
+
+#Modelo gratituo 
+model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
 
 # 2. Esta es la página principal (para saber si el servidor está encendido)
 @app.route("/")
@@ -12,28 +29,47 @@ def home():
 # 3. Aquí es donde sucede la "magia" para generar la rutina
 @app.route("/generar-rutina", methods=["POST"])
 def generar_rutina():
-    # Recibimos la información que nos envía Spring Boot (en formato JSON)
-    data = request.get_json()
+    #Recibimos lo que java manda
+    datos_usuario = request.get_json()
 
-    # Sacamos el objetivo que el usuario eligió
-    objetivo = data.get("objetivo")
+    objetivo = datos_usuario.get('objetivo' , 'acondicionamiento')
+    peso = datos_usuario.get('peso', 70)
+    altura = datos_usuario.get('altura', 170)
 
-    # Lógica sencilla para decidir qué rutina entregar
-    if objetivo == "bajar grasa":
-        # Si quiere bajar grasa, le devolvemos una rutina de cardio
+    #Las instrucciones para trabajar la IA
+    instrucciones = f"""
+    Actua como un entrenador personal de alto rendimiento.
+    Crea una Rutina para un usuario con:
+    - Peso: {peso}kg
+    - Altura: {altura}m
+    - Objetivo: {objetivo}
+    Responde ÚNICAMENTE en formato JSON con estas llaves:
+    "nombre_rutina", "dias", "ejercicios" (lista de strings).
+    No escribas nada más, solo el JSON puro."""
+
+    #Pedimos la respuesta de la IA gemini
+    try:
+        repuesta = model.generate_content(instrucciones)
+    
+        #Limpiamos para que Python entienda los datos 
+        texto_sucio = repuesta.text
+        texto_limpio = texto_sucio.replace('```json', '').replace('```', '').strip()
+
+        #Convertimos el texto en un diccionario JSON
+        rutina_final = json.loads(texto_limpio)
+
+        return jsonify(rutina_final)
+
+    except Exception as e:
+        print(f'Error: {e}')
+    
+        print(f"LA IA ESTÁ CANSADA: {e}")
+        # Devolvemos una rutina manual para que el usuario no vea un error 500
         return jsonify({
-            "rutina": "HIIT + Cardio",
-            "dias": 4,
-            "ejercicios": ["Burpees", "Correr", "Sentadillas"],
-            "es_favorita": False
-        })
-    else:
-        # Para cualquier otro objetivo (como ganar músculo), le damos una de fuerza
-        return jsonify({
-            "rutina": "Fuerza",
+            "nombre_rutina": "Rutina de Entrenamiento Express (Modo Offline)",
             "dias": 3,
-            "ejercicios": ["Pesas", "Press banca", "Dominadas"],
-            "es_favorita": False
+            "ejercicios": ["Sentadillas", "Flexiones", "Plancha"]
+        
         })
 
 # Arrancamos el servidor en el puerto 8000

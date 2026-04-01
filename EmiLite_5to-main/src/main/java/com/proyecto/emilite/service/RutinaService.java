@@ -68,4 +68,8 @@ public class RutinaService {
         // Guardar la rutina
         rutinaRepository.save(nuevaRutina);
     }
+
+    public List<Rutina> findByEntrenadorId(Long entrenadorId) {
+    return rutinaRepository.findByClienteEntrenadorId(entrenadorId);
+    }
 }

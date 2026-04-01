@@ -8,21 +8,21 @@
     <style>
         /* Variables y estilos base - Ajustados para usar morado como primario */
         :root {
-            --primary: #3e007b; /* Morado principal */
-            --primary-dark: #340061; /* Morado oscuro */
-            --secondary: #0F0F1E; /* Fondo principal oscuro */
-            --secondary-light: #1A1A2E; /* Fondo de secciones */
+            --primary: #BDCEF6; /* Morado principal */
+            --primary-dark: #597DD2; /* Morado oscuro */
+            --secondary: #FFFF; /* Fondo principal oscuro */
+            --secondary-light: #FFFF; /* Fondo de secciones */
             --accent: #00B4D8; /* Azul brillante */
             --accent-dark: #0096C7;
-            --text: #E0E0E0; /* Texto principal */
-            --text-light: #A0A0A0; /* Texto secundario */
-            --card-bg: #1E1E2E; /* Fondo de tarjetas */
+            --text: #143E9E; /* Texto principal */
+            --text-light: #2D2D3D; /* Texto secundario */
+            --card-bg: #84A1E5; /* Fondo de tarjetas */
             --border: #2D2D3D; /* Bordes */
             --success: #28A745;
             --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%); /* Gradiente morado */
-            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #143E9E 100%); /* Gradiente morado */
+            --gradient-dark: linear-gradient(135deg, #597DD2 0%, #5070bb 100%);
         }
 
         * {
@@ -352,7 +352,7 @@
         }
 
         .feature-card p {
-            color: var(--text-light);
+            color: #2d53ab;
             line-height: 1.8;
         }
 
@@ -445,7 +445,7 @@
 
         /* CTA Section */
         .cta {
-            background: var(--primary); /* Fondo en morado */
+            background: var(--primary-dark); /* Fondo en morado */
             color: white;
             text-align: center;
             padding: 120px 0;
@@ -534,7 +534,7 @@
         }
 
         .footer-column p {
-            color: var(--text-light);
+            color: var(--text);
             margin-bottom: 25px;
             line-height: 1.8;
         }
@@ -548,7 +548,7 @@
         }
 
         .footer-links a {
-            color: var(--text-light);
+            color: var(--text);
             text-decoration: none;
             transition: var(--transition);
             display: inline-block;
@@ -738,8 +738,8 @@
         <div class="container">
             <nav class="navbar">
                 <a href="/" class="logo"> <!-- Enlace a la página principal -->
-                    <img th:src="@{/images/logoemilite.png}" alt="Emi-Lite" style="height:60px; width:70px; display:inline-block; vertical-align:middle;" />
-                    <span style="margin-left:10px;">Emi-Lite</span>
+                    <img th:src="@{/images/logofitexpert.jpeg}" alt="Emi-Lite" style="height:60px; width:70px; display:inline-block; vertical-align:middle;" />
+                    <span style="margin-left:10px;">FIX EXTPERT</span>
                 </a>
                 
                 <button class="mobile-menu-btn" id="mobileMenuBtn"> <!-- Botón para móviles -->

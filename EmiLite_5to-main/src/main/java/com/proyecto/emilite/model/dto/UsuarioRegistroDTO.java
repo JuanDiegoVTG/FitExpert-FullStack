@@ -36,4 +36,7 @@ public class UsuarioRegistroDTO {
 
     @NotNull(message = "El rol es obligatorio")
     private Long rolId; 
+    
+    public Long getRolId() { return rolId; }
+    public void setRolId(Long rolId) { this.rolId = rolId; }
 }

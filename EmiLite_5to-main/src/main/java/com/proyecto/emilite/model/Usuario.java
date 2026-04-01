@@ -75,4 +75,8 @@ public class Usuario {
 
     @Column(name = "activo", nullable = false)
     private Boolean activo = true; 
+
+    @ManyToOne
+    @JoinColumn(name = "entrenador_id")
+    private Usuario entrenador;
 }

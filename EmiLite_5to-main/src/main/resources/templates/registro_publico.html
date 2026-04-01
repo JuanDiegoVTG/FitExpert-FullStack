@@ -169,7 +169,7 @@
     <div class="container">
         <div class="logo">
             <i class="fas fa-user-plus"></i> <!-- Icono de registro -->
-            <span class="logo-text">Emi-Lite</span>
+            <span class="logo-text">FIT EXPERT</span>
         </div>
 
         <div class="form-header">
@@ -229,8 +229,15 @@
                 <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}">
             </div>
 
-           
-            <input type="hidden" th:field="*{rolId}" /> <!-- Campo oculto -->
+            <div class="form-group">
+                <label><i class="fas fa-user-tag"></i> ¿Cuál es tu objetivo?</label>
+                <select name="rolId" class="form-control" style="background: #1a1a2e; color: white; border: 1px solid var(--border);" required>
+                    <option value="" disabled selected>Selecciona tu perfil...</option>
+                    <option value="2">¡Vengo a entrenar! (Atleta)</option>
+                    <option value="3">Vengo a preparar atletas (Entrenador)</option>
+                </select>
+            </div>
+            
 
             <button type="submit" class="btn-submit">
                 <i class="fas fa-user-plus"></i> Registrarse

@@ -18,4 +18,6 @@ public interface RutinaRepository extends JpaRepository<Rutina, Long> {
     List<Rutina> findByClienteIdAndActivo(Long clienteId, Boolean activo);
 
     List<Rutina> findByClienteIdAndActivoTrue(Long clienteId);
+
+    List<Rutina> findByClienteEntrenadorId(Long id);
 }

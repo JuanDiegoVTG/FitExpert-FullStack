@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Configurar IA - Emi-Lite</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3e007b;
+            --card-bg: #1E1E2E;
+            --text: #E0E0E0;
+            --border: #2D2D3D;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #A0A0A0;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: #151522;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            box-sizing: border-box; /* Importante para que no se salga del contenedor */
+        }
+
+        .btn-generar {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-generar:hover {
+            background: #5a00a8;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2><i class="fas fa-robot"></i> Configura tu IA</h2>
+        <p>Ingresa tus datos actuales para una rutina perfecta.</p>
+        
+        <form th:action="@{/api/rutina-real}" method="get">
+            
+            <div class="input-group">
+                <label>Tu peso actual (kg)</label>
+                <input type="number" name="peso" step="0.1" placeholder="Ej: 75.5" required>
+            </div>
+
+            <div class="input-group">
+                <label>Tu altura (m)</label>
+                <input type="number" name="altura" step="0.01" placeholder="Ej: 1.75" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Tu objetivo</label>
+                <select name="objetivo">
+                    <option value="ganar musculo">Ganar Músculo</option>
+                    <option value="perder grasa">Perder Grasa</option>
+                    <option value="definicion">Definición</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-generar">
+                <i class="fas fa-magic"></i> Calcular y Generar
+            </button>
+        </form>
+    </div>
+
+</body>
+</html>

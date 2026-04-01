@@ -23,6 +23,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     // Buscar usuarios por nombre de rol
     List<Usuario> findByRolNombre(String rolNombre);
 
+    //Busca especificamente por ese vinculo
+    List<Usuario> findByEntrenadorId(Long id);
+
     // Buscar por estado activo
     List<Usuario> findByActivo(Boolean activo);
 

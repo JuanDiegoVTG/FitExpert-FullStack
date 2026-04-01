@@ -57,4 +57,8 @@ public class Perfil {
     @OneToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "entrenador_id")
+    private Usuario entrenador;
 }

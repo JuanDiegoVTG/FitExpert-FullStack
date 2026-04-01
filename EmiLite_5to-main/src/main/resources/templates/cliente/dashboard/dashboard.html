@@ -1,449 +1,428 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Mi Panel - Emi-Lite</title>
+    <title>Dashboard Interactivo - Emi-Lite</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* Tus estilos habituales aquí */
         :root {
-            --primary: #3e007b; /* Morado principal */
-            --primary-dark: #340061; /* Morado oscuro */
-            --secondary: #0F0F1E; /* Fondo principal oscuro */
-            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
-            --text: #E0E0E0; /* Texto principal */
-            --text-light: #A0A0A0; /* Texto secundario */
-            --border: #2D2D3D; /* Bordes */
-            --success: #28A745;
-            --error: #FF4757;
-            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
-            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
+            --bg-body: #0f172a; /* Slate 950 */
+            --bg-sidebar: #1e293b; /* Slate 800 */
+            --primary: #6366f1; /* Indigo 500 */
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --accent: #10b981; /* Emerald 500 */
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--gradient-dark);
-            color: var(--text);
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+            color: var(--text-main);
             display: flex;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        .menu {
-            width: 250px;
-            background-color: var(--secondary-light);
-            padding: 30px 20px;
-            height: 100vh;
-            position: fixed;
-            border-right: 1px solid var(--border);
-            overflow-y: auto;
-        }
-
-        .menu h3 {
-            color: white;
-            font-size: 1.4rem;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1.5rem;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
         }
 
-        .menu h3 i {
-            color: var(--primary);
-        }
-
-        .menu h4 {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 25px 0 15px 0;
-            padding-left: 10px;
-            font-weight: 500;
-        }
-
-        .menu a {
+        .brand {
             display: flex;
             align-items: center;
             gap: 12px;
-            color: var(--text);
-            text-decoration: none;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            transition: var(--transition);
-            font-size: 0.95rem;
-            background-color: rgba(255, 255, 255, 0.03);
-            border: 1px solid transparent;
-        }
-
-        .menu a:hover {
-            background-color: var(--primary-light);
+            font-size: 1.5rem;
+            font-weight: 800;
             color: white;
-            border-color: var(--primary);
-            transform: translateX(5px);
+            margin-bottom: 3rem;
+            text-decoration: none;
         }
 
-        .menu a i {
-            width: 20px;
-            text-align: center;
+        .brand i {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text; 
+        background-clip: text; 
+        -webkit-text-fill-color: transparent; 
+    }
+        .nav-group {
+            margin-bottom: 2rem;
+        }
+
+        .nav-group label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+            padding-left: 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: white;
+        }
+
+        .nav-link i {
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover i {
             color: var(--primary);
-            font-size: 1.1rem;
+            transform: scale(1.1);
         }
 
-        .content {
-            margin-left: 250px;
-            padding: 40px;
-            width: calc(100% - 250px);
-            min-height: 100vh;
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 2.5rem;
         }
 
-        .user-header {
+        /* Header */
+        .top-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
         }
 
-        .user-info {
+        .user-profile {
             display: flex;
             align-items: center;
             gap: 15px;
+            background: var(--card-bg);
+            padding: 8px 20px 8px 8px;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
         }
 
-        .user-avatar {
-            width: 60px;
-            height: 60px;
+        .avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary), #818cf8);
             border-radius: 50%;
-            background: var(--gradient-primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            color: white;
-            font-size: 1.4rem;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            font-weight: bold;
+            box-shadow: 0 0 15px var(--primary-glow);
         }
 
-        .user-details h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: white;
+        /* Hero Card */
+        .hero-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(5px);
         }
 
-        .user-details p {
-            color: var(--text-light);
-            font-size: 0.9rem;
+        .hero-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(120px);
+            opacity: 0.2;
+            z-index: 0;
         }
 
-        .welcome-card {
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: var(--shadow);
-            margin-bottom: 40px;
-            border: 1px solid var(--border);
-            text-align: center;
+        .hero-content {
+            position: relative;
+            z-index: 1;
         }
 
-        .welcome-icon {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 20px;
+        .hero-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
         }
 
-        .welcome-card h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: white;
-            background: linear-gradient(to right, #fff 0%, var(--primary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .welcome-card p {
+        .hero-content p {
+            color: var(--text-muted);
             font-size: 1.1rem;
-            color: var(--text-light);
-            margin-bottom: 25px;
-            line-height: 1.6;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            max-width: 500px;
+            margin-bottom: 2rem;
         }
 
-        .role-badge {
-            display: inline-flex;
+        /* Stats Grid */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 20px;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-info h4 {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .stat-info .value {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .action-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
             align-items: center;
             gap: 8px;
-            background: var(--gradient-primary);
-            color: white;
-            padding: 10px 25px;
-            border-radius: 50px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-        }
-
-        .role-badge i {
-            font-size: 1rem;
-        }
-
-        .btn-purple {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--gradient-primary);
-            color: white;
+            transition: var(--transition);
+            cursor: pointer;
             border: none;
-            padding: 14px 30px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            font-size: 1rem;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
         }
 
-        .btn-purple:hover {
-            background: var(--gradient-hover);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        .btn-main {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px 0 var(--primary-glow);
         }
 
-        .btn-purple-outline {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
+        .btn-main:hover {
+            filter: brightness(1.1);
+            transform: scale(1.05);
+        }
+
+        .btn-outline {
             background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            padding: 12px 28px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            font-size: 1rem;
-        }
-
-        .btn-purple-outline:hover {
-            background: var(--primary-light);
-            transform: translateY(-3px);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 40px;
-        }
-
-        .stat-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px;
-            border: 1px solid var(--border);
-            transition: var(--transition);
-        }
-
-        .stat-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-5px);
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
+            border: 1px solid var(--border-color);
             color: white;
         }
 
-        .stat-card h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .logout-btn:hover {
+            background: #ef4444;
             color: white;
-        }
-
-        .stat-card p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 15px;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .menu {
-                width: 220px;
-            }
-            
-            .content {
-                margin-left: 220px;
-                width: calc(100% - 220px);
-            }
-        }
-
-        @media (max-width: 576px) {
-            .menu {
-                transform: translateX(-100%);
-                width: 280px;
-                z-index: 100;
-            }
-            
-            .menu.active {
-                transform: translateX(0);
-            }
-            
-            .content {
-                margin-left: 0;
-                width: 100%;
-                padding: 20px;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="menu" id="menu">
-        <h3><i class="fas fa-dumbbell"></i> Emi-Lite Cliente</h3>
-        
-        <h4>Cliente</h4>
-        <a href="/cliente/perfil/editar">
-            <i class="fas fa-user-edit"></i>
-            <span>Editar Perfil</span>
-        </a>
-        <a href="/cliente/pagos">
-            <i class="fas fa-credit-card"></i>
-            <span>Mis Pagos</span>
-        </a>
-        <a href="/cliente/rutinas">
-            <i class="fas fa-running"></i>
-            <span>Mis Rutinas</span>
-        </a>
-        <a href="/cliente/servicios">
-            <i class="fas fa-dumbbell"></i>
-            <span>Ver Servicios</span>
-        </a>
-        
-        
 
-        <form th:action="@{/logout}" method="post" style="margin-top: 30px;">
-            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn-purple" style="width: 100%; justify-content: center;">
-                <i class="fas fa-sign-out-alt"></i>
-                Cerrar Sesión
+    <nav class="sidebar">
+        <a href="#" class="brand">
+            <i class="fas fa-bolt"></i>
+            <span>FIT EXPERT</span>
+        </a>
+
+        <div class="nav-group">
+            <label>Menu Principal</label>
+            <a href="/cliente/dashboard" class="nav-link active">
+                <i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/cliente/rutinas" class="nav-link">
+                <i class="fas fa-dumbbell"></i>
+                <span>Mis Rutinas</span>
+            </a>
+            <a href="/cliente/servicios" class="nav-link">
+                <i class="fas fa-rocket"></i>
+                <span>Servicios</span>
+            </a>
+        </div>
+
+        <div class="nav-group">
+            <label>Cuenta</label>
+            <a href="/cliente/perfil/editar" class="nav-link">
+                <i class="fas fa-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+            <a href="/cliente/pagos" class="nav-link">
+                <i class="fas fa-wallet"></i>
+                <span>Pagos y Facturas</span>
+            </a>
+        </div>
+
+        <form th:action="@{/logout}" method="post" style="margin-top: auto;">
+            <button type="submit" class="btn logout-btn" style="width: 100%; justify-content: center;">
+                <i class="fas fa-power-off"></i>
+                <span>Cerrar Sesión</span>
             </button>
         </form>
-    </div>
+    </nav>
 
-    <div class="content">
-        <div class="user-header">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <span sec:authentication="principal.username" th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">C</span>
-                </div>
-                <div class="user-details">
-                    <h2 sec:authentication="principal.username">Cliente</h2>
-                    <p>Panel de cliente</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="welcome-card">
-            <div class="welcome-icon">
-                <i class="fas fa-dumbbell"></i>
-            </div>
-            <h1>Panel de Cliente</h1>
-            <p>Administra tu cuenta, pagos y rutinas.</p>
-            
-            <div class="role-badge">
-                <i class="fas fa-user"></i>
-                <span sec:authentication="principal.authorities">CLIENTE</span>
-            </div>
-            
-            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
-                <a href="/cliente/pagos" class="btn-purple">
-                    <i class="fas fa-receipt"></i>
-                    Ver Mis Pagos
-                </a>
-                <a href="/cliente/rutinas" class="btn-purple">
-                    <i class="fas fa-running"></i>
-                    Ver Mis Rutinas
-                </a>
-                <a href="/api/rutina-real" class="btn-purple-outline">
-                    <i class="fas fa-robot"></i>
-                    Generar con IA
-                </a>
-            </div>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-receipt"></i>
-                </div>
-                <h3>Mis Pagos</h3>
-                <p>Cantidad de pagos realizados</p>
-                <div class="stat-value">5</div>
+    <main class="main-content">
+        
+        <header class="top-header">
+            <div>
+                <h2 style="font-weight: 700;">Panel de Control</h2>
+                <p style="color: var(--text-muted);">¡Bienvenido de nuevo a tu entrenamiento!</p>
             </div>
 
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-running"></i>
+            <div class="user-profile">
+                <div class="avatar">
+                    <span th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">U</span>
                 </div>
-                <h3>Mis Rutinas</h3>
-                <p>Rutinas asignadas actualmente</p>
-                <div class="stat-value">2</div>
+                <div>
+                    <div style="font-weight: 600; font-size: 0.9rem;" sec:authentication="principal.username">Usuario</div>
+                    <div style="color: var(--accent); font-size: 0.75rem; font-weight: 700;">• MIEMBRO PRO</div>
+                </div>
+            </div>
+        </header>
+
+        <section class="hero-card">
+            <div class="hero-content">
+                <h1>Hola, <span sec:authentication="principal.username" style="color: var(--primary);">Atleta</span>! 👋</h1>
+                <p>Tu progreso no se detiene. Hoy es un excelente día para superar tus marcas personales. Revisa tus nuevas rutinas generadas.</p>
+                
+                <div class="action-btns">
+                    <a href="/cliente/rutinas" class="btn btn-main">
+                        <i class="fas fa-play"></i> Empezar Rutina
+                    </a>
+                    <a href="/cliente/preparar-rutina" class="btn btn-outline">
+                        <i class="fas fa-magic"></i> Generar con IA
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-container">
+            <div class="stat-item">
+                <div class="icon-box" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Historial Pagos</h4>
+                    <div class="value">5</div>
+                </div>
             </div>
 
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-dumbbell"></i>
+            <div class="stat-item">
+                <div class="icon-box" style="background: rgba(16, 185, 129, 0.2); color: var(--accent);">
+                    <i class="fas fa-calendar-check"></i>
                 </div>
-                <h3>Mis Servicios</h3>
-                <p>Servicios contratados</p>
-                <div class="stat-value">3</div>
+                <div class="stat-info">
+                    <h4>Rutinas Listas</h4>
+                    <div class="value">2</div>
+                </div>
             </div>
 
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-user-check"></i>
+            <div class="stat-item">
+                <div class="icon-box" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">
+                    <i class="fas fa-gem"></i>
                 </div>
-                <h3>Estado</h3>
-                <p>Membresía activa</p>
-                <div class="stat-value">Sí</div>
+                <div class="stat-info">
+                    <h4>Servicios</h4>
+                    <div class="value">3</div>
+                </div>
             </div>
-        </div>
-    </div>
+
+            <div class="stat-item">
+                <div class="icon-box" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Membresía</h4>
+                    <div class="value" style="color: var(--accent); font-size: 1.2rem;">ACTIVA</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Efecto hover sutil para las tarjetas de stats
+        document.querySelectorAll('.stat-item').forEach(item => {
+            item.addEventListener('mousemove', e => {
+                const rect = item.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                item.style.setProperty('--x', `${x}px`);
+                item.style.setProperty('--y', `${y}px`);
+            });
+        });
+    </script>
 </body>
 </html>

@@ -66,11 +66,13 @@ public class SecurityConfig {
 
                 // 4. Rutas solo para CLIENTE (las más específicas primero)
                 .requestMatchers(
-                    "/cliente/perfil/editar",  // Editar perfil (cliente)
-                    "/cliente/perfil",    
-                    "/api/rutina-real",    
+                    "/cliente/perfil/editar",  
+                    "/cliente/perfil",         
+                    "/cliente/rutinas",       
+                    "/cliente/preparar_rutina", 
+                    "/api/rutina-real",        
                     "/api/rutinas/*/favorita",
-                    "/api/rutinas/*/eliminar"  // Ver perfil (cliente, aunque puede ser solo lectura)
+                    "/api/rutinas/*/eliminar" // Ver perfil (cliente, aunque puede ser solo lectura)
                     // Agrega aquí otras rutas exclusivas para CLIENTE si las hay
                 ).hasRole("CLIENTE")
 
