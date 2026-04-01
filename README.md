@@ -38,12 +38,12 @@ Para ejecutar este proyecto localmente, necesitarás:
 1. Entra a la carpeta: `cd fit_expert_api_py`
 2. Instala las dependencias: `pip install -r requirements.txt` (si tienes el archivo)
 3. Inicia el servidor: `python app.py`
-   * *La API correrá por defecto en el puerto 5000.*
+   * *La API correrá por defecto en el puerto 8000.*
 
 ### Ejecutar el Backend de Spring Boot
 1. Entra a la carpeta: `cd EmiLite_5to-main`
 2. Ejecuta el comando: `mvn spring-boot:run`
-   * *El servidor correrá por defecto en el puerto 8080.*
+   * *El servidor correrá por defecto en el puerto 8082.*
 
 ---
 
