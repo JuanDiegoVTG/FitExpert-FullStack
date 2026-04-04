@@ -9,15 +9,24 @@
     
     <style>
         :root {
-            --bg-body: #0f172a; /* Slate 950 */
-            --bg-sidebar: #1e293b; /* Slate 800 */
-            --primary: #6366f1; /* Indigo 500 */
-            --primary-glow: rgba(99, 102, 241, 0.4);
-            --accent: #10b981; /* Emerald 500 */
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.1);
+            --bg-body: #111a30;
+            --bg-sidebar: #1e2f62f6;
+            --card-bg: rgba(20, 47, 130, 0.35);
+
+            --primary: #6079C5;
+            --primary-light: #8CA0DC;
+            --primary-dark: #2444A5;
+
+            /* IMPORTANTE: redefinimos accent para que no rompa */
+            --accent: #8CA0DC;
+
+            --text-main: #f1f5ff;
+            --text-muted: #a9b4d0;
+
+            --border-color: rgba(140, 160, 220, 0.15);
+
+            --primary-glow: rgba(96, 121, 197, 0.45);
+
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -29,10 +38,10 @@
         }
 
         body {
-            background-color: var(--bg-body);
+            background-color: var(--primary-light);
             background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(140,160,220,0.15), transparent 50%),
+                radial-gradient(at 100% 100%, rgba(64,92,176,0.15), transparent 50%);
             color: var(--text-main);
             display: flex;
             min-height: 100vh;
@@ -97,7 +106,7 @@
         }
 
         .nav-link:hover, .nav-link.active {
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(96, 121, 197, 0.15);
             color: white;
         }
 
@@ -139,7 +148,7 @@
         .avatar {
             width: 45px;
             height: 45px;
-            background: linear-gradient(135deg, var(--primary), #818cf8);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -150,7 +159,11 @@
 
         /* Hero Card */
         .hero-card {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%);
+            background: linear-gradient(
+                135deg, 
+                rgba(33, 52, 106, 0.816), 
+                rgba(60, 95, 198, 0.914)
+            );
             border: 1px solid var(--border-color);
             border-radius: 24px;
             padding: 3rem;
@@ -184,7 +197,7 @@
         }
 
         .hero-content p {
-            color: var(--text-muted);
+            color: var(--primary-light);
             font-size: 1.1rem;
             max-width: 500px;
             margin-bottom: 2rem;
@@ -198,7 +211,11 @@
         }
 
         .stat-item {
-            background: var(--card-bg);
+            background: linear-gradient(
+            135deg, 
+            rgba(33, 52, 106, 0.95), 
+            rgba(36, 68, 165, 0.9)
+            );
             border: 1px solid var(--border-color);
             padding: 1.5rem;
             border-radius: 20px;
@@ -206,13 +223,14 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            backdrop-filter: blur(6px);
         }
 
         .stat-item:hover {
             transform: translateY(-8px);
-            border-color: var(--primary);
+            border-color: var(--primary-light);
             background: rgba(30, 41, 59, 0.9);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 20px 40px rgba(20, 47, 130, 0.5);
         }
 
         .icon-box {
@@ -287,6 +305,10 @@
             background: #ef4444;
             color: white;
         }
+
+        .top-header h2 {
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -338,7 +360,7 @@
         <header class="top-header">
             <div>
                 <h2 style="font-weight: 700;">Panel de Control</h2>
-                <p style="color: var(--text-muted);">¡Bienvenido de nuevo a tu entrenamiento!</p>
+                <p style="color: var(--bg-sidebar);">¡Bienvenido de nuevo a tu entrenamiento!</p>
             </div>
 
             <div class="user-profile">
@@ -354,7 +376,7 @@
 
         <section class="hero-card">
             <div class="hero-content">
-                <h1>Hola, <span sec:authentication="principal.username" style="color: var(--primary);">Atleta</span>! 👋</h1>
+                <h1>Hola, <span sec:authentication="principal.username" style="color: var(--bg-sidebar);">Atleta</span>! 👋</h1>
                 <p>Tu progreso no se detiene. Hoy es un excelente día para superar tus marcas personales. Revisa tus nuevas rutinas generadas.</p>
                 
                 <div class="action-btns">
@@ -370,7 +392,7 @@
 
         <section class="stats-container">
             <div class="stat-item">
-                <div class="icon-box" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+                <div class="icon-box" style="background: rgba(96,121,197,0.2); color: var(--primary);">
                     <i class="fas fa-credit-card"></i>
                 </div>
                 <div class="stat-info">

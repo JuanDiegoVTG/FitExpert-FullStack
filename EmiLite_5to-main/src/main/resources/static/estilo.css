@@ -1,0 +1,212 @@
+/* =========================
+   PALETA DE COLORES (AZUL)
+========================= */
+:root {
+
+    /* Colores principales */
+    --primary: #3169B2;
+    --primary-dark: #093E82;
+    --secondary: #0B1F3A;
+    --secondary-light: #122B52;
+    --accent: #0D52AB;
+    --accent-dark: #093E82;
+
+    --text: #EAF2FB;
+    --text-light: #AFC6E9;
+
+    --card-bg: #122B52;
+    --border: #1E3A6D;
+
+    --success: #28A745;
+    --error: #dc3545;
+    --error-dark: #a71e2a;
+
+    --shadow: 0 8px 25px rgba(9, 62, 130, 0.35);
+    --transition: all 0.3s ease;
+
+    --gradient-primary: linear-gradient(135deg, #5382BE 0%, #0D52AB 100%);
+    --gradient-dark: linear-gradient(135deg, #0B1F3A 0%, #122B52 100%);
+}
+
+/* =========================
+   RESET
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =========================
+   BODY
+========================= */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--text);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* =========================
+   CONTENEDOR PRINCIPAL
+========================= */
+.container {
+    background-color: var(--card-bg);
+    padding: 40px 35px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 1000px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* =========================
+   LOGO
+========================= */
+.logo {
+    margin-bottom: 30px;
+}
+
+.logo i {
+    font-size: 3.5rem;
+    color: white;
+}
+
+.logo-text {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 1px;
+    margin-top: 10px;
+    display: block;
+}
+
+/* =========================
+   TITULOS
+========================= */
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* =========================
+   TABLAS
+========================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 15px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    background-color: var(--primary-dark);
+    color: var(--text);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+}
+
+tbody tr {
+    transition: var(--transition);
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* =========================
+   BOTONES
+========================= */
+.btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(9, 62, 130, 0.3);
+}
+
+/* Botón tipo volver */
+.back-link {
+    display: inline-block;
+    padding: 12px 25px;
+    background: var(--gradient-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(9, 62, 130, 0.3);
+}
+
+.back-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(9, 62, 130, 0.4);
+}
+
+/* =========================
+   MENSAJES
+========================= */
+.no-data {
+    color: var(--text-light);
+    font-style: italic;
+    padding: 20px;
+}
+
+/* =========================
+   LOGOUT
+========================= */
+.logout-link {
+    color: var(--error);
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.logout-link:hover {
+    color: var(--error-dark);
+}
+
+button.logout-link {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0 10px;
+    font: inherit;
+    cursor: pointer;
+    color: var(--error);
+    text-decoration: underline;
+}
+
+button.logout-link:hover {
+    color: var(--error-dark);
+    text-decoration: none;
+}
+
+
+
+
+

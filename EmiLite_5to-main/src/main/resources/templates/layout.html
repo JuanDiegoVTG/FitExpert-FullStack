@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:insert="${pageTitle}">Emi-Lite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header común -->
+        <div class="logo">
+            <i class="fas fa-concierge-bell"></i>
+            <span class="logo-text">Emi-Lite</span>
+        </div>
+
+        <!-- Aquí se inyecta el contenido específico -->
+        <div th:fragment="content">
+            <!-- contenido dinámico -->
+        </div>
+
+        <!-- Footer común -->
+        <footer>
+            <p style="color: var(--text-light); margin-top: 20px;">
+                © 2026 Emi-Lite. Todos los derechos reservados.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

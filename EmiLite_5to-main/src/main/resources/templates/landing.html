@@ -3,26 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emi-Lite | Plataforma de Gestión para Gimnasios</title>
+    <title>FIT EXPERT | Plataforma de Gestión para Gimnasios</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Variables y estilos base - Ajustados para usar morado como primario */
         :root {
-            --primary: #BDCEF6; /* Morado principal */
-            --primary-dark: #597DD2; /* Morado oscuro */
-            --secondary: #FFFF; /* Fondo principal oscuro */
-            --secondary-light: #FFFF; /* Fondo de secciones */
-            --accent: #00B4D8; /* Azul brillante */
-            --accent-dark: #0096C7;
-            --text: #143E9E; /* Texto principal */
-            --text-light: #2D2D3D; /* Texto secundario */
-            --card-bg: #84A1E5; /* Fondo de tarjetas */
-            --border: #2D2D3D; /* Bordes */
+            /* Nueva paleta azul */
+            --primary: #3169B2;       /* Azul principal */
+            --primary-dark: #093E82;  /* Azul oscuro */
+            --secondary: #0B1F3A;     /* Fondo principal oscuro */
+            --secondary-light: #122B52; /* Fondo secciones */
+            
+            --accent: #0D52AB;        /* Azul intenso */
+            --accent-dark: #093E82;
+
+            --text: #EAF2FB;          /* Texto principal claro */
+            --text-light: #AFC6E9;    /* Texto secundario */
+
+            --card-bg: #122B52;       /* Fondo de tarjetas */
+            --border: #1E3A6D;        /* Bordes */
+
             --success: #28A745;
-            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+
+            --shadow: 0 8px 25px rgba(9, 62, 130, 0.35);
             --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #143E9E 100%); /* Gradiente morado */
-            --gradient-dark: linear-gradient(135deg, #597DD2 0%, #5070bb 100%);
+
+            /* Gradientes adaptados */
+            --gradient-primary: linear-gradient(135deg, #5382BE 0%, #0D52AB 100%);
+            --gradient-dark: linear-gradient(135deg, #0B1F3A 0%, #122B52 100%);
         }
 
         * {
@@ -90,7 +98,7 @@
 
         .btn {
             display: inline-block;
-            padding: 16px 38px;
+            padding: 10px 22px;
             border-radius: 50px;
             font-weight: 600;
             text-decoration: none;
@@ -103,7 +111,7 @@
         }
 
         .btn-primary {
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 50px;
             background: var(--gradient-primary); /* Botón con gradiente morado */
             color: white;
@@ -142,9 +150,11 @@
 
         .navbar {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 22px 0;
+            padding: 10px 0;
+            gap: 50px; /* Espacio entre logo y enlaces */
+            
         }
 
         .logo {
@@ -167,6 +177,12 @@
         .nav-links {
             display: flex;
             gap: 35px;
+            justify-self: center;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 20px;
         }
 
         .nav-links a {
@@ -202,7 +218,7 @@
         .nav-links a.btn-secondary {
             border-color: var(--primary); /* Borde morado */
             color: var(--primary);       /* Texto morado */
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 50px;
         }
 
@@ -282,7 +298,7 @@
 
         /* Features Section */
         .features {
-            background-color: var(--secondary-light);
+            background-color: var(--text-light);
             position: relative;
         }
 
@@ -352,7 +368,7 @@
         }
 
         .feature-card p {
-            color: #2d53ab;
+            color: var(--text-light);
             line-height: 1.8;
         }
 
@@ -445,8 +461,8 @@
 
         /* CTA Section */
         .cta {
-            background: var(--primary-dark); /* Fondo en morado */
-            color: white;
+            background: var(--text-light); /* Fondo en morado */
+            color: var(--primary-dark);
             text-align: center;
             padding: 120px 0;
             position: relative;
@@ -534,7 +550,7 @@
         }
 
         .footer-column p {
-            color: var(--text);
+            color: var(--text-light);
             margin-bottom: 25px;
             line-height: 1.8;
         }
@@ -548,7 +564,7 @@
         }
 
         .footer-links a {
-            color: var(--text);
+            color: var(--text-light);
             text-decoration: none;
             transition: var(--transition);
             display: inline-block;
@@ -738,8 +754,8 @@
         <div class="container">
             <nav class="navbar">
                 <a href="/" class="logo"> <!-- Enlace a la página principal -->
-                    <img th:src="@{/images/logofitexpert.jpeg}" alt="Emi-Lite" style="height:60px; width:70px; display:inline-block; vertical-align:middle;" />
-                    <span style="margin-left:10px;">FIX EXTPERT</span>
+                    <img th:src="@{/images/logofitexpert.jpeg}" alt="Emi-Lite" style="height:110px; width:120px; display:inline-block; vertical-align:middle;" />
+                   <!--  <span style="margin-left:10px;">FIT EXPERT</span>-->
                 </a>
                 
                 <button class="mobile-menu-btn" id="mobileMenuBtn"> <!-- Botón para móviles -->
@@ -751,9 +767,11 @@
                     <a href="#caracteristicas">Características</a>
                     <a href="#testimonios">Testimonios</a>
                     <a href="#contacto">Contacto</a>
-                    <!-- Enlaces de autenticación -->
-                    <a href="/login" class="btn-secondary">Iniciar Sesión</a> <!-- Enlace a login -->
-                    <a href="/usuarios/registro-publico" class="btn btn-primary">Registrarse</a> <!-- Enlace a registro -->
+                </div>
+
+                <div class="nav-links nav-actions">
+                    <a href="/login" class="btn-secondary">Iniciar Sesión</a>
+                    <a href="/usuarios/registro-publico" class="btn btn-primary">Registrarse</a>
                 </div>
             </nav>
         </div>
