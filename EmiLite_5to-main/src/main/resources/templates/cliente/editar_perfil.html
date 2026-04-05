@@ -1,27 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Editar Perfil - Emi-Lite</title>
+    <title>Editar Perfil - FIT EXPERT</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/estilo.css}">
     <style>
         /* Variables de tema oscuro y colores de Emi-Lite */
-        :root {
-            --primary: #3e007b; /* Morado principal */
-            --primary-dark: #340061; /* Morado oscuro */
-            --secondary: #0F0F1E; /* Fondo principal oscuro */
-            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
-            --text: #E0E0E0; /* Texto principal */
-            --text-light: #A0A0A0; /* Texto secundario */
-            --border: #2D2D3D; /* Bordes */
-            --success: #28A745;
-            --error: #FF4757; /* Rojo para errores */
-            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
-            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
-        }
 
         * {
             margin: 0;
@@ -29,16 +15,6 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--gradient-dark);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
 
         .container {
             background-color: var(--card-bg);
@@ -150,7 +126,7 @@
         .back-link {
             display: inline-block;
             margin-top: 25px;
-            color: var(--primary); /* Color morado para el enlace */
+            color: white; /* Color morado para el enlace */
             text-decoration: none;
             font-weight: 600;
             transition: var(--transition);
@@ -159,18 +135,9 @@
 
         .back-link:hover {
             text-decoration: underline;
-            color: #5a00a8; /* Morado más claro al hover */
+            color: var(--secondary); /* Morado más claro al hover */
         }
 
-        .logout-link {
-            color: #dc3545; /* Rojo para logout */
-            text-decoration: none;
-            margin: 0 10px;
-        }
-
-        .logout-link:hover {
-            color: #a71e2a;
-        }
 
         button.logout-link {
             background: none;
@@ -179,7 +146,7 @@
             margin: 0 10px;
             font: inherit;
             cursor: pointer;
-            color: #dc3545;
+            color: #a21321;
             text-decoration: underline;
         }
 
@@ -189,14 +156,13 @@
         }
     </style>
 </head>
-<body>
+<body class="edición-perfil">
     <div class="container">
         <div class="logo">
-            <i class="fas fa-user-edit"></i> <!-- Icono representativo para edición de perfil -->
-            <span class="logo-text">Emi-Lite</span>
+            <img th:src="@{/images/logofitexpert.jpeg}" alt="Emi-Lite" style="height:110px; width:120px; display:inline-block; vertical-align:middle;" />
         </div>
 
-        <h2>Editar Mi Perfil</h2>
+        <h2>Editar Perfil</h2>
 
         <!-- Mensaje de éxito -->
         <div th:if="${param.success}" class="success-message">

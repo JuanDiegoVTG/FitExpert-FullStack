@@ -1,40 +1,31 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Mis Rutinas - Emi-Lite</title>
+    <title>Mis Rutinas - FIT EXPERT</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/estilo.css}">
+
     <style>
-        :root {
-            --primary: #3e007b;
-            --secondary: #0F0F1E;
-            --card-bg: #1E1E2E;
-            --text: #E0E0E0;
-            --border: #2D2D3D;
-            --gold: #FFD700;
-            --danger: #ff4757;
-        }
-
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
-            color: var(--text);
-            padding: 40px;
-            margin: 0;
-        }
-
-        .header-section { margin-bottom: 30px; }
+        .header-section { 
+            color: var(--secondary-light);
+            margin-bottom: 30px; }
 
         /* GRID CORREGIDO */
         .grid-rutinas {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            margin-top: 30px;
             gap: 25px;
         }
 
         .rutina-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
+            background: linear-gradient(
+                135deg,
+                rgba(33, 52, 106, 0.85),
+                rgba(60, 95, 198, 0.85)
+            );
+            border: 1px solid var(--border-color);
             border-radius: 15px;
             padding: 25px;
             position: relative;
@@ -78,8 +69,9 @@
         }
 
         .btn-detalles {
-            flex-grow: 1; background: transparent;
-            border: 1px solid var(--primary); color: white;
+            flex-grow: 1; background: var(--primary);
+            border: 1px solid var(--primary);
+             color: white;
             padding: 10px; border-radius: 8px;
             cursor: pointer; transition: 0.3s; margin-right: 10px;
         }
@@ -103,9 +95,36 @@
         }
 
         .modal-content {
-            background: #1E1E2E; padding: 30px; border-radius: 20px;
+            background: linear-gradient(
+                135deg, 
+                rgba(33, 52, 106, 0.816), 
+                rgba(60, 95, 198, 0.914)
+            );
+             padding: 30px; border-radius: 20px;
             width: 90%; max-width: 500px; border: 1px solid var(--primary);
             position: relative; animation: slideIn 0.3s ease;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-dashboard {
+            display: block;
+            padding: 40px;
+        }
+
+        /* centra el header */
+        .header-section {
+            text-align: center;
+        }
+
+
+        /* centra botón */
+        .actions {
+            text-align: center;
         }
 
         .ia-badge-modal {
@@ -139,9 +158,21 @@
         }
 
         .actions { margin-top: 40px; }
+
         .btn-volver {
-            color: white; text-decoration: none; border: 1px solid var(--border);
-            padding: 10px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 10px;
+            background: linear-gradient(
+                135deg, 
+                rgba(33, 52, 106, 0.816), 
+                rgba(60, 95, 198, 0.914)
+            );
+            color: white; 
+            text-decoration: none; 
+            border: 1px solid var(--border-color);
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px;
         }
 
         /* Color para la IA (Morado) */
@@ -157,15 +188,13 @@
             font-weight: bold;
         }
 
-        .rutina-card:has(.badge-trainer) {
-            border-color: #00d2d3; /* Borde diferente si es de entrenador */
-        }
+        
 
         @keyframes slideIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
-<body>
-
+<body class="page-rutinas">
+<div class="page-container">
     <div class="header-section">
         <h1><i class="fas fa-running"></i> Mis Rutinas Guardadas</h1>
         <p>Aquí puedes ver tu historial de entrenamientos y tus favoritas.</p>
@@ -220,7 +249,7 @@
     <div id="modalRutina" class="modal-overlay">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <div class="ia-badge-modal"><i class="fas fa-robot"></i> EMI-LITE INTELLIGENCE</div>
+            <div class="ia-badge-modal"><i class="fas fa-robot"></i> FIT XPERT INTELLIGENCE</div>
             <h2 id="modalTitle" style="margin: 5px 0;">Nombre</h2>
         
             <div class="modal-body">
@@ -273,5 +302,7 @@
         }
     });
     </script>
+
+</div>
 </body>
 </html>

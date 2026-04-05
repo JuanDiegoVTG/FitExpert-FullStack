@@ -6,6 +6,7 @@
     /* Colores principales */
     --primary: #3169B2;
     --primary-dark: #093E82;
+    --primary-light: #8CA0DC;
     --secondary: #0B1F3A;
     --secondary-light: #122B52;
     --accent: #0D52AB;
@@ -18,7 +19,7 @@
     --border: #1E3A6D;
 
     --success: #28A745;
-    --error: #dc3545;
+    --error: #a21321;
     --error-dark: #a71e2a;
 
     --shadow: 0 8px 25px rgba(9, 62, 130, 0.35);
@@ -42,7 +43,7 @@
 ========================= */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--text);
+    background: var(--primary-light);
     color: var(--text);
     min-height: 100vh;
     display: flex;
@@ -55,10 +56,13 @@ body {
    CONTENEDOR PRINCIPAL
 ========================= */
 .container {
-    background-color: var(--card-bg);
+    background:
+     linear-gradient(
+                135deg,rgb(33, 52, 106),rgb(60, 94, 198)
+            );;
     padding: 40px 35px;
     border-radius: 12px;
-    box-shadow: var(--shadow);
+    box-shadow: var(--secondary);
     width: 100%;
     max-width: 1000px;
     text-align: center;
@@ -112,7 +116,7 @@ th, td {
 }
 
 th {
-    background-color: var(--primary-dark);
+    background-color: var(--border);
     color: var(--text);
     font-weight: 600;
     text-transform: uppercase;
@@ -132,7 +136,7 @@ tbody tr:hover {
    BOTONES
 ========================= */
 .btn-primary {
-    background: var(--gradient-primary);
+    background: var(--primary);
     color: white;
     padding: 8px 16px;
     border-radius: 6px;
@@ -153,7 +157,7 @@ tbody tr:hover {
 .back-link {
     display: inline-block;
     padding: 12px 25px;
-    background: var(--gradient-primary);
+    background: var(--primary);
     color: white;
     text-decoration: none;
     border-radius: 50px;
@@ -207,6 +211,24 @@ button.logout-link:hover {
 }
 
 
+/*VISTA DE SERVICIOS*/
 
+body.vista-servicios {
+    background: url("/images/klipartz2.png"), var(--primary-light) no-repeat center center;
+    background-size: cover;
+
+}
+
+body.edición-perfil {
+    background: url("/images/klipartz1.png"), var(--primary-light) no-repeat center center;
+    background-size: cover;
+
+}
+
+body.mis-pagos {
+    background: url("/images/klipartz2.png"), var(--primary-light) no-repeat center center;
+    background-size: cover;
+
+}
 
 
