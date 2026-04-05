@@ -55,8 +55,11 @@
         /* Panel izquierdo: formulario */
         .login-form {
             flex: 1;
-            background: var(--card-bg);
-            padding: 50px;
+            background:
+            linear-gradient(
+                        135deg,rgba(30, 47, 95, 0.905),rgba(49, 76, 158, 0.79)
+            ); /* Fondo de la tarjeta */
+            padding: 60px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -64,12 +67,12 @@
 
         .login-form h2 {
             margin-bottom: 10px;
-            color: var(--primary);
+            color: var(--secondary);
         }
 
         .login-form p {
             margin-bottom: 20px;
-            color: var(--text-light);
+            color: var(--secondary);
         }
 
         .form-group {
@@ -86,6 +89,7 @@
         .form-control {
             width: 100%;
             padding: 12px 15px;
+            padding-left: 15px; 
             background: var(--secondary-light);
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -106,14 +110,14 @@
         }
 
         .options a {
-            color: var(--accent);
+            color: var(--secondary);
             text-decoration: none;
         }
 
         .btn-login {
             width: 100%;
             padding: 14px;
-            background: var(--gradient-primary);
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 8px;
@@ -132,7 +136,7 @@
         .or {
             text-align: center;
             margin: 20px 0;
-            color: var(--text-light);
+            color: var(--secondary);
         }
 
         .social-login {
@@ -214,12 +218,24 @@
         }
 
         .footer-links a {
-            color: var(--accent); /* azul claro */
+            color: var(--text-light); /* azul claro */
             text-decoration: none;
         }
+        
 
-        .footer-links a:hover {
-            color: var(--text-light); /* azul más intenso al pasar el mouse */
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: var(--text-light); /* Color morado para el enlace */
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+            color: var(--); /* Morado más claro al hover */
         }
         
 
@@ -230,7 +246,6 @@
         <!-- Formulario -->
         <div class="login-form">
             <h2>Iniciar Sesion</h2>
-            <a href="/" class="back-link">Volver a la Página Principal</a>
 
             <form th:action="@{/login}" method="post">
                 <div class="form-group">
@@ -264,7 +279,9 @@
             </div>
 
             <div class="footer-links">
-                <p>¿No tienes cuenta? <a th:href="@{/usuarios/registro-publico}">Regístrate aquí</a></p>
+                <p>¿No tienes cuenta? <a th:href="@{/usuarios/registro-publico}">Regístrate aquí </a>
+                <a href="/" class="back-link">Volver a la Página Principal</a></p>
+                
             </div> 
         </div>
 

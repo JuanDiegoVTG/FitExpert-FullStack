@@ -53,7 +53,10 @@
         }
 
         .container {
-            background-color: var(--card-bg); /* Fondo de la tarjeta */
+            background:
+            linear-gradient(
+                        135deg,rgb(33, 52, 106),rgb(60, 94, 198)
+            ); /* Fondo de la tarjeta */
             padding: 25px 20px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
@@ -134,9 +137,9 @@
         .btn-submit {
             width: 100%;
             padding: 16px;
-            background: var(--gradient-primary); /* Botón con gradiente morado */
+            background: var(--primary); /* Botón con gradiente morado */
             color: white;
-            border: none;
+            border: var(--primary-dark);
             border-radius: 8px;
             font-size: 1.1rem;
             font-weight: 600;
@@ -164,7 +167,7 @@
         .back-link {
             display: inline-block;
             margin-top: 25px;
-            color: var(--primary); /* Color morado para el enlace */
+            color: var(--text-light); /* Color morado para el enlace */
             text-decoration: none;
             font-weight: 600;
             transition: var(--transition);
@@ -173,7 +176,7 @@
 
         .back-link:hover {
             text-decoration: underline;
-            color: #5a00a8; /* Morado más claro al hover */
+            color: var(--secondary-light); /* Morado más claro al hover */
         }
 
         .form-header {
