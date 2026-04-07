@@ -98,25 +98,27 @@ public class SecurityConfig {
             Usuario usuario = usuarioRepository.findByUserNameWithRol(username)
                     .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-            // Validación de Entrenador aprobado
-            if (usuario.getRol().getNombre().equals("ENTRENADOR") && !usuario.isValidado()) {
+            // 🕵️ DEBUG: Esto saldrá en tu consola de Eclipse/VS Code
+            System.out.println("DEBUG LOGIN - Usuario: " + username);
+            System.out.println("DEBUG LOGIN - Rol: " + usuario.getRol().getNombre());
+            System.out.println("DEBUG LOGIN - Validado: " + usuario.isValidado());
+
+            // 🛡️ VALIDACIÓN REFORZADA
+            String nombreRol = usuario.getRol().getNombre().toUpperCase().trim();
+            
+            if (nombreRol.equals("ENTRENADOR") && !usuario.isValidado()) {
+                System.out.println("🛑 BLOQUEO ACTIVADO para: " + username);
                 throw new DisabledException("Tu cuenta aún no ha sido aprobada por el administrador.");
             }
 
-            // Normalización del rol para Spring Security (Asegura prefijo ROLE_)
-            String roleName = usuario.getRol().getNombre().toUpperCase().trim(); 
-            if (!roleName.startsWith("ROLE_")) {
-                roleName = "ROLE_" + roleName;
-            }
-
-            var authorities = Collections.singletonList(new SimpleGrantedAuthority(roleName));
-
+            // ... resto del código de authorities ...
+            String roleName = "ROLE_" + nombreRol;
             return new User(
                 usuario.getUserName(),
                 usuario.getPassword(),
-                usuario.isEnabled(), 
+                usuario.isEnabled(), // Usa el campo que pusimos en la entidad
                 true, true, true, 
-                authorities
+                Collections.singletonList(new SimpleGrantedAuthority(roleName))
             );
         };
     }

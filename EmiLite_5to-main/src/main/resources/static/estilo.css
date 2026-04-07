@@ -52,6 +52,40 @@ body {
     padding: 20px;
 }
 
+/* 1. LIBERAMOS EL BODY (El cambio más importante) */
+body.page-rutinas {
+    display: block !important; /* Rompe el centrado forzado del estilo.css */
+    background: #060e1a !important; /* Fondo oscuro nivel Spinning Center */
+    padding-top: 60px;
+}
+
+/* 2. ASEGURAMOS EL ANCHO DEL CONTENEDOR */
+.page-container {
+    max-width: 1250px !important; /* Le damos espacio para que quepan varias */
+    margin: 0 auto !important;
+    padding: 20px !important;
+    background: transparent !important; /* Quitamos el fondo blanco/gris si estorba */
+    border: none !important;
+}
+
+/* 3. EL GRID REFORZADO */
+.grid-rutinas {
+    display: grid !important;
+    /* Esto obliga a crear columnas de 320px mientras quepan en la pantalla */
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: 30px !important;
+    width: 100% !important;
+    margin-top: 40px !important;
+}
+
+/* 4. LA TARJETA (Ajuste de visaje) */
+.rutina-card {
+    background: linear-gradient(135deg, #122B52 0%, #0B1F3A 100%) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    min-height: 280px !important;
+    height: auto !important; /* Que no se estiren raro */
+}
+
 /* =========================
    CONTENEDOR PRINCIPAL
 ========================= */
@@ -67,6 +101,54 @@ body {
     max-width: 1000px;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 1. FONDO GENERAL (Gris suave premium) */
+body.page-rutinas {
+    display: block !important;
+    background-color: #f1f5f9 !important; /* Gris claro tipo Spinning */
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. CABECERA OSCURA */
+.top-dark-section {
+    background: #0b1f3a; /* Tu azul profundo */
+    padding: 80px 0 100px 0;
+    text-align: center;
+}
+
+.header-section h1 { color: white !important; font-size: 2.5rem; }
+.header-section p { color: #AFC6E9 !important; }
+
+/* 3. SECCIÓN DE CONTENIDO CON CURVA (EL SECRETO) */
+.content-light-section {
+    background-color: #f1f5f9;
+    margin-top: -50px; /* Sube para solaparse con lo oscuro */
+    border-radius: 50px 50px 0 0; /* Curva pro hacia arriba */
+    padding: 40px 0;
+    position: relative;
+    z-index: 10;
+}
+
+/* 4. LAS TARJETAS (Ahora resaltan más) */
+.rutina-card {
+    background: linear-gradient(135deg, #1e3a6d 0%, #0b1f3a 100%) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+}
+
+.rutina-card h3 { color: white !important; }
+.rutina-card p { color: #AFC6E9 !important; }
+
+/* Aseguramos que el grid use el ancho completo */
+.grid-rutinas {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: 25px !important;
+    max-width: 1200px;
+    margin: 0 auto !important;
 }
 
 /* =========================
@@ -131,6 +213,8 @@ tbody tr {
 tbody tr:hover {
     background-color: rgba(255, 255, 255, 0.05);
 }
+
+
 
 /* =========================
    BOTONES

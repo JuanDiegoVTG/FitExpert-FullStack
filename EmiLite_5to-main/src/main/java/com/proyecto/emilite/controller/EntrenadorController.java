@@ -21,7 +21,7 @@ import com.proyecto.emilite.service.UsuarioService;
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("/entrenador") // Path base para operaciones de ENTRENADOR
+@RequestMapping("/entrenador")
 public class EntrenadorController {
 
     @Autowired
@@ -30,8 +30,10 @@ public class EntrenadorController {
     @Autowired
     private RutinaService rutinaService;
 
-    // Endpoint: GET /entrenador/clientes
-    // Propósito: Mostrar SOLO los clientes asignados al entrenador logueado
+    /**
+     * Muestra la lista de clientes vinculados al entrenador actual.
+     * Sincronizado con: mis_clientes.html usando ${usuarios}
+     */
     @GetMapping("/clientes")
     public String verClientes(Authentication auth, Model model) {
         String username = auth.getName();
@@ -40,64 +42,60 @@ public class EntrenadorController {
         // Filtramos para obtener solo los clientes que tienen este entrenador asignado
         List<Usuario> misClientes = usuarioService.findByEntrenadorId(entrenador.getId());
         
+        // IMPORTANTE: El nombre del atributo debe ser "usuarios" para que el HTML lo lea
         model.addAttribute("usuarios", misClientes); 
         return "entrenador/mis_clientes"; 
     }
 
-    // Endpoint: GET /entrenador/rutinas
-    // Propósito: Mostrar la lista de rutinas de los clientes de este entrenador
+    /**
+     * Muestra las rutinas de los clientes que pertenecen a este entrenador.
+     * Sincronizado con: ver_rutinas.html usando ${rutinas}
+     */
     @GetMapping("/rutinas")
     public String verRutinas(Authentication auth, Model model) {
         String username = auth.getName();
         Usuario entrenador = usuarioService.findByUserName(username);
         
-        // Obtenemos solo las rutinas vinculadas a los clientes de este entrenador
         List<Rutina> rutinas = rutinaService.findByEntrenadorId(entrenador.getId());
         
         model.addAttribute("rutinas", rutinas);
         return "entrenador/ver_rutinas"; 
     }
 
-    // Endpoint: GET /entrenador/rutinas/nueva
-    // Propósito: Mostrar el formulario con TODOS los clientes para poder asignarles rutina
     @GetMapping("/rutinas/nueva")
     public String mostrarFormularioCreacionRutina(Model model) {
         model.addAttribute("rutinaForm", new RutinaFormDTO());
         
-        // Cargamos todos los clientes para que el entrenador pueda elegir a cualquiera
+        // Cargamos todos los clientes con rol CLIENTE para la selección inicial
         List<Usuario> todosLosClientes = usuarioService.findByRolNombre("CLIENTE");
         model.addAttribute("clientes", todosLosClientes);
         
         return "entrenador/form_rutina";
     }
 
-    // Endpoint: POST /entrenador/rutinas
-    // Propósito: Crear rutina y VINCULAR al cliente con el entrenador automáticamente
+    /**
+     * Procesa la creación de rutina y fuerza la vinculación Entrenador-Cliente
+     */
     @PostMapping("/rutinas")
     public String crearRutina(@Valid @ModelAttribute("rutinaForm") RutinaFormDTO rutinaForm,
                               BindingResult result,
                               Authentication auth,
                               Model model) {
         if (result.hasErrors()) {
-            // Si hay error, recargamos todos los clientes para no perder el select
             model.addAttribute("clientes", usuarioService.findByRolNombre("CLIENTE"));
             return "entrenador/form_rutina";
         }
 
         try {
-            // 1. Buscamos quién es el entrenador actual
             Usuario entrenadorActual = usuarioService.findByUserName(auth.getName());
-
-            // 2. Buscamos al cliente seleccionado
             Usuario cliente = usuarioService.findByIdOrThrow(rutinaForm.getClienteId());
 
-            // 3. VINCULACIÓN: Si el cliente no tiene entrenador, se lo asignamos al actual
-            if (cliente.getEntrenador() == null) {
-                cliente.setEntrenador(entrenadorActual);
-                usuarioService.save(cliente);
-            }
+            // 🚀 VINCULACIÓN FORZADA: 
+            // Cada vez que un entrenador crea una rutina para un cliente, 
+            // ese cliente queda vinculado a él para aparecer en su lista de "Mis Clientes"
+            cliente.setEntrenador(entrenadorActual);
+            usuarioService.save(cliente);
 
-            // 4. Creamos la rutina
             rutinaService.crearRutinaDesdeDTO(rutinaForm);
             return "redirect:/entrenador/rutinas";
             
@@ -108,8 +106,6 @@ public class EntrenadorController {
         }
     }
 
-    // Endpoint: GET /entrenador/rutinas/{id}/editar
-    // Propósito: Mostrar el formulario de edición con los datos precargados
     @GetMapping("/rutinas/{id}/editar")
     public String mostrarFormularioEdicion(@PathVariable Long id, Authentication auth, Model model) {
         Rutina rutina = rutinaService.findByIdOrThrow(id);
@@ -123,15 +119,15 @@ public class EntrenadorController {
         rutinaForm.setActiva(rutina.getActivo());
         rutinaForm.setClienteId(rutina.getCliente().getId());
 
-        // En edición, mostramos todos los clientes por si quiere reasignar la rutina
         model.addAttribute("rutinaForm", rutinaForm);
         model.addAttribute("rutinaId", id);
         model.addAttribute("clientes", usuarioService.findByRolNombre("CLIENTE"));
         return "entrenador/form_rutina";
     }
 
-    // Endpoint: POST /entrenador/rutinas/{id}
-    // Propósito: Actualizar rutina y asegurar que el cliente esté vinculado
+    /**
+     * Actualiza la rutina y mantiene/asegura el vínculo con el entrenador
+     */
     @PostMapping("/rutinas/{id}")
     public String actualizarRutina(@PathVariable Long id,
                                    @Valid @ModelAttribute("rutinaForm") RutinaFormDTO rutinaForm,
@@ -144,7 +140,6 @@ public class EntrenadorController {
             return "entrenador/form_rutina";
         }
 
-        // 1. Actualizar la entidad Rutina
         Rutina rutinaExistente = rutinaService.findByIdOrThrow(id);
         rutinaExistente.setNombre(rutinaForm.getNombre());
         rutinaExistente.setDescripcion(rutinaForm.getDescripcion());
@@ -153,14 +148,12 @@ public class EntrenadorController {
         rutinaExistente.setDuracionSemanas(rutinaForm.getDuracionSemanas());
         rutinaExistente.setActivo(rutinaForm.getActiva());
 
-        // 2. Asegurar el vínculo con el cliente
         Usuario cliente = usuarioService.findByIdOrThrow(rutinaForm.getClienteId());
         Usuario entrenadorActual = usuarioService.findByUserName(auth.getName());
 
-        if (cliente.getEntrenador() == null) {
-            cliente.setEntrenador(entrenadorActual);
-            usuarioService.save(cliente);
-        }
+        // Aseguramos que el cliente siga vinculado a este entrenador
+        cliente.setEntrenador(entrenadorActual);
+        usuarioService.save(cliente);
 
         rutinaExistente.setCliente(cliente);
         rutinaService.save(rutinaExistente);
@@ -168,8 +161,6 @@ public class EntrenadorController {
         return "redirect:/entrenador/rutinas";
     }
 
-    // Endpoint: POST /entrenador/rutinas/{id}/eliminar
-    // Propósito: Eliminar una rutina de forma segura
     @PostMapping("/rutinas/{id}/eliminar")
     public String eliminarRutina(@PathVariable Long id) {
         java.util.Optional<Rutina> rutinaOpt = rutinaService.findById(id);

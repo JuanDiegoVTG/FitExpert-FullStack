@@ -9,69 +9,44 @@
     
     <style>
         :root {
-<<<<<<< HEAD
-            --bg-body: #111a30;
-            --bg-sidebar: #1e2f62f6;
-            --card-bg: rgba(20, 47, 130, 0.35);
+            /* COLORES CUERPO (CLARO) */
+            --bg-body: #f1f5f9; 
+            --text-main: #0f172a; /* Azul casi negro, máxima visibilidad */
+            --text-muted: #64748b;
+            --card-bg: #3169B2;
+            --border-color: #e2e8f0;
 
-            --primary: #6079C5;
-            --primary-light: #8CA0DC;
-            --primary-dark: #2444A5;
+            /* COLORES SIDEBAR (AZUL ORIGINAL) */
+            --bg-sidebar: #0b1f3a; 
+            --text-sidebar: #ffffff;
+            --text-sidebar-muted: #afc6e9;
 
-            /* IMPORTANTE: redefinimos accent para que no rompa */
-            --accent: #8CA0DC;
-
-            --text-main: #f1f5ff;
-            --text-muted: #a9b4d0;
-
-            --border-color: rgba(140, 160, 220, 0.15);
-
-            --primary-glow: rgba(96, 121, 197, 0.45);
-
-=======
-            /* NUEVA PALETA: Iluminada y Energética */
-            --bg-body: #F4F7F6;       /* Fondo principal gris muy claro */
-            --bg-sidebar: #FFFFFF;    /* Barra lateral blanca pura */
-            --primary: #FF6B6B;       /* Naranja Coral (Energía) */
-            --primary-glow: rgba(255, 107, 107, 0.3);
-            --secondary: #4DABF7;     /* Azul Fresco */
-            --accent: #38D9A9;        /* Verde Menta */
-            --card-bg: #FFFFFF;       /* Tarjetas blancas */
-            --text-main: #2D3748;     /* Texto principal oscuro para leer bien */
-            --text-muted: #718096;    /* Texto secundario gris */
-            --border-color: #E2E8F0;  /* Bordes suaves */
->>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
-            --shadow-md: 0 8px 16px rgba(0,0,0,0.06);
+            /* ACENTOS */
+            --primary: #3169B2;
+            --accent: #10b981;
+            --transition: all 0.3s ease;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         body {
-            background-color: --bg-body;
+            background-color: var(--bg-body);
             color: var(--text-main);
             display: flex;
             min-height: 100vh;
         }
 
-        /* --- SIDEBAR --- */
+        /* --- SIDEBAR AZUL PROFUNDO --- */
         .sidebar {
             width: 280px;
             background: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            padding: 2rem 1.5rem;
+            padding: 2.5rem 1.5rem;
             display: flex;
             flex-direction: column;
             position: fixed;
             height: 100vh;
             z-index: 100;
-            box-shadow: var(--shadow-sm);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
         }
 
         .brand {
@@ -80,368 +55,244 @@
             gap: 12px;
             font-size: 1.5rem;
             font-weight: 800;
-            color: var(--text-main);
-            margin-bottom: 3rem;
+            color: white;
+            margin-bottom: 3.5rem;
             text-decoration: none;
+            letter-spacing: -1px;
         }
 
-        .brand i {
-            color: var(--primary);
-            font-size: 1.8rem;
-        }
-
-        .nav-group {
-            margin-bottom: 1.5rem;
-        }
+        .brand i { color: #00D4FF; font-size: 2rem; }
 
         .nav-group label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
-            margin-bottom: 0.8rem;
+            letter-spacing: 0.15em;
+            color: var(--text-sidebar-muted);
+            margin-bottom: 1rem;
             display: block;
-            padding-left: 0.5rem;
-            font-weight: 700;
+            font-weight: 800;
+            opacity: 0.7;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 0.8rem 1rem;
-            color: var(--text-muted);
+            padding: 0.9rem 1.2rem;
+            color: var(--text-sidebar-muted);
             text-decoration: none;
             border-radius: 12px;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.5rem;
             transition: var(--transition);
             font-weight: 600;
-            font-size: 0.95rem;
         }
 
         .nav-link:hover {
-            background: rgba(255, 107, 107, 0.08);
-            color: var(--primary);
-            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
         }
 
         .nav-link.active {
             background: var(--primary);
             color: white;
-            box-shadow: 0 4px 10px var(--primary-glow);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
         }
 
-        /* --- MAIN CONTENT --- */
-        .main-content {
-            margin-left: 280px;
-            flex: 1;
-            padding: 2.5rem;
-        }
+        /* --- CONTENIDO PRINCIPAL (CLARO) --- */
+        .main-content { margin-left: 280px; flex: 1; padding: 3rem; }
 
-        /* Top Header */
-        .top-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
-        }
+        .header-title h2 { font-size: 1.8rem; font-weight: 800; color: #1e293b; }
 
         .user-profile {
             display: flex;
             align-items: center;
-            gap: 15px;
-            background: var(--card-bg);
-            padding: 8px 20px 8px 8px;
+            gap: 12px;
+            background: white;
+            padding: 8px 18px 8px 8px;
             border-radius: 50px;
             border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .avatar {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 40px; height: 40px;
+            background: var(--primary);
+            color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
             font-weight: 800;
-            color: white;
         }
 
-        /* Admin Hero (El Banner Principal) */
+        /* --- CARDS Y PANELES --- */
         .admin-hero {
-<<<<<<< HEAD
-            background: linear-gradient(
-                135deg, 
-                rgba(33, 52, 106, 0.816), 
-                rgba(60, 95, 198, 0.914)
-            );
+            background: white;
             border: 1px solid var(--border-color);
-=======
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
->>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
             border-radius: 24px;
-            padding: 2.5rem;
-            margin-bottom: 2.5rem;
+            padding: 3rem;
+            margin-bottom: 3rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: white;
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
 
-        .hero-text h1 {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
+        .hero-text h1 { font-size: 2.4rem; color: #0f172a; margin-bottom: 1rem; }
+        .hero-text p { color: var(--text-muted); font-size: 1.1rem; max-width: 550px; }
 
-        .badge-hero {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            backdrop-filter: blur(5px);
-            display: inline-block;
-        }
-
-        .badge-admin {
-            background: #EBF4FF;
-            color: var(--secondary);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
         }
 
         .stat-card {
-            background: linear-gradient(
-                135deg, 
-                rgba(33, 52, 106, 0.816), 
-                rgba(60, 95, 198, 0.914)
-            );
+            background: #3169B2;
             border: 1px solid var(--border-color);
-            padding: 1.8rem;
+            padding: 2rem;
             border-radius: 20px;
             transition: var(--transition);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            border-color: var(--secondary);
-            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
         }
+
+        .stat-value { font-size: 2.2rem; font-weight: 800; color: #1e293b; margin-top: 10px; }
+        .stat-label { color:#dcfce7; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
 
         .stat-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.2rem;
-            font-size: 1.2rem;
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; background: #f1f5f9; color: var(--primary);
         }
 
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 0.2rem;
-            color: var(--text-main);
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        /* Buttons */
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-        }
-
+        /* BOTONES */
         .btn-action {
-            background: white;
-            color: var(--primary);
-            padding: 12px 24px;
-            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: 700;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition);
-        }
-
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: inline-flex; align-items: center; gap: 8px;
+            margin-top: 20px;
         }
 
         .logout-btn {
             margin-top: auto;
-            padding: 0.8rem;
-            background: white;
-            color: #ef4444;
-            border: 1px solid #ef4444;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ff8080;
+            border: 1px solid rgba(255, 128, 128, 0.2);
             border-radius: 12px;
             cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            font-weight: 700;
             transition: var(--transition);
         }
-
-        .logout-btn:hover {
-            background: #ef4444;
-            color: white;
-        }
+        .logout-btn:hover { background: #ef4444; color: white; }
     </style>
 </head>
 <body>
 
     <nav class="sidebar">
-        <a href="#" class="brand">
-            <i class="fas fa-dumbbell"></i>
+        <a th:href="@{/dashboard}" class="brand">
+            <i class="fas fa-microchip"></i>
             <span>FIT EXPERT</span>
         </a>
 
         <div class="nav-group">
             <label>Administración</label>
-            <a href="/dashboard" class="nav-link active">
-                <i class="fas fa-chart-pie"></i>
+            <a th:href="@{/dashboard}" class="nav-link active">
+                <i class="fas fa-home"></i>
                 <span>Panel Central</span>
             </a>
-            <a href="/admin/usuarios" class="nav-link">
-                <i class="fas fa-users-cog"></i>
-                <span>Gestionar Usuarios</span>
+            <a th:href="@{/admin/usuarios}" class="nav-link">
+                <i class="fas fa-users-gear"></i>
+                <span>Gestión Usuarios</span>
             </a>
-            <a href="/admin/servicios" class="nav-link">
-                <i class="fas fa-medal"></i>
-                <span>Servicios y Gym</span>
-            </a>
-        </div>
-
-        <div class="nav-group">
-            <label>Operaciones</label>
-            <a href="/admin/promociones" class="nav-link">
-                <i class="fas fa-percentage"></i>
-                <span>Promociones</span>
-            </a>
-            <a href="/admin/pagos" class="nav-link">
-                <i class="fas fa-file-invoice-dollar"></i>
-                <span>Control de Pagos</span>
+            <a th:href="@{/admin/servicios}" class="nav-link">
+                <i class="fas fa-dumbbell"></i>
+                <span>Servicios Gym</span>
             </a>
         </div>
 
         <div class="nav-group">
-            <label>Análisis</label>
-            <a href="/reportes" class="nav-link">
-                <i class="fas fa-chart-bar"></i>
-                <span>Reportes</span>
+            <label>Finanzas</label>
+            <a th:href="@{/admin/pagos}" class="nav-link">
+                <i class="fas fa-wallet"></i>
+                <span>Control Pagos</span>
             </a>
         </div>
 
         <form th:action="@{/logout}" method="post" style="margin-top: auto;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <button type="submit" class="logout-btn" style="width: 100%;">
-                <i class="fas fa-power-off"></i>
-                <span>Cerrar Sesión</span>
+                <i class="fas fa-power-off"></i> CERRAR SESIÓN
             </button>
         </form>
     </nav>
 
     <main class="main-content">
         
-        <header class="top-header">
-            <div>
-                <h2 style="font-weight: 800; letter-spacing: -0.02em;">Centro de Mando</h2>
-<<<<<<< HEAD
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Gestión global de la plataforma FIT EXPERT</p>
-=======
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Gestión global de la plataforma FitExpert</p>
->>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
+        <header class="top-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+            <div class="header-title">
+                <h2>Control de Mando</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Bienvenido al núcleo de la plataforma.</p>
             </div>
 
             <div class="user-profile">
                 <div class="avatar">
                     <span th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">A</span>
                 </div>
-                <div>
-                    <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-main);" sec:authentication="principal.username">Admin</div>
-                    <div class="badge-admin" style="font-size: 0.6rem; padding: 2px 6px;">Superuser</div>
+                <div style="text-align: left;">
+                    <div style="font-weight: 800; font-size: 0.85rem; color: #1e293b;" sec:authentication="principal.username">Admin</div>
+                    <div style="color: var(--accent); font-size: 0.6rem; font-weight: 800;">ADMINISTRADOR</div>
                 </div>
             </div>
         </header>
 
         <section class="admin-hero">
             <div class="hero-text">
-<<<<<<< HEAD
-                <div class="badge-admin" style="margin-bottom: 1rem;">Estado del Sistema: Óptimo</div>
-                <h1>Panel de <span style="color: var(--bg-body);">Administración</span></h1>
-                <p style="color: var(--text-muted); max-width: 500px; margin-bottom: 1.5rem;">
-                    Bienvenido, Administrador. Aquí puedes supervisar el crecimiento de la comunidad, validar pagos y ajustar los servicios disponibles.
-=======
-                <div class="badge-hero" style="margin-bottom: 1rem;">Estado del Sistema: Óptimo</div>
-                <h1>Panel de <span style="color: #FFE066;">Administración</span></h1>
-                <p style="color: rgba(255,255,255,0.9); max-width: 500px; margin-bottom: 1.5rem; line-height: 1.6;">
-                    Bienvenido, Administrador. Aquí puedes supervisar el crecimiento de la comunidad, validar perfiles de entrenadores y ajustar los servicios disponibles.
->>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
-                </p>
-                <div class="btn-group">
-                    <a href="/admin/usuarios" class="btn-action">
-                        <i class="fas fa-plus-circle"></i> Nuevo Usuario
-                    </a>
-                    <a href="/reportes" class="btn-action" style="background: transparent; color: white; border: 1px solid white;">
-                        <i class="fas fa-download"></i> Descargar Reporte
+                <span style="background: #dcfce7; color: #15803d; padding: 5px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">SISTEMA ACTIVO</span>
+                <h1 style="margin-top: 15px;">Gestión <span style="color: var(--primary);">Fit Expert</span></h1>
+                <p>Audita los movimientos de los usuarios y supervisa las rutinas generadas por la IA en tiempo real.</p>
+                
+                <div style="display: flex; gap: 10px;">
+                    <a th:href="@{/admin/usuarios}" class="btn-action">
+                        <i class="fas fa-search"></i> AUDITAR USUARIOS
                     </a>
                 </div>
             </div>
-            <div style="font-size: 10rem; opacity: 0.15; transform: rotate(-15deg); margin-right: 20px;">
-                <i class="fas fa-shield-heart"></i>
+            <div style="font-size: 8rem; color: var(--primary); opacity: 0.05;">
+                <i class="fas fa-shield-check"></i>
             </div>
         </section>
 
         <section class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(255, 107, 107, 0.1); color: var(--primary);">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-value">152</div>
-                <div class="stat-label">Usuarios Totales</div>
-            </div>
-
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(56, 217, 169, 0.1); color: var(--accent);">
-                    <i class="fas fa-check-double"></i>
-                </div>
-                <div class="stat-value">8</div>
-                <div class="stat-label">Pendientes de Aprobar</div>
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-value">1,240</div>
+                <div class="stat-label">Usuarios</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(252, 196, 25, 0.1); color: #FCC419;">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="stat-value">98%</div>
-                <div class="stat-label">Satisfacción IA</div>
+                <div class="stat-icon" style="color: #f59e0b;"><i class="fas fa-robot"></i></div>
+                <div class="stat-value">856</div>
+                <div class="stat-label">Rutinas IA</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #10b981;"><i class="fas fa-dollar-sign"></i></div>
+                <div class="stat-value">$12.4M</div>
+                <div class="stat-label">Ventas</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #7c3aed;"><i class="fas fa-server"></i></div>
+                <div class="stat-value">99%</div>
+                <div class="stat-label">Uptime</div>
             </div>
         </section>
 

@@ -71,7 +71,7 @@ public class Usuario {
     }
     // Relación con la tabla rol
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY) 
+    @ManyToOne(fetch = FetchType.EAGER) 
     @JoinColumn(name = "rol_id", nullable = false)
     private Rol rol;
 

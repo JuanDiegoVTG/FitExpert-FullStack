@@ -35,7 +35,6 @@ public class UsuarioController {
     @Autowired
     private EmailService emailService;
 
-    // 1. Mostrar el formulario con los roles disponibles (Atleta y Entrenador)
     @GetMapping("/usuarios/registro-publico")
     public String mostrarFormularioRegistroPublico(Model model) {
         List<Rol> rolesDisponibles = rolService.findAll(); 
@@ -46,7 +45,6 @@ public class UsuarioController {
         return "registro_publico"; 
     }
 
-    // 2. Procesar el formulario de registro
     @PostMapping("/usuarios/crear-publico")
     public String crearUsuarioPublico(
             @Valid @ModelAttribute("usuarioForm") UsuarioRegistroDTO usuarioForm,
@@ -54,7 +52,7 @@ public class UsuarioController {
             @RequestParam(value = "archivoCv", required = false) MultipartFile archivoCv, 
             Model model) {
 
-        // A. VALIDACIONES INICIALES
+        // 1. VALIDACIONES DE FORMULARIO
         if (result.hasErrors()) {
             model.addAttribute("roles", rolService.findAll());
             return "registro_publico";
@@ -74,31 +72,38 @@ public class UsuarioController {
             return "registro_publico";
         }
 
-        // B. INTENTO DE REGISTRO E INTEGRACIÓN
-        // 1. Declaramos la variable AQUÍ arriba para que todo el bloque 'try' la vea
+        // 2. PROCESO DE REGISTRO E IA
         Double scoreObtenido = 0.0; 
 
         try {
-            // 2. CAPTURAMOS el resultado que viene de Python
-            if (usuarioForm.getRolId() == 2 && archivoCv != null && !archivoCv.isEmpty()) {
-                scoreObtenido = pythonService.validarCvConPython(archivoCv, usuarioForm.getUserName());
+            //  REGLA: 2 = Entrenador (Análisis de CV con Python)
+            if (usuarioForm.getRolId() == 2) { 
+                if (archivoCv != null && !archivoCv.isEmpty()) {
+                    scoreObtenido = pythonService.validarCvConPython(archivoCv, usuarioForm.getUserName());
+                    System.out.println("🐍 Python analizó el CV. Score: " + scoreObtenido);
+                }
             }
 
-            // 3. Guardamos el usuario
+            // Guardamos el usuario (el Service ya sabe que si es 2, validado = false)
             usuarioService.registrar(usuarioForm);
 
-            // 4. DISPARAMOS EL CORREO (Dentro del try, para que solo se envíe si el registro fue exitoso)
+            // REGLA: 2 = Entrenador (Disparar el correo de postulación)
             if (usuarioForm.getRolId() == 2) {
-                emailService.enviarNotificacionRegistro(usuarioForm.getEmail(), usuarioForm.getNombres(), scoreObtenido);
+                emailService.enviarNotificacionRegistro(
+                    usuarioForm.getEmail(), 
+                    usuarioForm.getNombres(), 
+                    scoreObtenido
+                );
+                System.out.println("📧 Correo de postulación enviado a: " + usuarioForm.getEmail());
             }
             
             return "redirect:/login?exito=true";
 
         } catch (Exception e) {
+            System.err.println("❌ Error en el proceso: " + e.getMessage());
             model.addAttribute("error", "Error en el proceso: " + e.getMessage());
             model.addAttribute("roles", rolService.findAll());
             return "registro_publico";
         }
     }
-
 }

@@ -1,9 +1,6 @@
 package com.proyecto.emilite.service;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,22 +25,15 @@ public class UsuarioService {
     @Autowired
     private RolRepository rolRepository;
 
-
-    // --- MÉTODO DE REGISTRO (EL QUE USA EL AUTH CONTROLLER) ---
+    // --- 1. REGISTRO Y CREACIÓN ---
     @Transactional
     public void registrar(UsuarioRegistroDTO dto) {
         if (usuarioRepository.existsByUserName(dto.getUserName())) {
-            throw new RuntimeException("El nombre de usuario '" + dto.getUserName() + "' ya está en uso.");
+            throw new RuntimeException("El nombre de usuario ya existe.");
         }
-
-        // 2. Validar Email único
-        if (usuarioRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Este correo ya está registrado");
-        }
-
-        // 3. Validar Edad mínima (Opcional pero pro para el SENA)
-        if (Period.between(dto.getFechaNacimiento(), LocalDate.now()).getYears() < 14) {
-            throw new RuntimeException("Debes tener al menos 14 años para registrarte");
+        
+        if (dto.getFechaNacimiento() == null) {
+            throw new RuntimeException("La fecha de nacimiento es obligatoria.");
         }
 
         Usuario usuario = new Usuario();
@@ -52,46 +42,48 @@ public class UsuarioService {
         usuario.setEmail(dto.getEmail());
         usuario.setNombres(dto.getNombres());
         usuario.setApellidos(dto.getApellidos());
-        usuario.setTelefono(dto.getTelefono());
-        usuario.setDireccion(dto.getDireccion());
         usuario.setFechaNacimiento(dto.getFechaNacimiento());
         usuario.setActivo(true);
+        usuario.setEnabled(true);
 
-        Long idRol = (dto.getRolId() != null) ? dto.getRolId() : 2L;
+        // 🛡️ LÓGICA DE APROBACIÓN SEGÚN TU BD (image_43d1be.png)
+        // ID 2 = ENTRENADOR | ID 3 = CLIENTE
+        Long idRol = (dto.getRolId() != null) ? dto.getRolId() : 3L; 
+        
+        if (idRol == 2) { 
+            usuario.setValidado(false); // Entrenador espera aprobación
+        } else {
+            usuario.setValidado(true);  // Clientes entran directo
+        }
+
         Rol rol = rolRepository.findById(idRol)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
         usuario.setRol(rol);
-
         usuarioRepository.save(usuario);
     }
-    
-    // Este método lo buscan tus controladores de Admin y Usuario
+
     public void crearUsuarioDesdeDTO(UsuarioRegistroDTO dto) {
-        registrar(dto); // Simplemente llamamos al método nuevo para no repetir código
+        registrar(dto);
     }
 
-    // Este lo busca el ReporteController y AdminController para los filtros
-    public List<Usuario> findByFilters(String rolNombre, Boolean activo) {
-        if (rolNombre == null && activo == null) return findAll();
-        if (rolNombre != null && activo != null) return usuarioRepository.findByRolNombreAndActivo(rolNombre, activo);
-        if (rolNombre != null) return usuarioRepository.findByRolNombre(rolNombre);
-        return usuarioRepository.findByActivo(activo);
-    }
-
-    // --- BÚSQUEDAS ---
+    // --- 2. BÚSQUEDAS (Limpia los errores de image_434ed9.png) ---
 
     public List<Usuario> findAll() {
         return usuarioRepository.findAll();
     }
 
-    public Usuario findById(Long id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ID no encontrado: " + id));
+    public List<Usuario> listarTodos() {
+        return usuarioRepository.findAll();
     }
 
     public Usuario findByUserName(String username) {
         return usuarioRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("Username no encontrado: " + username));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
+    }
+
+    public Usuario findById(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ID no encontrado: " + id));
     }
 
     public Usuario findByIdOrThrow(Long id) {
@@ -106,11 +98,14 @@ public class UsuarioService {
         return usuarioRepository.findByEntrenadorId(entrenadorId);
     }
 
-    public Optional<Usuario> findByEmail(String email) {
-        return usuarioRepository.findByEmail(email);
+    public List<Usuario> findByFilters(String rolNombre, Boolean activo) {
+        if (rolNombre == null && activo == null) return findAll();
+        if (rolNombre != null && activo != null) return usuarioRepository.findByRolNombreAndActivo(rolNombre, activo);
+        if (rolNombre != null) return usuarioRepository.findByRolNombre(rolNombre);
+        return usuarioRepository.findByActivo(activo);
     }
 
-    // --- VALIDACIONES Y GUARDADO ---
+    // --- 3. GESTIÓN (Requerido por Admin y Cliente Controllers) ---
 
     public Usuario save(Usuario usuario) {
         return usuarioRepository.save(usuario);
@@ -126,13 +121,5 @@ public class UsuarioService {
 
     public boolean existsByEmail(String email) {
         return usuarioRepository.existsByEmail(email);
-    }
-
-    public List<Rol> findAllRoles() {
-        return rolRepository.findAll();
-    }
-
-    public List<Usuario> listarTodos() {
-        return usuarioRepository.findAll();
     }
 }

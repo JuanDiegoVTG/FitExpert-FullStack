@@ -6,13 +6,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/estilo.css}">
     <style>
-        
-
         body {
             font-family: 'Segoe UI', sans-serif;
-            background:url("/images/klipartz2.png"),  #8CA0DC;
+            /* Fondo original que pediste */
+            background: url("/images/klipartz2.png"), #8CA0DC;
             background-size: cover;
-            color: var(--text);
+            background-position: center;
+            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -27,11 +27,12 @@
                 rgb(60, 94, 198)
             );
             padding: 40px;
-            border-radius: 15px;
-            border: 1px solid var(--border);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
 
         .input-group {
@@ -42,61 +43,116 @@
         label {
             display: block;
             margin-bottom: 8px;
-            font-size: 0.9rem;
-            color: var(--text);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #AFC6E9;
         }
 
         input, select {
             width: 100%;
             padding: 12px;
-            background: #7575913d;
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
             color: white;
-            box-sizing: border-box; /* Importante para que no se salga del contenedor */
-        }
-
-        select option {
-            background: var(--secondary-light); /* fondo de cada opción */
-            color: var(--text-main);            /* texto claro */
-        }
-
-        .btn-generar {
-            width: 100%;
-            padding: 15px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
+            box-sizing: border-box;
+            outline: none;
             transition: 0.3s;
         }
 
+        input:focus, select:focus {
+            border-color: #00D4FF;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        select option {
+            background: #1e2f62;
+            color: white;
+        }
+
+        /* BOTÓN PRINCIPAL */
+        .btn-generar {
+            width: 100%;
+            padding: 15px;
+            background: #3169B2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         .btn-generar:hover {
-            background: var(--primary);
+            background: #00D4FF;
+            color: #0b1f3a;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-generar:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* BOTÓN VOLVER */
+        .btn-secondary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #AFC6E9;
+            border: 1px solid rgba(175, 198, 233, 0.3);
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: white;
+        }
+
+        .loading-spinner {
+            display: none;
         }
     </style>
 </head>
 <body>
 
     <div class="form-container">
-        <img th:src="@{/images/logofitexpert.jpeg}" alt="Emi-Lite" style="height:110px; width:120px; display:inline-block; vertical-align:middle;" />
+        <a th:href="@{/dashboard}">
+            <img th:src="@{/images/logofitexpert.jpeg}" alt="FitExpert" 
+                 style="height:90px; width:auto; border-radius: 12px; margin-bottom: 20px;" />
+        </a>
             
-        <h2> Configura tu IA</h2>
-        <p>Ingresa tus datos actuales para una rutina perfecta.</p>
+        <h2 style="margin-bottom: 5px;">Configura tu IA</h2>
+        <p style="color: #AFC6E9; font-size: 0.9rem; margin-bottom: 30px;">Algoritmo optimizado para Emi-Lite.</p>
         
-        <form th:action="@{/api/rutina-real}" method="get">
+        <form th:action="@{/api/rutina-real}" method="post" id="iaForm">
             
             <div class="input-group">
                 <label>Tu peso actual (kg)</label>
-                <input type="number" name="peso" step="0.1" min="30" max="300" placeholder="Ej: 75.5" required>
+                <input type="number" name="peso" step="0.1" min="30" max="200" placeholder="Ej: 75.5" required>
             </div>
 
             <div class="input-group">
                 <label>Tu altura (m)</label>
-                <input type="number" name="altura" step="0.01" min="1.00" max="2.50" placeholder="Ej: 1.75" required>
+                <input type="number" name="altura" step="0.01" min="1.00" max="2.30" placeholder="Ej: 1.75" required>
             </div>
             
             <div class="input-group">
@@ -108,11 +164,31 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn-generar">
-                <i class="fas fa-magic"></i> Calcular y Generar
+            <button type="submit" class="btn-generar" id="submitBtn">
+                <i class="fas fa-magic" id="magicIcon"></i> 
+                <span id="btnText">Calcular y Generar</span>
             </button>
         </form>
+
+        <a th:href="@{/cliente/rutinas}" class="btn-secondary">
+            <i class="fas fa-dumbbell"></i> Ver mis rutinas guardadas
+        </a>
     </div>
+
+    <script>
+        // VISAJE: Efecto de carga para que el usuario no piense que se trabó
+        const form = document.getElementById('iaForm');
+        const btn = document.getElementById('submitBtn');
+        const icon = document.getElementById('magicIcon');
+        const text = document.getElementById('btnText');
+
+        form.onsubmit = function() {
+            btn.disabled = true;
+            icon.className = "fas fa-circle-notch fa-spin"; // Icono de carga girando
+            text.innerText = "PROCESANDO CON IA...";
+            btn.style.background = "#475569";
+        };
+    </script>
 
 </body>
 </html>

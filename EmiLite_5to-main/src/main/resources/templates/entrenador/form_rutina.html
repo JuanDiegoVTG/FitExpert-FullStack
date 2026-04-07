@@ -8,210 +8,165 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/estilo.css}">
     <style>
-        /* Tus estilos modernos y cohesivos con el tema morado */
-        
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            
+            /* Restauramos tu fondo original */
+            background: url("/images/klipartz2.png"), #0b1f3a;
+            background-size: cover;
+            background-attachment: fixed;
             padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            color: white;
         }
 
         .container {
-            background-color: var(--card-bg);
+            background-color: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
             padding: 40px 35px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             width: 100%;
-            max-width: 500px; /* Ancho un poco más grande para el formulario */
+            max-width: 550px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .logo {
-            margin-bottom: 30px;
-        }
-
-        .logo i {
-            font-size: 3.5rem;
-            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .logo-text {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 800;
-            color: white;
+            color: #00D4FF;
             letter-spacing: 1px;
-            margin-top: 10px;
+            margin-bottom: 20px;
             display: block;
         }
 
         h2 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             margin-bottom: 30px;
-            color: var(--text);
-            font-weight: 600;
+            color: white;
+            font-weight: 700;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
+        .form-group { margin-bottom: 20px; text-align: left; }
 
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: var(--text-light);
-            font-size: 1rem;
+            color: #afc6e9;
+            font-size: 0.9rem;
         }
 
-        input[type="text"],
-        input[type="number"],
-        select,
-        textarea {
+        input[type="text"], input[type="number"], select, textarea {
             width: 100%;
             padding: 14px 16px;
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
             font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        textarea {
-            resize: vertical; /* Permite redimensionar verticalmente */
-            min-height: 80px;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
             outline: none;
-            border-color: var(--primary); /* Borde morado al enfocar */
-            box-shadow: 0 0 0 3px rgba(62, 0, 123, 0.2); /* Sombra morada */
+            transition: 0.3s;
+        }
+
+        /* 🚀 FIX CRÍTICO: Visibilidad de las opciones en el select */
+        select option {
+            background-color: #1e2f62 !important; /* Fondo sólido oscuro */
+            color: white !important; /* Texto blanco */
+            padding: 10px;
+        }
+
+        textarea { resize: vertical; min-height: 100px; }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #00D4FF;
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
         }
 
         .btn-submit {
             width: 100%;
             padding: 16px;
-            background: var(--gradient-primary); /* Botón con gradiente morado */
+            background: linear-gradient(135deg, #3169B2, #1e3a6d);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: var(--transition);
+            transition: 0.3s;
             margin-top: 10px;
+            text-transform: uppercase;
         }
 
         .btn-submit:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(62, 0, 123, 0.4); /* Sombra más intensa */
+            box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3);
+            filter: brightness(1.1);
         }
 
-        .btn-submit:active {
-            transform: translateY(-1px);
-        }
-
-        .error {
-            color: var(--error); /* Color rojo para errores */
-            font-size: 0.9rem;
-            margin-top: 5px;
-            text-align: left;
-        }
+        .error { color: #ff4d4d; font-size: 0.85rem; margin-top: 5px; font-weight: 600; }
 
         .back-link {
             display: inline-block;
             margin-top: 25px;
-            color: var(--primary); /* Color morado para el enlace */
+            color: #afc6e9;
             text-decoration: none;
             font-weight: 600;
-            transition: var(--transition);
-            font-size: 0.95rem;
+            transition: 0.3s;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
-            color: #5a00a8; /* Morado más claro al hover */
-        }
+        .back-link:hover { color: #00D4FF; transform: translateX(-5px); }
 
         .logout-link {
-            color: #dc3545; /* Rojo para logout */
-            text-decoration: none;
-            margin: 0 10px;
-        }
-
-        .logout-link:hover {
-            color: #a71e2a;
-        }
-
-        button.logout-link {
+            color: #ff4d4d;
             background: none;
             border: none;
-            padding: 0;
-            margin: 0 10px;
-            font: inherit;
             cursor: pointer;
-            color: #dc3545;
+            font-weight: 600;
+            margin-left: 15px;
             text-decoration: underline;
-        }
-
-        button.logout-link:hover {
-            color: #a71e2a;
-            text-decoration: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">
-            
             <span class="logo-text">Fit Expert Entrenador</span>
         </div>
 
-        <h2 th:if="${rutinaId}">Editar Rutina</h2>
-        <h2 th:unless="${rutinaId}">Crear Nueva Rutina</h2>
+        <h2 th:text="${rutinaId} ? 'Editar Rutina' : 'Crear Nueva Rutina'"></h2>
 
-        <!-- Mostrar mensaje de error si lo hay -->
-        <div th:if="${error}" class="message error-message">
-            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+        <div th:if="${error}" style="background: rgba(255,77,77,0.1); border: 1px solid #ff4d4d; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+            <i class="fas fa-exclamation-circle" style="color: #ff4d4d;"></i> 
+            <span th:text="${error}" style="color: #ff4d4d; font-size: 0.9rem;"></span>
         </div>
 
-        <!-- Formulario para crear o editar rutina -->
-        <!-- La acción cambia según si es edición o creación -->
         <form th:action="${rutinaId} ? @{/entrenador/rutinas/{id}(id=${rutinaId})} : @{/entrenador/rutinas}" th:object="${rutinaForm}" method="post">
+            
             <div class="form-group">
-                <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" th:field="*{nombre}" placeholder="Nombre de la rutina" required>
+                <label for="nombre">Nombre de la Rutina:</label>
+                <input type="text" id="nombre" th:field="*{nombre}" placeholder="Ej: Hipertrofia Nivel 1" required>
                 <div class="error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
             </div>
 
             <div class="form-group">
-                <label for="descripcion">Descripción:</label>
-                <textarea id="descripcion" th:field="*{descripcion}" placeholder="Describe la rutina..."></textarea>
-                <!-- No validación aquí a menos que la agregues al DTO -->
+                <label for="descripcion">Descripción / Ejercicios:</label>
+                <textarea id="descripcion" th:field="*{descripcion}" placeholder="Detalla los ejercicios, series y repeticiones..."></textarea>
             </div>
 
             <div class="form-group">
-                <label for="tipo">Tipo:</label>
+                <label for="tipo">Tipo de Entrenamiento:</label>
                 <select id="tipo" th:field="*{tipo}">
                     <option value="">Seleccione un tipo</option>
                     <option value="Cardio">Cardio</option>
                     <option value="Fuerza">Fuerza</option>
                     <option value="Flexibilidad">Flexibilidad</option>
-                    <option value="Otro">Otro</option>
+                    <option value="IA Generada">IA Generada</option>
                 </select>
             </div>
 
@@ -226,35 +181,40 @@
             </div>
 
             <div class="form-group">
-                <label for="duracionSemanas">Duración (semanas):</label>
+                <label for="duracionSemanas">Duración (Semanas):</label>
                 <input type="number" id="duracionSemanas" th:field="*{duracionSemanas}" min="1" placeholder="Ej: 4">
             </div>
 
             <div class="form-group">
-                <label for="clienteId">Cliente:</label>
+                <label for="clienteId">Asignar a Cliente:</label>
                 <select id="clienteId" th:field="*{clienteId}" required>
                     <option value="">Seleccione un cliente</option>
-                    <option th:each="cliente : ${clientes}" th:value="${cliente.id}" th:text="${cliente.nombres + ' ' + cliente.apellidos}" th:selected="${cliente.id == rutinaForm.clienteId}"></option>
+                    <option th:each="cliente : ${clientes}" 
+                            th:value="${cliente.id}" 
+                            th:text="${cliente.nombres + ' ' + cliente.apellidos}" 
+                            th:selected="${cliente.id == rutinaForm.clienteId}"></option>
                 </select>
                 <div class="error" th:if="${#fields.hasErrors('clienteId')}" th:errors="*{clienteId}"></div>
             </div>
 
-            <div class="form-group">
-                <label for="activa">
-                    <input type="checkbox" id="activa" th:field="*{activa}"> Activa
-                </label>
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="activa" th:field="*{activa}" style="width: 20px; height: 20px; cursor: pointer;">
+                <label for="activa" style="margin-bottom: 0; cursor: pointer;"> Rutina Activa</label>
             </div>
 
-            <button type="submit" class="btn-submit" th:text="${rutinaId} ? 'Actualizar Rutina' : 'Crear Rutina'"></button>
+            <button type="submit" class="btn-submit" th:text="${rutinaId} ? 'Actualizar Rutina' : 'Guardar Rutina'"></button>
         </form>
 
-        <a href="/entrenador/rutinas" class="back-link">Volver a la Lista</a>
+        <div style="margin-top: 20px;">
+            <a th:href="@{/entrenador/rutinas}" class="back-link">
+                <i class="fas fa-chevron-left"></i> Volver a la Lista
+            </a>
 
-        <!-- Formulario para cerrar sesión -->
-        <form th:action="@{/logout}" method="post" style="display: inline;">
-            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="logout-link">Cerrar sesión</button>
-        </form>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="logout-link">Cerrar sesión</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>

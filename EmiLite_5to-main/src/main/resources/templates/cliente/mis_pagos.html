@@ -1,280 +1,213 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-<<<<<<< HEAD
     <title>Mis Pagos - FIT EXPERT</title>
-=======
-    <title>Mis Pagos - FitExpert Pro</title>
->>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <script src="https://sdk.mercadopago.com/js/v2"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<<<<<<< HEAD
     <link rel="stylesheet" th:href="@{/estilo.css}">
-    <style>
-        /* Variables de tema oscuro y colores de Emi-Lite */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        .logo {
-            margin-bottom: 30px;
-=======
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: rgba(255, 255, 255, 0.1);
-            --accent: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(at 0% 0%, #1e1b4b 0px, transparent 50%), 
-                        radial-gradient(at 100% 100%, #0f172a 0px, transparent 50%);
-            background-color: #020617;
-            color: var(--text);
-            padding: 40px 20px;
+        /* 1. RESTAURACIÓN DEL FONDO ORIGINAL Y AJUSTES DE LAYOUT */
+        body.mis-pagos {
+            /* Restauramos tu fondo original con imagen y color fallback */
+            background: url("/images/klipartz2.png"), #8CA0DC no-repeat center center !important;
+            background-size: cover !important;
+            
+            /* Mantenemos el centrado del contenedor */
+            display: flex !important; 
+            justify-content: center !important; 
+            align-items: center !important; 
+            padding: 20px !important;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
+            margin: 0;
         }
 
+        /* Contenedor estilo "Glassmorphism" para que resalte sobre la imagen */
         .container {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
+            background: rgba(11, 31, 58, 0.9) !important; /* Fondo oscuro semi-transparente */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
             padding: 40px;
-            border-radius: 28px;
-            box-shadow: var(--shadow);
             width: 100%;
-            max-width: 1100px;
-            border: 1px solid var(--border);
-            animation: fadeIn 0.6s ease-out;
+            max-width: 950px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
->>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
-        }
-
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 35px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid var(--border);
-        }
-
-<<<<<<< HEAD
+        .header-section { text-align: center; margin-bottom: 40px; }
+        
+        /* 2. TABLA ESTILIZADA CON ALTO CONTRASTE */
+        .table-wrapper { overflow-x: auto; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.2); }
         th {
-            background-color: var(--primary-dark); /* Fondo morado oscuro para encabezados */
-            color: var(--text);
+            background-color: #1e3a6d !important; 
+            color: #00D4FF !important; /* Títulos en Cyan */
+            padding: 18px; text-transform: uppercase; font-size: 0.75rem; font-weight: 800; letter-spacing: 1px;
+        }
+        td { padding: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #EAF2FB; }
+
+        /* 3. BOTÓN PAGAR AHORA (ESTILO BACANO CYAN) */
+        .btn-pay {
+            background: linear-gradient(135deg, #00D4FF 0%, #3169B2 100%) !important;
+            color: white !important;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+        .btn-pay:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
+            filter: brightness(1.1);
+        }
+
+        /* 4. BOTONES DEL FOOTER */
+        .footer-nav { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+
+        /* Botón Volver Estilo Sutil pero Claro */
+        .btn-back {
+            background: rgba(255, 255, 255, 0.05);
+            color: #AFC6E9 !important; /* Azul clarito */
+            border: 1px solid rgba(175, 198, 233, 0.3);
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-decoration: none;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex; align-items: center; gap: 10px;
+        }
+        .btn-back:hover {
+            background: rgba(49, 105, 178, 0.2);
+            color: white !important;
+            border-color: #00D4FF;
+            transform: translateX(-5px);
         }
 
-        tbody tr {
-            transition: var(--transition);
+        .btn-logout {
+            background: transparent; color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.2);
+            padding: 10px 20px; border-radius: 12px; cursor: pointer; transition: 0.3s;
         }
+        .btn-logout:hover { background: #ff4d4d; color: white; }
 
-        tbody tr:hover {
-            background-color: rgba(255, 255, 255, 0.05); /* Fondo ligeramente más claro al pasar el mouse */
-        }
-
-        .no-data {
-            color: var(--text-light);
-            font-style: italic;
-            padding: 20px;
-        }
-
+        /* BADGES DE ESTADO */
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        .badge-completado { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-pendiente { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
     </style>
 </head>
 <body class="mis-pagos">
     <div class="container">
-        <div class="logo">
-             <!-- Icono representativo para pagos -->
-            <img th:src="@{/images/logofitexpert.jpeg}" alt="Emi-Lite" style="height:110px; width:120px; display:inline-block; vertical-align:middle;" />
-=======
-        .logo-area { display: flex; align-items: center; gap: 18px; }
-        .logo-area i { 
-            font-size: 2.2rem; 
-            background: var(--primary);
-            padding: 12px;
-            border-radius: 15px;
-            color: white;
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-        }
-        .logo-area h2 { font-size: 1.8rem; font-weight: 800; }
-
-        .table-wrapper {
-            background: rgba(15, 23, 42, 0.4);
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            margin-bottom: 30px;
-        }
-
-        table { width: 100%; border-collapse: collapse; }
-        th {
-            background: rgba(99, 102, 241, 0.08);
-            padding: 18px 20px;
-            text-align: left;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        td { padding: 20px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
-        tr:hover { background: rgba(255, 255, 255, 0.02); }
-
-        .badge {
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .badge-completado { background: rgba(16, 185, 129, 0.1); color: var(--accent); border: 1px solid rgba(16, 185, 129, 0.2); }
-        .badge-pendiente { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
-
-        .btn-pay {
-            background: #009ee3;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-pay:hover { background: #007eb5; transform: scale(1.05); }
-
-        .footer-nav { display: flex; justify-content: space-between; align-items: center; }
-        .btn-back { color: var(--text-muted); text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .btn-logout { background: none; border: 1px solid var(--danger); color: var(--danger); padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <header class="header-section">
-        <div class="logo-area">
-            <i class="fas fa-receipt"></i>
-            <div>
-                <h2>Mis Pagos</h2>
-                <p style="color: var(--text-muted); font-size: 0.85rem;">Gestión de servicios FitExpert</p>
+        <header class="header-section">
+            <div class="logo">
+                <img th:src="@{/images/logofitexpert.jpeg}" alt="FIT EXPERT" style="height:90px; width:auto; border-radius: 12px;" />
             </div>
->>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
-        </div>
-    </header>
+            <div>
+                <h2 style="color: white; font-size: 2rem; letter-spacing: -1px;">Gestión de Pagos</h2>
+                <p style="color: #AFC6E9; font-size: 0.95rem; opacity: 0.8;">Historial de suscripciones en Emi-Lite</p>
+            </div>
+        </header>
 
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Servicio</th>
-                    <th>Monto</th>
-                    <th>Estado</th>
-                    <th>Fecha</th>
-                    <th style="text-align: center;">Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="pago : ${pagos}">
-                    <td style="font-weight: 700;" th:text="${pago.servicio != null ? pago.servicio.nombre : 'Aporte Libre'}"></td>
-                    <td th:text="'$' + ${#numbers.formatDecimal(pago.monto, 1, 0)}" style="font-weight: 800;"></td>
-                    <td>
-                        <span th:class="${pago.estado == 'COMPLETADO' ? 'badge badge-completado' : 'badge badge-pendiente'}" 
-                              th:text="${pago.estado}"></span>
-                    </td>
-                    <td th:text="${#temporals.format(pago.fechaPago, 'dd/MM/yyyy HH:mm')}" style="color: var(--text-muted);"></td>
-                    
-                    <td style="text-align: center;">
-                        <div th:if="${pago.estado == 'PENDIENTE'}">
-                            <button class="btn-pay" th:data-pago-id="${pago.id}" onclick="iniciarMercadoPago(this)">
-                                <i class="fas fa-shopping-cart"></i> Pagar ahora
-                            </button>
-                        </div>
-                        <div th:if="${pago.estado == 'COMPLETADO'}">
-                            <span style="color: var(--accent); font-weight: 700;"><i class="fas fa-check-circle"></i> Al día</span>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th style="text-align: center;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="pago : ${pagos}">
+                        <td style="font-weight: 700; color: white;" th:text="${pago.servicio != null ? pago.servicio.nombre : 'Aporte Libre'}"></td>
+                        <td th:text="'$' + ${#numbers.formatDecimal(pago.monto, 1, 0)}" style="font-weight: 800; color: #00D4FF;"></td>
+                        <td>
+                            <span th:class="${pago.estado == 'COMPLETADO' ? 'badge badge-completado' : 'badge badge-pendiente'}" 
+                                  th:text="${pago.estado}"></span>
+                        </td>
+                        <td th:text="${#temporals.format(pago.fechaPago, 'dd/MM/yyyy HH:mm')}" style="color: #94a3b8; font-size: 0.85rem;"></td>
+                        
+                        <td style="text-align: center;">
+                            <div th:if="${pago.estado == 'PENDIENTE'}">
+                                <button class="btn-pay" th:data-pago-id="${pago.id}" onclick="iniciarMercadoPago(this)">
+                                    <i class="fas fa-wallet"></i> Pagar ahora
+                                </button>
+                            </div>
+                            <div th:if="${pago.estado == 'COMPLETADO'}">
+                                <span style="color: #10b981; font-weight: 700; font-size: 0.9rem;"><i class="fas fa-check-circle"></i> Al día</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="footer-nav">
+            <a th:href="@{/dashboard}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver al Panel
+            </a>
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn-logout"><i class="fas fa-power-off"></i> Salir</button>
+            </form>
+        </footer>
     </div>
 
-    <footer class="footer-nav">
-        <a href="/dashboard" class="btn-back"><i class="fas fa-chevron-left"></i> Volver al Panel</a>
-        <form th:action="@{/logout}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn-logout"><i class="fas fa-power-off"></i> Salir</button>
-        </form>
-    </footer>
-</div>
-
 <script>
-    // 1. LLAVE PÚBLICA (Usa la de TEST si la APP_USR te da error 414)
-    const mp = new MercadoPago('APP_USR-9d63d349-83b2-4e94-8ef1-a2b87ca9eeee');
+    // 1. Configuración Mercado Pago (Asegúrate que esta sea tu PUBLIC_KEY)
+    const mp = new MercadoPago('APP_USR-9d63d349-83b2-4e94-8ef1-a2b87ca9eeee', {
+        locale: 'es-CO'
+    });
 
     async function iniciarMercadoPago(boton) {
         const pagoId = boton.getAttribute('data-pago-id');
         const originalContent = boton.innerHTML;
         
-        boton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
+        boton.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> PROCESANDO...';
         boton.disabled = true;
 
         try {
-            // 2. FETCH AL CONTROLADOR
+            // 2. Llamada al backend
             const response = await fetch('/admin/pagos/crear-preferencia/' + pagoId);
-            const preferenceId = await response.text();
             
-            console.log(preferenceId);
+            // Si el servidor responde 403 o 404, es problema de Spring Security o Ruta
+            if (!response.ok) {
+                throw new Error("El servidor respondió con error: " + response.status);
+            }
 
-            // 🔍 EL DETECTIVE: Si recibimos HTML, es que Spring Security nos bloqueó
-            if (preferenceId.trim().startsWith("<!DOCTYPE") || preferenceId.length > 100) {
-                console.error("Error: Se recibió HTML en lugar de un ID. Revisa el SecurityConfig.");
-                alert("Error de sesión: Por favor, cierra sesión y vuelve a entrar.");
+            const prefId = await response.text();
+            
+            // 3. VALIDACIÓN CRÍTICA: ¿Es un ID real de Mercado Pago?
+            // Un ID real no tiene espacios, no es HTML y suele ser largo.
+            console.log("ID Recibido de Java:", prefId);
+
+            if (prefId.includes("<!DOCTYPE") || prefId.length < 10) {
+                console.error("ERROR: Java devolvió una página HTML o un ID muy corto. Revisa el Controller.");
+                alert("Error técnico: El servidor no generó un ID válido.");
                 return;
             }
-            
-            if (preferenceId !== "error" && preferenceId.length > 5) {
-                mp.checkout({
-                    preference: { id: preferenceId },
-                    autoOpen: true 
-                });
-            } else {
-                alert("No se pudo generar el cobro. Intenta más tarde.");
-            }
+
+            // 4. Abrir la pasarela
+            mp.checkout({
+                preference: {
+                    id: prefId
+                },
+                autoOpen: true
+            });
+
         } catch (err) {
-            alert("Error de conexión con el servidor.");
+            alert("Error de conexión: " + err.message);
+            console.error("Detalle del error:", err);
         } finally {
             boton.innerHTML = originalContent;
             boton.disabled = false;
