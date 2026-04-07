@@ -1,27 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Lista de Usuarios - Emi-Lite Admin</title>
+    <title>Lista de Usuarios - Fit Expert</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/estilo_admin.css}">
     <style>
         /* Tus estilos modernos y cohesivos con el tema morado */
-        :root {
-            --primary: #3e007b; /* Morado principal */
-            --primary-dark: #340061; /* Morado oscuro */
-            --secondary: #0F0F1E; /* Fondo principal oscuro */
-            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
-            --text: #E0E0E0; /* Texto principal */
-            --text-light: #A0A0A0; /* Texto secundario */
-            --border: #2D2D3D; /* Bordes */
-            --success: #28A745;
-            --error: #FF4757;
-            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
-            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
-        }
+        
 
         * {
             margin: 0;
@@ -31,8 +18,6 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--gradient-dark);
-            color: var(--text);
             padding: 20px;
             display: flex;
             justify-content: center;
@@ -41,7 +26,11 @@
         }
 
         .container {
-            background-color: var(--card-bg);
+            background: linear-gradient(
+                135deg, 
+                rgba(33, 52, 106, 0.816), 
+                
+            );
             padding: 40px 35px;
             border-radius: 12px;
             box-shadow: var(--shadow);
@@ -109,7 +98,7 @@
         .filter-group select, .filter-group input[type="text"] {
             width: 200px; /* Ancho fijo para los selects */
             padding: 12px 14px;
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0);
             border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text);
@@ -125,7 +114,7 @@
 
         .btn-filter {
             padding: 12px 25px;
-            background: var(--gradient-primary); /* Botón con gradiente morado */
+            background: var(--card-bg); /* Botón con gradiente morado */
             color: white;
             border: none;
             border-radius: 8px;
@@ -155,7 +144,7 @@
         }
 
         th {
-            background-color: var(--primary-dark); /* Fondo morado oscuro para encabezados */
+            background-color: var(--bg-sidebar); /* Fondo morado oscuro para encabezados */
             color: var(--text);
             font-weight: 600;
             text-transform: uppercase;
@@ -184,21 +173,21 @@
         }
 
         .btn-edit {
-            background-color: #ffc107;
+            background-color: #fcf230c1;
             color: black;
         }
 
         .btn-edit:hover {
-            background-color: #e0a800;
+            background-color: #fcf230c1;
         }
 
         .btn-delete {
-            background-color: #dc3545;
+            background-color: #ee384ad1;
             color: white;
         }
 
         .btn-delete:hover {
-            background-color: #c82333;
+            background-color: #ee384ad1;
         }
 
         .button-group {
@@ -240,28 +229,15 @@
             color: #a71e2a;
         }
 
-        button.logout-link {
-            background: none;
-            border: none;
-            padding: 0;
-            margin: 0 10px;
-            font: inherit;
-            cursor: pointer;
-            color: #dc3545;
-            text-decoration: underline;
-        }
-
-        button.logout-link:hover {
-            color: #a71e2a;
-            text-decoration: none;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">
-            <i class="fas fa-users"></i> <!-- Icono representativo para usuarios -->
-            <span class="logo-text">Emi-Lite Admin</span>
+            <img th:src="@{/images/logofitexpert.jpeg}" alt="Emi-Lite" style="height:110px; width:120px; display:inline-block; vertical-align:middle;" />
+        
+             <!-- Icono representativo para usuarios -->
+            <span class="logo-text"></span>
         </div>
 
         <h2>Gestión de Usuarios</h2>

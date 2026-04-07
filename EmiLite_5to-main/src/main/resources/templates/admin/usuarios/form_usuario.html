@@ -1,164 +1,144 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title th:if="${usuarioId}">Editar Usuario</title>
+    <title th:if="${usuarioId}">Editar Usuario - Fit Expert</title>
     <title th:unless="${usuarioId}">Crear Nuevo Usuario</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Tus estilos modernos y cohesivos con el tema morado */
-        :root {
-            --primary: #3e007b; /* Morado principal */
-            --primary-dark: #340061; /* Morado oscuro */
-            --secondary: #0F0F1E; /* Fondo principal oscuro */
-            --card-bg: #1E1E2E; /* Fondo de tarjetas/forms */
-            --text: #E0E0E0; /* Texto principal */
-            --text-light: #A0A0A0; /* Texto secundario */
-            --border: #2D2D3D; /* Bordes */
-            --success: #28A745;
-            --error: #FF4757; /* Rojo para errores */
-            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%);
-            --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%);
-        }
+    <link rel="stylesheet" th:href="@{/estilo_admin.css}">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <style>
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--gradient-dark);
-            color: var(--text);
-            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            color: var(--text-main);
         }
+
 
         .container {
-            background-color: var(--card-bg);
-            padding: 40px 35px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
             width: 100%;
-            max-width: 500px; /* Ancho un poco más grande para el formulario */
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .logo {
-            margin-bottom: 30px;
-        }
-
-        .logo i {
-            font-size: 3.5rem;
-            color: white;
-        }
-
-        .logo-text {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: white;
-            letter-spacing: 1px;
-            margin-top: 10px;
-            display: block;
+            max-width: 950px;
+            background: linear-gradient(
+                    135deg,
+                rgb(29, 50, 108),
+                rgb(60, 94, 198)
+            );
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid var(--border-color);
         }
 
         h2 {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            color: var(--text);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .section {
+            background: var(--bg-sidebar); 
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-titulo {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #8CA0DC;
             font-weight: 600;
         }
 
         .form-group {
-            margin-bottom: 20px;
-            text-align: left;
+            margin-bottom: 15px;
         }
-
+    
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-light);
-            font-size: 1rem;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: var(--text-muted);
         }
 
-        input[type="text"],
-        input[type="password"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="date"],
-        select {
+        input, select {
             width: 100%;
-            padding: 14px 16px;
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 1rem;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.04);
+            color: var(--text-main);
             transition: var(--transition);
         }
 
-        input:focus,
-        select:focus {
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-glow);
             outline: none;
-            border-color: var(--primary); /* Borde morado al enfocar */
-            box-shadow: 0 0 0 3px rgba(62, 0, 123, 0.2); /* Sombra morada */
+        }
+
+        
+
+        .error {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 4px;
         }
 
         .btn-submit {
+            margin-top: 25px;
             width: 100%;
-            padding: 16px;
-            background: var(--gradient-primary); /* Botón con gradiente morado */
-            color: white;
+            padding: 14px;
+            border-radius: 12px;
             border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            background:  var(--bg-sidebar);
+            color: white;
+            font-weight: bold;
             cursor: pointer;
             transition: var(--transition);
-            margin-top: 10px;
         }
 
         .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(62, 0, 123, 0.4); /* Sombra más intensa */
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px var(--primary-glow);
         }
 
-        .btn-submit:active {
-            transform: translateY(-1px);
-        }
-
-        .error {
-            color: var(--error); /* Color rojo para errores */
+        .footer-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
             font-size: 0.9rem;
-            margin-top: 5px;
-            text-align: left;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-top: 25px;
-            color: var(--primary); /* Color morado para el enlace */
+        .footer-links form{
+            margin-top: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-main);
             text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-            font-size: 0.95rem;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
 
-        .back-link:hover {
+        .footer-links a:hover, .footer-links button:hover {
             text-decoration: underline;
-            color: #5a00a8; /* Morado más claro al hover */
+
         }
 
         .logout-link {
+            margin-top: 20px;
             color: #dc3545; /* Rojo para logout */
             text-decoration: none;
             margin: 0 10px;
@@ -166,107 +146,111 @@
 
         .logout-link:hover {
             color: #a71e2a;
-        }
+        }        
 
-        button.logout-link {
-            background: none;
-            border: none;
-            padding: 0;
-            margin: 0 10px;
-            font: inherit;
-            cursor: pointer;
-            color: #dc3545;
-            text-decoration: underline;
-        }
 
-        button.logout-link:hover {
-            color: #a71e2a;
-            text-decoration: none;
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="logo">
-            <i class="fas fa-user-edit"></i> <!-- Icono representativo para edición de usuario -->
-            <span class="logo-text">Emi-Lite Admin</span>
+<div class="container">
+
+    <div class="logo">
+            <img th:src="@{/images/logofitexpert.jpeg}" alt="Emi-Lite" style="height:110px; width:120px; display:inline-block; vertical-align:middle;" />
+             <!-- Icono representativo para usuarios -->
+            <span class="logo-text"></span>
+    </div>
+
+    <h2 th:if="${usuarioId}">Editar Usuario</h2>
+    <h2 th:unless="${usuarioId}">Crear Usuario</h2>
+
+    <form th:action="${usuarioId} ? @{/admin/usuarios/{id}(id=${usuarioId})} : @{/admin/usuarios}" th:object="${usuarioForm}" method="post">
+
+        <div class="form-grid">
+
+            <!-- CUENTA -->
+            <div class="section">
+                <div class="section-titulo">Datos de Cuenta</div>
+
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <input type="text" th:field="*{userName}" placeholder="Nombre de usuario" required>
+                    <div class="error" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" th:field="*{password}" placeholder="Nueva contraseña">
+                    <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" th:field="*{email}" placeholder="correo@email.com">
+                    <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Rol</label>
+                    <select th:field="*{rolId}" required>
+                        <option value="">Seleccione un rol</option>
+                        <option th:each="rol : ${roles}" th:value="${rol.id}" th:text="${rol.nombre}"></option>
+                    </select>
+                    <div class="error" th:if="${#fields.hasErrors('rolId')}" th:errors="*{rolId}"></div>
+                </div>
+            </div>
+
+            <!-- PERSONAL -->
+            <div class="section">
+                <div class="section-titulo">Información Personal</div>
+
+                <div class="form-group">
+                    <label>Nombres</label>
+                    <input type="text" th:field="*{nombres}" required>
+                    <div class="error" th:if="${#fields.hasErrors('nombres')}" th:errors="*{nombres}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Apellidos</label>
+                    <input type="text" th:field="*{apellidos}" required>
+                    <div class="error" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" th:field="*{telefono}">
+                </div>
+
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" th:field="*{direccion}">
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha de Nacimiento</label>
+                    <input type="date" th:field="*{fechaNacimiento}">
+                </div>
+            </div>
+
         </div>
 
-        <h2 th:if="${usuarioId}">Editar Usuario</h2>
-        <h2 th:unless="${usuarioId}">Crear Nuevo Usuario</h2>
+        <button type="submit" class="btn-submit" th:text="${usuarioId} ? 'Actualizar Usuario' : 'Crear Usuario'"></button>
+    </form>
 
-        <!-- Mostrar mensaje de error si lo hay -->
-        <div th:if="${error}" class="error-message">
-            <p class="error" th:text="${error}"></p>
-        </div>
+    <div class="footer-links">
+        <a href="/admin/usuarios" class="back-link">Volver al Panel</a>
 
-        <!-- Formulario para crear o editar usuario -->
-        <form th:action="${usuarioId} ? @{/admin/usuarios/{id}(id=${usuarioId})} : @{/admin/usuarios}" th:object="${usuarioForm}" method="post">
-            <div class="form-group">
-                <label for="userName">Nombre de Usuario:</label>
-                <input type="text" id="userName" th:field="*{userName}" placeholder="Nombre de usuario único" required>
-                <div class="error" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></div>
-            </div>
-
-            <div class="form-group">
-                <label for="password">Contraseña:</label>
-                <input type="password" id="password" th:field="*{password}" placeholder="Ingrese nueva contraseña (deje vacío para mantener la actual)">
-                <!-- Opcional: No validar contraseña si está vacía en edición -->
-                <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-            </div>
-
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" th:field="*{email}" placeholder="tu@email.com">
-                <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-            </div>
-
-            <div class="form-group">
-                <label for="nombres">Nombres:</label>
-                <input type="text" id="nombres" th:field="*{nombres}" placeholder="Tu(s) nombre(s)" required>
-                <div class="error" th:if="${#fields.hasErrors('nombres')}" th:errors="*{nombres}"></div>
-            </div>
-
-            <div class="form-group">
-                <label for="apellidos">Apellidos:</label>
-                <input type="text" id="apellidos" th:field="*{apellidos}" placeholder="Tu(s) apellido(s)" required>
-                <div class="error" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></div>
-            </div>
-
-            <div class="form-group">
-                <label for="telefono">Teléfono:</label>
-                <input type="tel" id="telefono" th:field="*{telefono}" placeholder="+57 XXX XXX XXXX">
-            </div>
-
-            <div class="form-group">
-                <label for="direccion">Dirección:</label>
-                <input type="text" id="direccion" th:field="*{direccion}" placeholder="Calle, ciudad, país">
-            </div>
-
-            <div class="form-group">
-                <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-                <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}">
-            </div>
-
-            <div class="form-group">
-                <label for="rolId">Rol:</label>
-                <select id="rolId" th:field="*{rolId}" required>
-                    <option value="">Seleccione un rol</option>
-                    <option th:each="rol : ${roles}" th:value="${rol.id}" th:text="${rol.nombre}" th:selected="${rol.id == usuarioForm.rolId}"></option>
-                </select>
-                <div class="error" th:if="${#fields.hasErrors('rolId')}" th:errors="*{rolId}"></div>
-            </div>
-
-            <button type="submit" class="btn-submit" th:text="${usuarioId} ? 'Actualizar Usuario' : 'Crear Usuario'"></button>
-        </form>
-
-        <a href="/admin/usuarios" class="back-link">Volver a la Lista</a>
-
-        <!-- Formulario para cerrar sesión -->
-        <form th:action="@{/logout}" method="post" style="display: inline;">
+        <form th:action="@{/logout}" method="post">
             <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <button type="submit" class="logout-link">Cerrar sesión</button>
         </form>
     </div>
+
+</div>
 </body>
 </html>
