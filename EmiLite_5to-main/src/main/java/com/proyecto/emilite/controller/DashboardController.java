@@ -1,58 +1,55 @@
 package com.proyecto.emilite.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.proyecto.emilite.service.UsuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.Collection;
 
 @Controller
 public class DashboardController {
 
-    @GetMapping("/dashboard") 
-    public String dashboard() {
-        
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    @Autowired
+    private UsuarioService usuarioService;
 
-        
-        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
-           
+    @GetMapping("/dashboard")
+    public String mostrarDashboard(Model model, Authentication auth) {
+        // 1. Por si acaso alguien entra sin sesión
+        if (auth == null) {
             return "redirect:/login";
         }
 
-        // Obtener el rol del usuario logueado
-        String rol = auth.getAuthorities().stream()
-                .findFirst()
-                .map(grantedAuth -> grantedAuth.getAuthority())
-                .orElse("ROLE_ANONYMOUS");
+        // 2. Extraer datos del usuario actual
+        String username = auth.getName();
+        Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
 
-        // Redirigir a la vista específica según el rol
-        if (rol.equals("ROLE_ADMIN")) {
-            return "redirect:/admin/dashboard";
-        } else if (rol.equals("ROLE_ENTRENADOR")) {
-            return "redirect:/entrenador/dashboard"; 
-        } else if (rol.equals("ROLE_CLIENTE")) {
-            return "redirect:/cliente/dashboard"; 
-        } else {
+        boolean isAdmin = authorities.stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        
+        boolean isEntrenador = authorities.stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ENTRENADOR"));
+
+        // 3. Dato común para todos los dashboards
+        model.addAttribute("nombreUsuario", username);
+
+        // 4. EL RUTEO INTELIGENTE A TUS CARPETAS HTML
+        if (isAdmin) {
+            // Solo al admin le cargamos la base de datos pesada
+            model.addAttribute("usuarios", usuarioService.listarTodos());
+            // Apunta a: src/main/resources/templates/dashboard/dashboard.html
+            return "admin/dashboard/dashboard"; 
             
-            return "redirect:/error/rol-desconocido"; 
+        } else if (isEntrenador) {
+            // Apunta a: src/main/resources/templates/entrenador/dashboard/dashboard.html
+            return "entrenador/dashboard/dashboard"; 
+            
+        } else {
+            // Apunta a: src/main/resources/templates/dashboard/dashboard.html
+            return "cliente/dashboard/dashboard"; 
         }
-    }
-
-    // ADMIN 
-    @GetMapping("/admin/dashboard")
-    public String adminDashboard() {
-        return "admin/dashboard/dashboard"; 
-    }
-
-    // ENTRENADOR 
-    @GetMapping("/entrenador/dashboard")
-    public String entrenadorDashboard() {
-        return "entrenador/dashboard/dashboard"; 
-    }
-
-    // CLIENTE 
-    @GetMapping("/cliente/dashboard")
-    public String clienteDashboard() {
-        return "cliente/dashboard/dashboard"; 
     }
 }

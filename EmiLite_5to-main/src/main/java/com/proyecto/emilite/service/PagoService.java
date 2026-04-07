@@ -1,18 +1,17 @@
 package com.proyecto.emilite.service;
 
-import com.proyecto.emilite.model.Pago;
-import com.proyecto.emilite.model.Usuario;
-import com.proyecto.emilite.model.Servicio;
-import com.proyecto.emilite.model.Promocion;
-import com.proyecto.emilite.model.dto.PagoFormDTO;
-import com.proyecto.emilite.repository.PagoRepository;
-import com.proyecto.emilite.repository.UsuarioRepository; // Importa este repositorio
-import com.proyecto.emilite.repository.ServicioRepository; // Importa este repositorio
-import com.proyecto.emilite.repository.PromocionRepository; // Importa este repositorio
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.proyecto.emilite.model.Pago;
+import com.proyecto.emilite.model.Servicio;
+import com.proyecto.emilite.model.Usuario;
+import com.proyecto.emilite.model.dto.PagoFormDTO;
+import com.proyecto.emilite.repository.PagoRepository;
+import com.proyecto.emilite.repository.ServicioRepository;
+import com.proyecto.emilite.repository.UsuarioRepository; 
 
 @Service
 public class PagoService {
@@ -20,85 +19,73 @@ public class PagoService {
     @Autowired
     private PagoRepository pagoRepository;
 
-    // Inyectamos los otros repositorios necesarios
     @Autowired
-    private UsuarioRepository usuarioRepository; // <-- Añade esta línea
+    private UsuarioRepository usuarioRepository; 
 
     @Autowired
-    private ServicioRepository servicioRepository; // <-- Añade esta línea
+    private ServicioRepository servicioRepository; 
+    
+    // --- MÉTODOS CRUD BÁSICOS ---
 
-    @Autowired
-    private PromocionRepository promocionRepository; // <-- Añade esta línea
-
-    // Método para obtener todos los pagos
     public List<Pago> findAll() {
         return pagoRepository.findAll();
     }
 
-    // Método para encontrar un pago por ID
-    // Este método SÍ debe usar Optional y orElseThrow porque findById de JpaRepository SIEMPRE devuelve Optional
     public Pago findById(Long id) {
-        return pagoRepository.findById(id) // Este método devuelve Optional<Pago>
-                .orElseThrow(() -> new RuntimeException("Pago no encontrado con ID: " + id)); // <-- orElseThrow es válido aquí
-    }
-
-    // Método para guardar (crear o actualizar) un pago
-    public Pago save(Pago pago) {
-        return pagoRepository.save(pago);
-    }
-
-    // Conveniencia: obtener Pago o lanzar excepción si no existe
-    public Pago findByIdOrThrow(Long id) {
         return pagoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pago no encontrado con ID: " + id));
     }
 
-    // Método para eliminar un pago por ID
+    public Pago save(Pago pago) {
+        return pagoRepository.save(pago);
+    }
+
     public void deleteById(Long id) {
         pagoRepository.deleteById(id);
     }
 
-    // Método para encontrar pagos por ID de usuario (usado por el cliente para ver sus pagos)
+    // MÉTODOS DE BÚSQUEDA ESPECÍFICOS
+
     public List<Pago> findByUsuarioId(Long usuarioId) {
         return pagoRepository.findByUsuarioId(usuarioId);
     }
 
-    // Método para crear un pago desde un DTO (usado por el cliente al pagar un servicio)
-    public void crearPagoDesdeDTO(PagoFormDTO dto) {
-        // Validar que el usuario exista
-        // usuarioRepository.findById() devuelve Optional<Usuario>, por lo tanto, usamos orElseThrow
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId()) // <-- findById devuelve Optional
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + dto.getUsuarioId()));
+    // Busca un pago por su referencia de mercado pago. Útil para el retorno del checkout.
+     
+    public Pago findByReferencia(String referencia) {
+        return pagoRepository.findByReferenciaPago(referencia).orElse(null);
+    }
 
-        // Validar que el servicio exista (si se proporcionó)
+    // LÓGICA DE NEGOCIO Y PASARELA
+
+    // Crea un pago desde el formulario del ADMIN.
+    
+    public void crearPagoDesdeDTO(PagoFormDTO dto) {
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         Servicio servicio = null;
         if (dto.getServicioId() != null) {
-            // servicioRepository.findById() devuelve Optional<Servicio>, por lo tanto, usamos orElseThrow
-            servicio = servicioRepository.findById(dto.getServicioId()) // <-- findById devuelve Optional
-                    .orElseThrow(() -> new RuntimeException("Servicio no encontrado con ID: " + dto.getServicioId()));
+            servicio = servicioRepository.findById(dto.getServicioId())
+                    .orElseThrow(() -> new RuntimeException("Servicio no encontrado"));
         }
 
-        // Validar que la promoción exista (si se proporcionó)
-        Promocion promocion = null;
-        if (dto.getPromocionId() != null) {
-            // promocionRepository.findById() devuelve Optional<Promocion>, por lo tanto, usamos orElseThrow
-            promocion = promocionRepository.findById(dto.getPromocionId()) // <-- findById devuelve Optional
-                    .orElseThrow(() -> new RuntimeException("Promoción no encontrada con ID: " + dto.getPromocionId()));
-        }
-
-        // Crear la entidad Pago
         Pago nuevoPago = new Pago();
         nuevoPago.setUsuario(usuario);
         nuevoPago.setServicio(servicio);
-        nuevoPago.setPromocion(promocion);
         nuevoPago.setMonto(dto.getMonto());
-        nuevoPago.setMetodoPago(dto.getMetodoPago());
-        nuevoPago.setEstado(dto.getEstado());
+        nuevoPago.setMetodoPago(dto.getMetodoPago()); // Ej: "MERCADO_PAGO" o "EFECTIVO"
+        nuevoPago.setEstado(dto.getEstado() != null ? dto.getEstado() : "PENDIENTE");
         nuevoPago.setReferenciaPago(dto.getReferenciaPago());
 
-        // Fecha de pago se asigna por defecto en la entidad Pago
+        pagoRepository.save(nuevoPago);
+    }
 
-        // Guardar el pago
-        pagoRepository.save(nuevoPago); // <-- Asegúrate de que este método exista en PagoRepository
+    //Método para actualizar el estado tras el retorno de Mercado Pago.
+    public void actualizarEstado(String referencia, String estado) {
+        pagoRepository.findByReferenciaPago(referencia).ifPresent(pago -> {
+            pago.setEstado(estado);
+            pagoRepository.save(pago);
+        });
     }
 }

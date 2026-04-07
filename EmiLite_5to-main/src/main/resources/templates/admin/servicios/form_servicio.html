@@ -181,7 +181,9 @@
         <h2 th:if="${servicioId}">Editar Servicio</h2>
         <h2 th:unless="${servicioId}">Crear Nuevo Servicio</h2>
 
-        <form th:action="${servicioId} ? @{/servicios/{id}(id=${servicioId})} : @{/servicios}" th:object="${servicioForm}" method="post">
+        <form th:action="@{/admin/servicios/guardar}" th:object="${servicio}" method="post">
+    
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <div class="form-group">
                 <label for="nombre">Nombre:</label>
                 <input type="text" id="nombre" th:field="*{nombre}" placeholder="Nombre del servicio" required>

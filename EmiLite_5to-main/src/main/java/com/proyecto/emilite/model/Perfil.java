@@ -54,6 +54,7 @@ public class Perfil {
     private String observaciones;
 
     // Relación bidireccional con Usuario
+    @ToString.Exclude
     @OneToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;

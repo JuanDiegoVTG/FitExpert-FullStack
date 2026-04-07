@@ -150,7 +150,7 @@ public class PythonController {
             
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/cliente/dashboard";
+            return "redirect:/dashboard";
         }
     }
 
@@ -163,7 +163,7 @@ public class PythonController {
 
         rutinaRepository.save(rutinaEncontrada);
 
-        return "redirect:/cliente/dashboard";
+        return "redirect:/dashboard";
     }
 
     @PostMapping("/rutinas/{id}/eliminar")
@@ -172,5 +172,7 @@ public class PythonController {
     rutinaRepository.deleteById(id);
     return "redirect:/cliente/rutinas";
         
-    }   
+    }
+    
+    
 }

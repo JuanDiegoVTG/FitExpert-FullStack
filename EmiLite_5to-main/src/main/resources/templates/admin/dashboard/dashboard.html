@@ -9,6 +9,7 @@
     
     <style>
         :root {
+<<<<<<< HEAD
             --bg-body: #111a30;
             --bg-sidebar: #1e2f62f6;
             --card-bg: rgba(20, 47, 130, 0.35);
@@ -27,7 +28,22 @@
 
             --primary-glow: rgba(96, 121, 197, 0.45);
 
+=======
+            /* NUEVA PALETA: Iluminada y Energética */
+            --bg-body: #F4F7F6;       /* Fondo principal gris muy claro */
+            --bg-sidebar: #FFFFFF;    /* Barra lateral blanca pura */
+            --primary: #FF6B6B;       /* Naranja Coral (Energía) */
+            --primary-glow: rgba(255, 107, 107, 0.3);
+            --secondary: #4DABF7;     /* Azul Fresco */
+            --accent: #38D9A9;        /* Verde Menta */
+            --card-bg: #FFFFFF;       /* Tarjetas blancas */
+            --text-main: #2D3748;     /* Texto principal oscuro para leer bien */
+            --text-muted: #718096;    /* Texto secundario gris */
+            --border-color: #E2E8F0;  /* Bordes suaves */
+>>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+            --shadow-md: 0 8px 16px rgba(0,0,0,0.06);
         }
 
         * {
@@ -38,10 +54,7 @@
         }
 
         body {
-            background-color: var(--bg-body);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+            background-color: --bg-body;
             color: var(--text-main);
             display: flex;
             min-height: 100vh;
@@ -51,7 +64,6 @@
         .sidebar {
             width: 280px;
             background: var(--bg-sidebar);
-            backdrop-filter: blur(10px);
             border-right: 1px solid var(--border-color);
             padding: 2rem 1.5rem;
             display: flex;
@@ -59,6 +71,7 @@
             position: fixed;
             height: 100vh;
             z-index: 100;
+            box-shadow: var(--shadow-sm);
         }
 
         .brand {
@@ -67,17 +80,14 @@
             gap: 12px;
             font-size: 1.5rem;
             font-weight: 800;
-            color: white;
+            color: var(--text-main);
             margin-bottom: 3rem;
             text-decoration: none;
         }
 
         .brand i {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 5px var(--primary-glow));
+            color: var(--primary);
+            font-size: 1.8rem;
         }
 
         .nav-group {
@@ -105,24 +115,20 @@
             border-radius: 12px;
             margin-bottom: 0.3rem;
             transition: var(--transition);
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.95rem;
         }
 
-        .nav-link:hover, .nav-link.active {
-            background: rgba(99, 102, 241, 0.1);
-            color: white;
+        .nav-link:hover {
+            background: rgba(255, 107, 107, 0.08);
+            color: var(--primary);
             transform: translateX(5px);
         }
 
-        .nav-link i {
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
-
-        .nav-link:hover i {
-            color: var(--primary);
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px var(--primary-glow);
         }
 
         /* --- MAIN CONTENT --- */
@@ -148,35 +154,41 @@
             padding: 8px 20px 8px 8px;
             border-radius: 50px;
             border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
         }
 
         .avatar {
             width: 42px;
             height: 42px;
-            background: linear-gradient(135deg, #ef4444, #f59e0b); /* Rojo/Naranja para Admin */
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+            color: white;
         }
 
-        /* Admin Hero */
+        /* Admin Hero (El Banner Principal) */
         .admin-hero {
+<<<<<<< HEAD
             background: linear-gradient(
                 135deg, 
                 rgba(33, 52, 106, 0.816), 
                 rgba(60, 95, 198, 0.914)
             );
             border: 1px solid var(--border-color);
+=======
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+>>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
             border-radius: 24px;
             padding: 2.5rem;
             margin-bottom: 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(5px);
+            color: white;
+            box-shadow: var(--shadow-md);
         }
 
         .hero-text h1 {
@@ -184,15 +196,26 @@
             margin-bottom: 0.5rem;
         }
 
-        .badge-admin {
-            background: rgba(239, 68, 68, 0.2);
-            color: #f87171;
+        .badge-hero {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
             padding: 4px 12px;
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 800;
             text-transform: uppercase;
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            backdrop-filter: blur(5px);
+            display: inline-block;
+        }
+
+        .badge-admin {
+            background: #EBF4FF;
+            color: var(--secondary);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
         }
 
         /* Stats Grid */
@@ -212,12 +235,13 @@
             padding: 1.8rem;
             border-radius: 20px;
             transition: var(--transition);
+            box-shadow: var(--shadow-sm);
         }
 
         .stat-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--primary);
-            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+            box-shadow: var(--shadow-md);
         }
 
         .stat-icon {
@@ -235,12 +259,13 @@
             font-size: 1.8rem;
             font-weight: 800;
             margin-bottom: 0.2rem;
+            color: var(--text-main);
         }
 
         .stat-label {
             color: var(--text-muted);
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         /* Buttons */
@@ -250,12 +275,12 @@
         }
 
         .btn-action {
-            background: var(--primary);
-            color: white;
+            background: white;
+            color: var(--primary);
             padding: 12px 24px;
             border-radius: 12px;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.9rem;
             display: flex;
             align-items: center;
@@ -264,16 +289,16 @@
         }
 
         .btn-action:hover {
-            filter: brightness(1.1);
-            box-shadow: 0 0 20px var(--primary-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .logout-btn {
             margin-top: auto;
             padding: 0.8rem;
-            background: rgba(239, 68, 68, 0.1);
+            background: white;
             color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
             border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
@@ -294,13 +319,13 @@
 
     <nav class="sidebar">
         <a href="#" class="brand">
-            <i class="fas fa-user-shield"></i>
+            <i class="fas fa-dumbbell"></i>
             <span>FIT EXPERT</span>
         </a>
 
         <div class="nav-group">
             <label>Administración</label>
-            <a href="/admin/dashboard" class="nav-link active">
+            <a href="/dashboard" class="nav-link active">
                 <i class="fas fa-chart-pie"></i>
                 <span>Panel Central</span>
             </a>
@@ -309,7 +334,7 @@
                 <span>Gestionar Usuarios</span>
             </a>
             <a href="/admin/servicios" class="nav-link">
-                <i class="fas fa-dumbbell"></i>
+                <i class="fas fa-medal"></i>
                 <span>Servicios y Gym</span>
             </a>
         </div>
@@ -329,13 +354,12 @@
         <div class="nav-group">
             <label>Análisis</label>
             <a href="/reportes" class="nav-link">
-                <i class="fas fa-file-contract"></i>
-                <span>Reportes de Usuarios</span>
+                <i class="fas fa-chart-bar"></i>
+                <span>Reportes</span>
             </a>
         </div>
 
         <form th:action="@{/logout}" method="post" style="margin-top: auto;">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <button type="submit" class="logout-btn" style="width: 100%;">
                 <i class="fas fa-power-off"></i>
                 <span>Cerrar Sesión</span>
@@ -348,7 +372,11 @@
         <header class="top-header">
             <div>
                 <h2 style="font-weight: 800; letter-spacing: -0.02em;">Centro de Mando</h2>
+<<<<<<< HEAD
                 <p style="color: var(--text-muted); font-size: 0.9rem;">Gestión global de la plataforma FIT EXPERT</p>
+=======
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Gestión global de la plataforma FitExpert</p>
+>>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
             </div>
 
             <div class="user-profile">
@@ -356,7 +384,7 @@
                     <span th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">A</span>
                 </div>
                 <div>
-                    <div style="font-weight: 700; font-size: 0.9rem;" sec:authentication="principal.username">Admin</div>
+                    <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-main);" sec:authentication="principal.username">Admin</div>
                     <div class="badge-admin" style="font-size: 0.6rem; padding: 2px 6px;">Superuser</div>
                 </div>
             </div>
@@ -364,56 +392,56 @@
 
         <section class="admin-hero">
             <div class="hero-text">
+<<<<<<< HEAD
                 <div class="badge-admin" style="margin-bottom: 1rem;">Estado del Sistema: Óptimo</div>
                 <h1>Panel de <span style="color: var(--bg-body);">Administración</span></h1>
                 <p style="color: var(--text-muted); max-width: 500px; margin-bottom: 1.5rem;">
                     Bienvenido, Administrador. Aquí puedes supervisar el crecimiento de la comunidad, validar pagos y ajustar los servicios disponibles.
+=======
+                <div class="badge-hero" style="margin-bottom: 1rem;">Estado del Sistema: Óptimo</div>
+                <h1>Panel de <span style="color: #FFE066;">Administración</span></h1>
+                <p style="color: rgba(255,255,255,0.9); max-width: 500px; margin-bottom: 1.5rem; line-height: 1.6;">
+                    Bienvenido, Administrador. Aquí puedes supervisar el crecimiento de la comunidad, validar perfiles de entrenadores y ajustar los servicios disponibles.
+>>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
                 </p>
                 <div class="btn-group">
                     <a href="/admin/usuarios" class="btn-action">
                         <i class="fas fa-plus-circle"></i> Nuevo Usuario
                     </a>
-                    <a href="/reportes" class="btn-action" style="background: transparent; border: 1px solid var(--border-color);">
+                    <a href="/reportes" class="btn-action" style="background: transparent; color: white; border: 1px solid white;">
                         <i class="fas fa-download"></i> Descargar Reporte
                     </a>
                 </div>
             </div>
-            <div style="font-size: 8rem; color: var(--primary); opacity: 0.1; transform: rotate(-15deg);">
-                <i class="fas fa-shield-alt"></i>
+            <div style="font-size: 10rem; opacity: 0.15; transform: rotate(-15deg); margin-right: 20px;">
+                <i class="fas fa-shield-heart"></i>
             </div>
         </section>
 
         <section class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                <div class="stat-icon" style="background: rgba(255, 107, 107, 0.1); color: var(--primary);">
                     <i class="fas fa-users"></i>
                 </div>
                 <div class="stat-value">152</div>
                 <div class="stat-label">Usuarios Totales</div>
             </div>
 
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--accent);">
-                    <i class="fas fa-dumbbell"></i>
-                </div>
-                <div class="stat-value">24</div>
-                <div class="stat-label">Servicios Activos</div>
-            </div>
 
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
-                    <i class="fas fa-receipt"></i>
+                <div class="stat-icon" style="background: rgba(56, 217, 169, 0.1); color: var(--accent);">
+                    <i class="fas fa-check-double"></i>
                 </div>
                 <div class="stat-value">8</div>
-                <div class="stat-label">Pagos de Hoy</div>
+                <div class="stat-label">Pendientes de Aprobar</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                <div class="stat-icon" style="background: rgba(252, 196, 25, 0.1); color: #FCC419;">
                     <i class="fas fa-chart-line"></i>
                 </div>
-                <div class="stat-value">$450k</div>
-                <div class="stat-label">Recaudado Hoy (COP)</div>
+                <div class="stat-value">98%</div>
+                <div class="stat-label">Satisfacción IA</div>
             </div>
         </section>
 

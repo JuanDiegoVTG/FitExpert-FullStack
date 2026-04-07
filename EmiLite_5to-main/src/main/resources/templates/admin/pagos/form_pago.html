@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:if="${pagoId}">Editar Pago - Fit Expert</title>
     <title th:unless="${pagoId}">Registrar Nuevo Pago - FIT EXPERT</title>
@@ -12,238 +12,196 @@
         /* Variables de tema oscuro y colores de Emi-Lite */
         
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             padding: 20px;
         }
 
         .container {
-            background-color: var(--card-bg);
-            padding: 40px 35px;
-            border-radius: 12px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 30px;
             box-shadow: var(--shadow);
             width: 100%;
-            max-width: 500px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .logo {
-            margin-bottom: 30px;
-        }
-
-        .logo i {
-            font-size: 3.5rem;
-            color: white;
-        }
-
-        .logo-text {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: white;
-            letter-spacing: 1px;
-            margin-top: 10px;
-            display: block;
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-light);
-            font-size: 1rem;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 14px 16px;
-            background-color: rgba(255, 255, 255, 0.05);
+            max-width: 550px;
             border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header { text-align: center; margin-bottom: 30px; }
+        .header i { 
+            font-size: 2.5rem; 
+            color: var(--primary); 
+            background: rgba(99, 102, 241, 0.1);
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+
+        h2 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+
+        .form-group { margin-bottom: 20px; }
+        label { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            margin-bottom: 8px; 
+            font-weight: 700; 
+            color: var(--text-muted); 
+            font-size: 0.85rem; 
+        }
+        label i { color: var(--primary); font-size: 0.9rem; }
+
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: white;
             font-size: 1rem;
             transition: var(--transition);
         }
 
-        input:focus,
-        select:focus {
+        input:focus, select:focus {
             outline: none;
-            border-color: var(--primary); /* Borde morado al enfocar */
-            box-shadow: 0 0 0 3px rgba(62, 0, 123, 0.2); /* Sombra morada */
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+            background: rgba(30, 41, 59, 0.9);
         }
 
         .btn-submit {
             width: 100%;
             padding: 16px;
-            background: var(--gradient-primary); /* Botón con gradiente morado */
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 16px;
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 800;
             cursor: pointer;
             transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             margin-top: 10px;
         }
 
         .btn-submit:hover {
+            background: var(--primary-dark);
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(62, 0, 123, 0.4); /* Sombra más intensa */
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
         }
 
-        .btn-submit:active {
-            transform: translateY(-1px);
-        }
-
-        .error {
-            color: var(--error); /* Color rojo para errores */
-            font-size: 0.9rem;
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.75rem;
             margin-top: 5px;
-            text-align: left;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
         }
 
         .back-link {
-            display: inline-block;
-            margin-top: 25px;
-            color: var(--primary); /* Color morado para el enlace */
+            color: var(--text-muted);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 0.9rem;
             transition: var(--transition);
-            font-size: 0.95rem;
         }
-
-        .back-link:hover {
-            text-decoration: underline;
-            color: #5a00a8; /* Morado más claro al hover */
-        }
-
-        .logout-link {
-            color: #dc3545; /* Rojo para logout */
-            text-decoration: none;
-            margin: 0 10px;
-        }
-
-        .logout-link:hover {
-            color: #a71e2a;
-        }
-
-        button.logout-link {
-            background: none;
-            border: none;
-            padding: 0;
-            margin: 0 10px;
-            font: inherit;
-            cursor: pointer;
-            color: #dc3545;
-            text-decoration: underline;
-        }
-
-        button.logout-link:hover {
-            color: #a71e2a;
-            text-decoration: none;
-        }
+        .back-link:hover { color: white; }
     </style>
 </head>
 <body>
+
     <div class="container">
         <div class="logo">
             <img th:src="@{/images/logofitexpert.jpeg}" alt="Emi-Lite" style="height:110px; width:120px; display:inline-block; vertical-align:middle;" />
         </div>
 
-        <h2 th:if="${pagoId}">Editar Pago</h2>
-        <h2 th:unless="${pagoId}">Registrar Nuevo Pago</h2>
+        <form th:action="@{/admin/pagos/guardar}" th:object="${pagoForm}" method="post">
+            
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <input type="hidden" th:field="*{id}" />
 
-        <form th:action="${pagoId} ? @{/pagos/{id}(id=${pagoId})} : @{/pagos}" th:object="${pagoForm}" method="post">
-            <div class="form-group">
-                <label for="usuarioId">Cliente:</label>
-                <select id="usuarioId" th:field="*{usuarioId}" required>
-                    <option value="">Seleccione un cliente</option>
-                    <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.userName}"></option>
-                </select>
-                <div class="error" th:if="${#fields.hasErrors('usuarioId')}" th:errors="*{usuarioId}"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Cliente</label>
+                    <select th:field="*{usuario}" required>
+                        <option value="" disabled selected>Seleccione...</option>
+                        <option th:each="u : ${usuarios}" th:value="${u.id}" th:text="${u.userName}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-dumbbell"></i> Servicio</label>
+                    <select th:field="*{servicio}">
+                        <option value="">Aporte Libre</option>
+                        <option th:each="s : ${servicios}" th:value="${s.id}" th:text="${s.nombre}"></option>
+                    </select>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="servicioId">Servicio (Opcional):</label>
-                <select id="servicioId" th:field="*{servicioId}">
-                    <option value="">Seleccione un servicio (opcional)</option>
-                    <option th:each="servicio : ${servicios}" th:value="${servicio.id}" th:text="${servicio.nombre}"></option>
-                </select>
-                <!-- No validación aquí a menos que lo hagas obligatorio -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label><i class="fas fa-coins"></i> Monto (COP)</label>
+                    <input type="number" th:field="*{monto}" required placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-wallet"></i> Método</label>
+                    <select th:field="*{metodoPago}" required>
+                        <option value="" disabled selected>Elegir...</option>
+                        <option value="EFECTIVO">EFECTIVO</option>
+                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                        <option value="WOMPI">WOMPI</option>
+                    </select>
+                    <p class="error-msg" th:if="${#fields.hasErrors('metodoPago')}" th:errors="*{metodoPago}"></p>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="monto">Monto:</label>
-                <input type="number" id="monto" th:field="*{monto}" step="0.01" placeholder="Ej: 50000.00" required min="0.01">
-                <div class="error" th:if="${#fields.hasErrors('monto')}" th:errors="*{monto}"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label><i class="fas fa-info-circle"></i> Estado</label>
+                    <select th:field="*{estado}">
+                        <option value="PENDIENTE">PENDIENTE</option>
+                        <option value="COMPLETADO">COMPLETADO</option>
+                        <option value="FALLIDO">FALLIDO</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-barcode"></i> Referencia</label>
+                    <input type="text" th:field="*{referenciaPago}" placeholder="Opcional">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="metodoPago">Método de Pago:</label>
-                <input type="text" id="metodoPago" th:field="*{metodoPago}" placeholder="Ej: Tarjeta de Crédito, PSE, Efecty" required>
-                <div class="error" th:if="${#fields.hasErrors('metodoPago')}" th:errors="*{metodoPago}"></div>
-            </div>
-
-            <div class="form-group">
-                <label for="estado">Estado:</label>
-                <select id="estado" th:field="*{estado}" required>
-                    <option value="PENDIENTE">Pendiente</option>
-                    <option value="COMPLETADO">Completado</option>
-                    <option value="FALLIDO">Fallido</option>
-                    <option value="CANCELADO">Cancelado</option>
-                </select>
-                <div class="error" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></div>
-            </div>
-
-            <div class="form-group">
-                <label for="referenciaPago">Referencia de Pago (Opcional):</label>
-                <input type="text" id="referenciaPago" th:field="*{referenciaPago}" placeholder="Ej: REF123456">
-                <!-- No validación aquí a menos que lo hagas obligatorio -->
-            </div>
-
-            <div class="form-group">
-                <label for="promocionId">Promoción (Opcional):</label>
-                <select id="promocionId" th:field="*{promocionId}">
-                    <option value="">Seleccione una promoción (opcional)</option>
-                    <option th:each="promocion : ${promociones}" th:value="${promocion.id}" th:text="${promocion.codigo}"></option>
-                </select>
-                <!-- No validación aquí a menos que lo hagas obligatorio -->
-            </div>
-
-            <button type="submit" class="btn-submit" th:text="${pagoId} ? 'Actualizar Pago' : 'Registrar Pago'"></button>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-save"></i> 
+                <span th:text="${pagoForm.id != null ? 'Actualizar Pago' : 'Confirmar Registro'}"></span>
+            </button>
         </form>
 
-        <a href="/pagos" class="back-link">Volver a la Lista</a>
-
-        <!-- Formulario para cerrar sesión -->
-        <form th:action="@{/logout}" method="post" style="display: inline;">
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <button type="submit" class="logout-link">Cerrar sesión</button>
-        </form>
+        <div class="footer-links">
+            <a href="/admin/pagos" class="back-link"><i class="fas fa-arrow-left"></i> Volver al historial</a>
+        </div>
     </div>
+
 </body>
 </html>

@@ -5,15 +5,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data; 
+import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 
 @Data 
 public class UsuarioRegistroDTO {
 
-    @NotBlank(message = "El nombre de usuario es obligatorio")
-    @Size(min = 3, max = 50, message = "El nombre de usuario debe tener entre 3 y 50 caracteres")
-    private String userName; 
+    @NotBlank(message = "El nombre de usuario no puede estar vacío")
+    @Size(min = 4, max = 20, message = "El username debe tener entre 4 y 20 caracteres")
+    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "El username no puede tener espacios ni caracteres especiales")
+    private String userName;
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")

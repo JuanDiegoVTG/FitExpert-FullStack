@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
+<<<<<<< HEAD
     <title>Lista de Pagos - Fit Expert</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,260 +11,291 @@
     <style>
         /* Variables de tema oscuro y colores de Emi-Lite */
         
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+=======
+    <title>Historial de Pagos - FitExpert Pro</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #10b981; /* Éxito */
+            --warning: #f59e0b; /* Pendiente */
+            --danger: #ef4444; /* Error */
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+>>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
+<<<<<<< HEAD
             
             padding: 20px;
+=======
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(at 0% 0%, #1e1b4b 0px, transparent 50%), 
+                        radial-gradient(at 100% 100%, #0f172a 0px, transparent 50%);
+            background-color: #020617;
+            color: var(--text);
+            padding: 40px 20px;
+            min-height: 100vh;
+>>>>>>> c605208 (feat: Ajuste de seguridad API, cambio de IA y pasarela de pagos)
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
         }
 
         .container {
-            background-color: var(--card-bg);
-            padding: 40px 35px;
-            border-radius: 12px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 28px;
             box-shadow: var(--shadow);
             width: 100%;
-            max-width: 90%; /* Ancho más grande para la tabla */
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            max-width: 1200px;
+            border: 1px solid var(--border);
+            animation: fadeIn 0.6s ease-out;
         }
 
-        .logo {
-            margin-bottom: 30px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .logo i {
-            font-size: 3.5rem;
-            color: white;
-        }
-
-        .logo-text {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: white;
-            letter-spacing: 1px;
-            margin-top: 10px;
-            display: block;
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th, td {
-            padding: 15px 10px;
-            text-align: left;
+        /* --- Header UX --- */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
             border-bottom: 1px solid var(--border);
         }
 
-        th {
-            background-color: var(--primary-dark); /* Fondo morado oscuro para encabezados */
-            color: var(--text);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.9rem;
-        }
-
-        tbody tr {
-            transition: var(--transition);
-        }
-
-        tbody tr:hover {
-            background-color: rgba(255, 255, 255, 0.05); /* Fondo ligeramente más claro al pasar el mouse */
-        }
-
-        .btn {
-            margin: 10px;
-            padding: 8px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-            font-weight: 600;
-        }
-
-        .btn-edit {
-            background-color: #0094fe;
-            color: black;
-        }
-
-        .btn-edit:hover {
-            background-color: #e0a800;
-        }
-
-        .btn-delete {
-            background-color: #dc3545;
+        .title-group { display: flex; align-items: center; gap: 18px; }
+        .title-group i { 
+            font-size: 2.2rem; 
+            background: var(--primary);
+            padding: 12px;
+            border-radius: 15px;
             color: white;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
         }
-
-        .btn-delete:hover {
-            background-color: #c82333;
-        }
+        .title-group h2 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
 
         .btn-create {
-            background: var(--gradient-primary); /* Botón con gradiente morado */
+            background: var(--primary);
             color: white;
-            margin-bottom: 20px;
-            display: inline-block;
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-weight: 700;
             text-decoration: none;
-            box-shadow: 0 4px 15px rgba(62, 0, 123, 0.3);
-        }
-
-        .btn-create:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(62, 0, 123, 0.4); /* Sombra más intensa */
-        }
-
-        .button-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        .back-link {
-            display: inline-block;
-            padding: 12px 25px;
-            background: var(--gradient-primary); /* Botón con gradiente morado */
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
             transition: var(--transition);
-            margin-top: 20px;
-            box-shadow: 0 4px 15px rgba(62, 0, 123, 0.3);
         }
-
-        .back-link:hover {
+        .btn-create:hover { 
+            background: var(--primary-dark); 
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(62, 0, 123, 0.4);
+            box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4);
         }
 
-        .logout-link {
-            color: #dc3545; /* Rojo para logout */
-            text-decoration: none;
-            margin: 0 10px;
+        /* --- Tabla UX --- */
+        .table-wrapper {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
         }
 
-        .logout-link:hover {
-            color: #a71e2a;
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: rgba(99, 102, 241, 0.08);
+            padding: 18px 20px;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--primary);
         }
 
-        button.logout-link {
-            background: none;
-            border: none;
-            padding: 0;
-            margin: 0 10px;
-            font: inherit;
+        td { padding: 20px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+        /* --- Badges Estilizados --- */
+        .badge {
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        
+        .badge-completado { background: rgba(16, 185, 129, 0.1); color: var(--accent); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-pendiente { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-fallido { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        /* --- Botones de Acción --- */
+        .action-btns { display: flex; gap: 10px; }
+        .btn-icon {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: var(--transition);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.03);
             cursor: pointer;
-            color: #dc3545;
-            text-decoration: underline;
-        }
-
-        button.logout-link:hover {
-            color: #a71e2a;
             text-decoration: none;
         }
+        .btn-icon:hover { transform: scale(1.1); color: white; }
+        .btn-edit:hover { background: #0ea5e9; border-color: #0ea5e9; }
+        .btn-delete:hover { background: var(--danger); border-color: var(--danger); }
 
-        .no-data {
-            color: var(--text-light);
-            font-style: italic;
-            padding: 20px;
+        .footer-nav {
+            margin-top: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+
+        .btn-back {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        .btn-back:hover { color: white; }
+
+        .btn-logout {
+            background: none;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-logout:hover { background: var(--danger); color: white; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); }
+
+        .no-data { text-align: center; padding: 60px; color: var(--text-muted); }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <div class="logo">
-            <i class="fas fa-receipt"></i> <!-- Icono representativo para pagos -->
-            <span class="logo-text">Emi-Lite</span>
-        </div>
+        <header class="header-section">
+            <div class="title-group">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <div>
+                    <h2>Finanzas FitExpert</h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Gestión centralizada de pagos e ingresos</p>
+                </div>
+            </div>
+            
+            <span sec:authorize="hasRole('ADMIN')">
+                <a href="/admin/pagos/nuevo" class="btn-create">
+                    <i class="fas fa-plus-circle"></i> Nuevo Registro
+                </a>
+            </span>
+        </header>
 
-        <h2>Gestión de Pagos</h2>
-
-        <!-- Enlace para crear nuevo pago (solo para ADMIN) -->
-        <span sec:authorize="hasRole('ADMIN')">
-            <a href="/pagos/nuevo" class="btn-create">+ Registrar Nuevo Pago</a>
-        </span>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Servicio</th>
-                    <th>Monto (COP)</th>
-                    <th>Método de Pago</th>
-                    <th>Estado</th>
-                    <th>Referencia</th>
-                    <th>Promoción</th>
-                    <th>Fecha de Pago</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="pago : ${pagos}">
-                    <td th:text="${pago.id}"></td>
-                    <td th:text="${pago.usuario.userName}"></td>
-                    <td th:text="${pago.servicio != null ? pago.servicio.nombre : 'N/A'}"></td>
-                    <td th:text="|${#numbers.formatDecimal(pago.monto, 1, 2)} COP|"></td> <!-- Formateado como COP -->
-                    <td th:text="${pago.metodoPago}"></td>
-                    <td th:text="${pago.estado}"></td>
-                    <td th:text="${pago.referenciaPago != null ? pago.referenciaPago : 'N/A'}"></td>
-                    <td th:text="${pago.promocion != null ? pago.promocion.codigo : 'N/A'}"></td>
-                    <td th:text="${#temporals.format(pago.fechaPago, 'dd/MM/yyyy HH:mm')}"></td>
-                    <td class="button-group">
-                        <span sec:authorize="hasRole('ADMIN')">
-                            <a th:href="@{/pagos/{id}/editar(id=${pago.id})}" class="btn btn-edit">Editar</a>
-                            <form th:action="@{/pagos/{id}/eliminar(id=${pago.id})}" method="post" style="display: inline;" onsubmit="return confirm('¿Eliminar pago?');">
-                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                                <button type="submit" class="btn btn-delete">Eliminar</button>
-                            </form>
-                        </span>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Servicio</th>
+                        <th>Monto</th>
+                        <th>Método</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th style="text-align: right;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="pago : ${pagos}">
+                        <td th:text="'#' + ${pago.id}" style="color: var(--text-muted); font-family: monospace;"></td>
+                        <td th:text="${pago.usuario.userName}" style="font-weight: 700;"></td>
+                        <td th:text="${pago.servicio != null ? pago.servicio.nombre : 'Aporte Libre'}"></td>
+                        <td style="font-weight: 800; color: white;">
+                            <span style="color: var(--accent);">$</span>
+                            <span th:text="${#numbers.formatDecimal(pago.monto, 1, 0)}"></span>
+                        </td>
+                        <td>
+                            <i th:if="${pago.metodoPago == 'WOMPI'}" class="fas fa-credit-card" style="color: #6366f1;"></i>
+                            <i th:if="${pago.metodoPago == 'EFECTIVO'}" class="fas fa-money-bill-alt" style="color: #10b981;"></i>
+                            <i th:if="${pago.metodoPago == 'TRANSFERENCIA'}" class="fas fa-exchange-alt" style="color: #f59e0b;"></i>
+                            <span th:text="${pago.metodoPago}" style="margin-left: 5px; font-size: 0.85rem;"></span>
+                        </td>
+                        <td>
+                            <span th:class="${pago.estado == 'COMPLETADO' ? 'badge badge-completado' : (pago.estado == 'PENDIENTE' ? 'badge badge-pendiente' : 'badge badge-fallido')}" 
+                                  th:text="${pago.estado}">
+                            </span>
+                        </td>
+                        <td th:text="${#temporals.format(pago.fechaPago, 'dd MMM, yyyy')}" style="font-size: 0.85rem; color: var(--text-muted);"></td>
                         
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        <td style="text-align: right;">
+                            <div class="action-btns" sec:authorize="hasRole('ADMIN')" style="justify-content: flex-end;">
+                                <a th:href="@{/admin/pagos/{id}/editar(id=${pago.id})}" class="btn-icon btn-edit" title="Editar">
+                                    <i class="fas fa-pen-nib"></i>
+                                </a>
+                                
+                                <form th:action="@{/admin/pagos/{id}/eliminar(id=${pago.id})}" method="post" onsubmit="return confirm('¿Confirmas que deseas eliminar este registro permanentemente?');">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn-icon btn-delete" title="Eliminar">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <!-- Mensaje si no hay pagos -->
-        <div th:if="${#lists.isEmpty(pagos)}" class="no-data">
-            <p>No hay pagos registrados en el sistema.</p>
+            <div th:if="${#lists.isEmpty(pagos)}" class="no-data">
+                <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
+                <p>No hay registros de pagos para mostrar.</p>
+            </div>
         </div>
 
-        <span sec:authorize="hasRole('ADMIN')">
-            <a href="/admin/dashboard" class="back-link">Volver al Panel</a>
-        </span>
+        <footer class="footer-nav">
+            <a href="/dashboard" class="btn-back">
+                <i class="fas fa-chevron-left"></i> Volver al Panel Principal
+            </a>
 
-        <!-- Formulario para cerrar sesión -->
-        <form th:action="@{/logout}" method="post" style="display: inline;">
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <button type="submit" class="logout-link">Cerrar sesión</button>
-        </form>
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn-logout">
+                    <i class="fas fa-power-off"></i> Cerrar Sesión
+                </button>
+            </form>
+        </footer>
     </div>
+
 </body>
 </html>

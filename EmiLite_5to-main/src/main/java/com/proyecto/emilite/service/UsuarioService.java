@@ -1,5 +1,7 @@
 package com.proyecto.emilite.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +36,16 @@ public class UsuarioService {
             throw new RuntimeException("El nombre de usuario '" + dto.getUserName() + "' ya está en uso.");
         }
 
+        // 2. Validar Email único
+        if (usuarioRepository.existsByEmail(dto.getEmail())) {
+            throw new RuntimeException("Este correo ya está registrado");
+        }
+
+        // 3. Validar Edad mínima (Opcional pero pro para el SENA)
+        if (Period.between(dto.getFechaNacimiento(), LocalDate.now()).getYears() < 14) {
+            throw new RuntimeException("Debes tener al menos 14 años para registrarte");
+        }
+
         Usuario usuario = new Usuario();
         usuario.setUserName(dto.getUserName());
         usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -52,8 +64,6 @@ public class UsuarioService {
 
         usuarioRepository.save(usuario);
     }
-
-    // --- COMPATIBILIDAD (PARA QUE SE QUITEN LOS ERRORES EN TUS OTROS CONTROLLERS) ---
     
     // Este método lo buscan tus controladores de Admin y Usuario
     public void crearUsuarioDesdeDTO(UsuarioRegistroDTO dto) {
@@ -120,5 +130,9 @@ public class UsuarioService {
 
     public List<Rol> findAllRoles() {
         return rolRepository.findAll();
+    }
+
+    public List<Usuario> listarTodos() {
+        return usuarioRepository.findAll();
     }
 }

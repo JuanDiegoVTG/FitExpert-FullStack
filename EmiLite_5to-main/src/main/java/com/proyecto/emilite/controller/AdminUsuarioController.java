@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.proyecto.emilite.model.Rol;
 import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.model.dto.UsuarioRegistroDTO;
+import com.proyecto.emilite.repository.UsuarioRepository;
 import com.proyecto.emilite.service.RolService;
 import com.proyecto.emilite.service.UsuarioService;
 
@@ -30,6 +31,9 @@ public class AdminUsuarioController {
 
     @Autowired
     private RolService rolService;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     // Mostrar la lista de usuarios (solo para ADMIN), con opción de filtrar
     @GetMapping
@@ -178,5 +182,21 @@ public class AdminUsuarioController {
 
         // Redirigir a la lista de usuarios después de intentar eliminar
         return "redirect:/admin/usuarios";
+    }
+
+    @GetMapping("/aprobar/{id}")
+    public String aprobarEntrenador(@PathVariable Long id) {
+        // Buscamos al usuario en la BD
+        Usuario usuario = usuarioRepository.findById(id).orElse(null);
+        
+        if (usuario != null && usuario.getRol().getNombre().equals("ENTRENADOR")) {
+            // Le damos el pase VIP
+            usuario.setValidado(true);
+            usuario.setActivo(true); // Por si acaso también estaba inactivo
+            usuarioRepository.save(usuario);
+        }
+        
+        // Lo devolvemos al panel de control
+        return "redirect:/dashboard"; 
     }
 }

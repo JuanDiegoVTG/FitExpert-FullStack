@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Tus estilos aquí, puedes reutilizar parte del login.html */
         :root {
             /* Nueva paleta azul */
             --primary: #3169B2;       /* Azul principal */
@@ -49,7 +48,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            margin: 0;
         }
 
         .container {
@@ -66,29 +65,50 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .logo {
-            margin-bottom: 30px;
+        /* --- Stepper Progress --- */
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
         }
 
-        .logo i {
-            font-size: 3.5rem;
-            color: white; /* Icono blanco */
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 2;
+            transition: 0.3s;
+            border: 4px solid #0f172a;
         }
 
-        .logo-text {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: white; /* Texto blanco */
-            letter-spacing: 1px;
-            margin-top: 10px;
+        .step.active {
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .step.completed {
+            background: var(--accent);
+        }
+
+        /* --- Form Steps --- */
+        .form-step {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .form-step.active {
             display: block;
         }
 
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            color: var(--text); /* Color del texto */
-            font-weight: 600;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .form-group {
@@ -96,19 +116,20 @@
             text-align: left;
         }
 
+        .full-width { grid-column: span 2; }
+
+        .form-group { margin-bottom: 20px; }
+
         label {
             display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
             margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-light); /* Color del label */
-            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        input[type="text"],
-        input[type="password"],
-        input[type="email"],
-        input[type="date"],
-        select {
+        input, select {
             width: 100%;
             padding: 12px;
             background-color: #6fa3fd98;
@@ -186,7 +207,7 @@
         .form-header p {
             color: var(--text-light); /* Texto secundario */
             font-size: 1rem;
-            margin-top: 8px;
+            transition: 0.3s;
         }
 
         form {
@@ -286,8 +307,33 @@
                 Registrarse
             </button>
         </form>
-
-        <a href="/" class="back-link">Volver a la Página Principal</a>
     </div>
+
+    <script>
+        function move(from, to) {
+            // Ocultar actual y mostrar siguiente
+            document.getElementById('step' + from).classList.remove('active');
+            document.getElementById('step' + to).classList.add('active');
+            
+            // Actualizar stepper visual
+            document.getElementById('s' + from).classList.remove('active');
+            document.getElementById('s' + from).classList.add('completed');
+            document.getElementById('s' + to).classList.add('active');
+        }
+
+        function checkTrainer() {
+            const select = document.getElementById('rolSelect');
+            const box = document.getElementById('trainerUpload');
+            
+            
+            if(select.value == "2") { 
+                box.classList.remove('hidden');
+                document.getElementById('archivoCv').required = true; // Obligatorio para entrenadores
+            } else {
+                box.classList.add('hidden');
+                document.getElementById('archivoCv').required = false;
+            }
+        }
+    </script>
 </body>
 </html>

@@ -1,34 +1,23 @@
 package com.proyecto.emilite.controller;
 
-import java.io.ByteArrayOutputStream;
-
+import com.mercadopago.MercadoPagoConfig;
+import com.mercadopago.client.preference.*;
+import com.mercadopago.resources.preference.Preference;
+import com.proyecto.emilite.model.Pago;
+import com.proyecto.emilite.service.PagoService;
+import com.proyecto.emilite.service.UsuarioService;
+import com.proyecto.emilite.service.ServicioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.xhtmlrenderer.pdf.ITextRenderer;
+import org.springframework.web.bind.annotation.*;
 
-import com.proyecto.emilite.model.Pago;
-import com.proyecto.emilite.model.Servicio;
-import com.proyecto.emilite.model.Usuario;
-import com.proyecto.emilite.model.dto.PagoFormDTO;
-import com.proyecto.emilite.service.PagoService;
-import com.proyecto.emilite.service.ServicioService;
-import com.proyecto.emilite.service.UsuarioService;
-import com.proyecto.emilite.util.HtmlGenerator;
-
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
-@RequestMapping("/pagos")
+@RequestMapping("/admin/pagos") // Mantenemos /admin/pagos para que coincida con tu SecurityConfig
 public class PagoController {
 
     @Autowired
@@ -40,160 +29,97 @@ public class PagoController {
     @Autowired
     private ServicioService servicioService;
 
-   
-    //  PARTE ADMIN
+    // --- GESTIÓN ADMINISTRATIVA ---
 
     @GetMapping
-    public String listarPagos(Model model) {
+    public String listarPagosAdmin(Model model) {
         model.addAttribute("pagos", pagoService.findAll());
-        return "pagos/lista_pagos";
+        return "admin/pagos/lista_pagos"; 
     }
 
     @GetMapping("/nuevo")
-    public String mostrarFormularioCreacion(Model model) {
-        model.addAttribute("pagoForm", new PagoFormDTO());
+    public String mostrarFormularioPago(Model model) {
+        model.addAttribute("pagoForm", new Pago());
         model.addAttribute("usuarios", usuarioService.findAll());
         model.addAttribute("servicios", servicioService.findAll());
-        return "pagos/form_pago";
+        return "admin/pagos/form_pago";
     }
 
-    @PostMapping
-    public String crearPago(@Valid @ModelAttribute("pagoForm") PagoFormDTO pagoForm,
-                            BindingResult result,
-                            Model model) {
-
-        if (result.hasErrors()) {
-            model.addAttribute("usuarios", usuarioService.findAll());
-            model.addAttribute("servicios", servicioService.findAll());
-            return "pagos/form_pago";
-        }
-
-        Pago nuevoPago = new Pago();
-
-        
-        Usuario usuario = usuarioService.findById(pagoForm.getUsuarioId());
-        nuevoPago.setUsuario(usuario);
-
-        
-        if (pagoForm.getServicioId() != null) {
-            Servicio servicio = servicioService.findById(pagoForm.getServicioId());
-            nuevoPago.setServicio(servicio);
-        }
-
-        nuevoPago.setMonto(pagoForm.getMonto());
-        nuevoPago.setMetodoPago(pagoForm.getMetodoPago());
-        nuevoPago.setEstado(pagoForm.getEstado());
-        nuevoPago.setReferenciaPago(pagoForm.getReferenciaPago());
-
-        pagoService.save(nuevoPago);
-
-        return "redirect:/pagos";
+    @PostMapping("/guardar")
+    public String guardarPago(@ModelAttribute("pagoForm") Pago pago) {
+        pagoService.save(pago);
+        return "redirect:/admin/pagos";
     }
 
     @GetMapping("/{id}/editar")
     public String mostrarFormularioEdicion(@PathVariable Long id, Model model) {
-
-        Pago pago = pagoService.findById(id); 
-
-        PagoFormDTO pagoForm = new PagoFormDTO();
-        pagoForm.setUsuarioId(pago.getUsuario().getId());
-        pagoForm.setServicioId(pago.getServicio() != null ? pago.getServicio().getId() : null);
-        pagoForm.setMonto(pago.getMonto());
-        pagoForm.setMetodoPago(pago.getMetodoPago());
-        pagoForm.setEstado(pago.getEstado());
-        pagoForm.setReferenciaPago(pago.getReferenciaPago());
-
-        model.addAttribute("pagoForm", pagoForm);
-        model.addAttribute("pagoId", id);
+        model.addAttribute("pagoForm", pagoService.findById(id));
         model.addAttribute("usuarios", usuarioService.findAll());
         model.addAttribute("servicios", servicioService.findAll());
-
-        return "pagos/form_pago";
+        return "admin/pagos/form_pago"; 
     }
-
-
-        @PostMapping("/{id}")
-    public String actualizarPago(@PathVariable Long id,
-                                @Valid @ModelAttribute("pagoForm") PagoFormDTO pagoForm,
-                                BindingResult result,
-                                Model model) {
-
-        if (result.hasErrors()) {
-            model.addAttribute("pagoId", id);
-            model.addAttribute("usuarios", usuarioService.findAll());
-            model.addAttribute("servicios", servicioService.findAll());
-            return "pagos/form_pago";
-        }
-
-        // PagoService devuelve Pago directo 
-        Pago pagoExistente = pagoService.findById(id);
-
-        
-        Usuario usuario = usuarioService.findById(pagoForm.getUsuarioId());
-        pagoExistente.setUsuario(usuario);
-
-        if (pagoForm.getServicioId() != null) {
-            Servicio servicio = servicioService.findById(pagoForm.getServicioId());
-            pagoExistente.setServicio(servicio);
-        } else {
-            pagoExistente.setServicio(null);
-        }
-
-        pagoExistente.setMonto(pagoForm.getMonto());
-        pagoExistente.setMetodoPago(pagoForm.getMetodoPago());
-        pagoExistente.setEstado(pagoForm.getEstado());
-        pagoExistente.setReferenciaPago(pagoForm.getReferenciaPago());
-
-        pagoService.save(pagoExistente);
-
-        return "redirect:/pagos";
-    }
-
 
     @PostMapping("/{id}/eliminar")
     public String eliminarPago(@PathVariable Long id) {
         pagoService.deleteById(id);
-        return "redirect:/pagos";
+        return "redirect:/admin/pagos";
     }
 
+    // --- INTEGRACIÓN MERCADO PAGO ---
 
-    //  PARTE CLIENTE
+    @GetMapping("/crear-preferencia/{id}")
+    @ResponseBody
+    public String crearPreferencia(@PathVariable Long id) {
+        try {
+            // 1. CREDENCIALES: Usa el TOKEN DE PRUEBA
+            MercadoPagoConfig.setAccessToken("APP_USR-4856297003007933-040323-ab7c7dac806d261fd8528f4c510bb4aa-3311074257");
 
-    @GetMapping("/cliente")
-    public String verPagosCliente(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
+            Pago pago = pagoService.findById(id);
 
-        Usuario usuarioLogueado = usuarioService.findByUserName(username);
+            // 2. CONFIGURACIÓN DEL ÍTEM
+            String nombreServicio = (pago.getServicio() != null) ? pago.getServicio().getNombre() : "Aporte FitExpert";
+            
+            PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
+                    .id(pago.getId().toString())
+                    .title(nombreServicio)
+                    .quantity(1)
+                    .unitPrice(new BigDecimal(pago.getMonto().toString()))
+                    .currencyId("COP")
+                    .build();
 
-        model.addAttribute("pagos", pagoService.findByUsuarioId(usuarioLogueado.getId()));
+            List<PreferenceItemRequest> items = new ArrayList<>();
+            items.add(itemRequest);
 
-        return "cliente/mis_pagos";
-    }
+           
+            PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
+                .success("http://localhost:8082/admin/pagos")
+                .pending("http://localhost:8082/admin/pagos")
+                .failure("http://localhost:8082/admin/pagos")
+                .build();
 
+        
+            PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+                .items(items)
+                .backUrls(backUrls)
+                .externalReference(pago.getReferenciaPago())
+                .build();
 
-    //  GENERAR PDF
+            //Crear la preferencia
+            PreferenceClient client = new PreferenceClient();
+            Preference preference = client.create(preferenceRequest);
 
-    @GetMapping("/cliente/pagar/{id}")
-    public void pagarServicio(@PathVariable Long id,
-                              HttpServletResponse response,
-                              Model model) throws Exception {
+            // Retornamos el ID para que el frontend abra el Checkout
+            return preference.getId();
 
-        Servicio servicio = servicioService.findById(id); // este método devuelve directo
-        model.addAttribute("servicio", servicio);
-
-        String html = HtmlGenerator.generateHtml("comprobante", model);
-
-        ByteArrayOutputStream pdfStream = new ByteArrayOutputStream();
-        ITextRenderer renderer = new ITextRenderer();
-
-        renderer.setDocumentFromString(html);
-        renderer.layout();
-        renderer.createPDF(pdfStream);
-
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename=comprobante_pago.pdf");
-        response.getOutputStream().write(pdfStream.toByteArray());
-        response.flushBuffer();
+        } catch (Exception e) {
+            // Log detallado en consola si Mercado Pago rechaza la petición
+            if (e instanceof com.mercadopago.exceptions.MPApiException) {
+                System.err.println("--- ERROR DE MERCADO PAGO ---");
+                System.err.println(((com.mercadopago.exceptions.MPApiException) e).getApiResponse().getContent());
+                System.err.println("-----------------------------");
+            }
+            e.printStackTrace();
+            return "error";
+        }
     }
 }

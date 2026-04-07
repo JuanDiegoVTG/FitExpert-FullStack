@@ -179,13 +179,13 @@
         </div>
 
         <span sec:authorize="hasRole('ADMIN')">
-            <a href="/admin/dashboard" class="back-link">Volver al Panel</a>
+            <a href="/dashboard" class="back-link">Volver al Panel</a>
         </span>
         <span sec:authorize="hasRole('ENTRENADOR')">
             <a href="/entrenador/dashboard" class="back-link">Volver al Panel</a>
         </span>
         <span sec:authorize="hasRole('CLIENTE')">
-            <a href="/cliente/dashboard" class="back-link">Volver al Panel</a>
+            <a href="/dashboard" class="back-link">Volver al Panel</a>
         </span>
         <span sec:authorize="isAnonymous() or !hasAnyRole('ADMIN','ENTRENADOR','CLIENTE')">
             <a href="/dashboard" class="back-link">Volver al Panel</a>

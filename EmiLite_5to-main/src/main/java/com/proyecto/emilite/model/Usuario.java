@@ -18,6 +18,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "usuario")
@@ -62,13 +63,15 @@ public class Usuario {
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento; 
 
+    @ToString.Exclude
     @OneToOne(mappedBy = "usuario", fetch = FetchType.EAGER)
     private Perfil perfil;
     public Perfil getPerfil() {
     return perfil;
     }
     // Relación con la tabla rol
-     @ManyToOne(fetch = FetchType.LAZY) 
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY) 
     @JoinColumn(name = "rol_id", nullable = false)
     private Rol rol;
 
@@ -76,7 +79,14 @@ public class Usuario {
     @Column(name = "activo", nullable = false)
     private Boolean activo = true; 
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "entrenador_id")
     private Usuario entrenador;
+
+    private boolean validado = false; // El campo que usa la IA y el Admin
+    private boolean enabled = true;   // Para que Spring Security sepa que la cuenta está activa
+
+    private Double cvScore;
+
 }
