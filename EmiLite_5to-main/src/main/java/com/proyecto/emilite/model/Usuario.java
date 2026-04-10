@@ -89,4 +89,7 @@ public class Usuario {
 
     private Double cvScore;
 
+    private boolean esPremuim = false;
+    private int creditosIA = 3;
+
 }

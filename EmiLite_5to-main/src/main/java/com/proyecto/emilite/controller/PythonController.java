@@ -20,6 +20,7 @@ import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.repository.PerfilRepository;
 import com.proyecto.emilite.repository.RutinaRepository;
 import com.proyecto.emilite.repository.UsuarioRepository;
+import com.proyecto.emilite.service.ContratoService;
 import com.proyecto.emilite.service.PythonService;
 
 @Controller
@@ -37,14 +38,15 @@ public class PythonController {
     @Autowired
     private RutinaRepository rutinaRepository;
 
+    @Autowired
+    private ContratoService contratoService;
+
     public PythonController(PerfilRepository perfilRepository) {
         this.perfilRepository = perfilRepository;
     }
 
-    /**
-     * PROCESO DE GENERACIÓN DE RUTINA CON IA
-     * Ruta completa: /api/rutina-real
-     */
+    //PROCESO DE GENERACIÓN DE RUTINA CON IA
+     
     @PostMapping("/rutina-real") // CAMBIADO A POST para coincidir con el form
     public String rutinaReal(
         @RequestParam(name = "peso", defaultValue = "70") Double peso,     
@@ -53,14 +55,26 @@ public class PythonController {
         Authentication auth, Model model
     ){
         String username = auth.getName();
-        
+
         try {
-            // 1. Buscamos al usuario y actualizamos su perfil
+
+            // 1. Buscamos al usuario
             Usuario usuario = usuarioRepository.findByUserName(username)
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            // ¿Tiene un contrato activo con un entrenador?
+            if (!contratoService.tieneEntrenadorActivo(usuario.getId())) {
+
+                // Notificación satisfactoria 
+                model.addAttribute("error", "Acceso denegado: Primero debes contratar a un entrenador para habilitar la IA.");
+
+                // Lo mandamos al catálogo 
+                return "redirect:/cliente/entrenadores?error=sin_contrato";
+            }
             
+            //2. Actualizamos su perfil
             Perfil perfil = usuario.getPerfil();
-            if (perfil == null) {
+            if (perfil == null){
                 perfil = new Perfil();
                 perfil.setUsuario(usuario);
             }
@@ -70,7 +84,7 @@ public class PythonController {
             perfil.setObjetivo(objetivo);
             perfilRepository.save(perfil);
 
-            // 2. Preparamos los datos para Flask
+            // 3. Preparamos los datos para Flask
             Map<String, Object> data = new HashMap<>();
             data.put("peso", peso);
             data.put("altura", altura);
@@ -78,17 +92,17 @@ public class PythonController {
 
             String jsonPayload = new ObjectMapper().writeValueAsString(data);
             
-            // 3. Llamamos al servicio de Python
+            // 4. Llamamos al servicio de Python
             String jsonRespuestaFlask = pythonService.generarRutina(jsonPayload);
 
-            // 4. Mapeamos la respuesta de la IA
+            // 5. Mapeamos la respuesta de la IA
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> rutinaGenerada = mapper.readValue(
                 jsonRespuestaFlask, 
                 new TypeReference<Map<String, Object>>() {}
             );
 
-            // 5. Creamos el objeto Rutina para nuestra BD
+            // 6. Creamos el objeto Rutina para nuestra BD
             Rutina nuevaRutina = new Rutina(); 
 
             // Extraemos y limpiamos los ejercicios
@@ -116,7 +130,7 @@ public class PythonController {
             
             nuevaRutina.setCliente(usuario); 
 
-            // 6. ¡IMPORTANTE! Guardamos y mandamos a la vista con el nombre "rutina"
+            // 7.Guardamos y mandamos a la vista con el nombre "rutina"
             rutinaRepository.save(nuevaRutina);
             
             // Aquí corregimos el Error 500: el HTML busca ${rutina}

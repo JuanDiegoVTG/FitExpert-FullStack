@@ -23,7 +23,7 @@ def generar_rutina_ia(datos_usuario):
     objetivo = datos_usuario.get('objetivo', 'acondicionamiento').lower()
     peso = datos_usuario.get('peso', 70)
 
-    # --- INTENTO 1: IA GENERATIVA (GROQ) ---
+    # IA GENERATIVA (GROQ) 
     if client:
         try:
             print(f" Generando con Groq para: {objetivo} ---")
@@ -54,9 +54,7 @@ def generar_rutina_ia(datos_usuario):
     return generar_logica_local(objetivo, peso)
 
 def generar_logica_local(objetivo, peso):
-    """
-    Sistema experto basado en reglas (Funciona sin internet).
-    """
+   
     ejercicios_db = {
         "masa": ["Press Banca", "Sentadillas", "Remo con barra", "Peso Muerto"],
         "peso": ["Burpees", "Saltar Cuerda", "Zancadas", "Escaladores"],
