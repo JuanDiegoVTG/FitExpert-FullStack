@@ -65,7 +65,7 @@ public class SecurityConfig {
             .requestMatchers("/entrenador/**").hasRole("ENTRENADOR")
 
             // 6. RUTAS DE CLIENTE
-            .requestMatchers("/cliente/**", "/api/rutina-real/**").hasRole("CLIENTE")
+            .requestMatchers("/cliente/**", "/api/rutina-real/**","/cliente/entrenador/" ).hasRole("CLIENTE")
 
             // 7. RUTAS COMPARTIDAS
             .requestMatchers("/dashboard").hasAnyRole("CLIENTE", "ENTRENADOR", "ADMIN")

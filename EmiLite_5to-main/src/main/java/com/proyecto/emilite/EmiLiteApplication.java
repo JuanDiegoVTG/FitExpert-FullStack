@@ -8,4 +8,4 @@ public class EmiLiteApplication {
     public static void main(String[] args) {
         SpringApplication.run(EmiLiteApplication.class, args);
     }
-}
+} 
