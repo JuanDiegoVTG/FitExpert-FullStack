@@ -36,4 +36,35 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     // Comprueba existencia por email
     boolean existsByEmail(String email);
-}
+
+
+
+
+
+    //--- CATALOGO -----//
+
+    @Query("""
+    SELECT u FROM Usuario u 
+    WHERE u.rol.nombre = 'ENTRENADOR'
+    AND u.activo = true
+    AND (
+        LOWER(u.nombres) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+        LOWER(u.apellidos) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+        LOWER(u.descripcion) LIKE LOWER(CONCAT('%', :keyword, '%'))
+    )
+    """)
+    List<Usuario> buscarEntrenadores(@Param("keyword") String keyword);
+
+
+    /* 
+    // Buscar por palabra clave en nombres o apellidos
+    List<Usuario> findByNombresContainingIgnoreCase(String keyword);
+    List<Usuario> findByApellidosContainingIgnoreCase(String keyword);
+
+    // Buscar por descripción del perfil (si Perfil tiene campo descripcion)
+    List<Usuario> findByDescripcionContainingIgnoreCase(String keyword);
+
+    // Buscar por calificación mínima (si usas cvScore como puntuación)
+    List<Usuario> findByCvScoreGreaterThanEqual(Double cvScore);
+    */
+}  

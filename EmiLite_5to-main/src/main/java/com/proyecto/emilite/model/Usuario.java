@@ -63,6 +63,9 @@ public class Usuario {
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento; 
 
+    @Column(name = "descripcion", length = 500)
+    private String descripcion;
+
     @ToString.Exclude
     @OneToOne(mappedBy = "usuario", fetch = FetchType.EAGER)
     private Perfil perfil;

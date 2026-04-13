@@ -346,24 +346,21 @@
         <section class="filter-section">
             <div class="filter-group">
 
-            <form th:action="@{/catalogo/cliente}" method="get" class="filter-form">
-
+            <form th:action="@{/catalogo}" method="get" class="filter-form">
                 <div class="filter-group full-width">
                     <label for="keyword">Buscar por nombre o especialidad: </label>
-                    <input type="text" id="keyword" name="keyword" class="filter-input keyword">
+                    <input type="text" id="searchBar" name="keyword" class="filter-input keyword">
                 </div>
 
-                <div class="filter-group">
+                <!--<div class="filter-group">
                     <label>Puntuación mínima:</label>
-                    <input type="number" name="puntuacion" min="1" max="5"
-                        class="filter-input small">
+                    <input type="number" name="puntuacion" min="1" max="5" class="filter-input small">
                 </div>
 
                 <div class="filter-group">
-                    <label>Puntuacion maxima:</label>
-                    <input type="number" name="calificacion" min="1" max="10"
-                        class="filter-input small">
-                </div>
+                    <label>Puntuación máxima:</label>
+                    <input type="number" name="calificacion" min="1" max="10" class="filter-input small">
+                </div>-->
 
                 <button type="submit" class="btn-contratar">Filtrar</button>
             </form>
@@ -374,13 +371,13 @@
         
 
     
-    <!-- CONTENIDO DE ENTRENADORES -->
+        <!-- CONTENIDO DE ENTRENADORES -->
         <section class="content-light-section">
             <div class="page-container">
                 <div class="grid-rutinas">
 
                     <!-- CARD -->
-                    <div class="rutina-card">
+                    <div class="rutina-card" >
                         <img src="/images/tixonov_valentin-crossfit-6030019.jpg" alt="Entrenador" style="width:100%; border-radius:12px 12px 0 0;">
                         <div style="padding:20px;">
                             <h3>Carlos Méndez</h3>
@@ -502,6 +499,9 @@
                     </div>
 
                     
+        
+
+                    
 
                 </div>
 
@@ -512,3 +512,23 @@
 
 </body>
 </html>
+
+<script>
+  const searchBar = document.getElementById("searchBar");
+  const cards = document.querySelectorAll(".rutina-card");
+
+  searchBar.addEventListener("keyup", function() {
+    const query = searchBar.value.toLowerCase().trim();
+
+    cards.forEach(card => {
+  const nombre = card.querySelector("h3").innerText.toLowerCase();
+  const descripcion = card.querySelector("p").innerText.toLowerCase();
+
+  if (nombre.includes(query) || descripcion.includes(query)) {
+    card.style.display = "";
+  } else {
+    card.style.display = "none";
+  }
+});
+  });
+</script>
