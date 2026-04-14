@@ -55,6 +55,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     """)
     List<Usuario> buscarEntrenadores(@Param("keyword") String keyword);
 
+    List<Usuario> findByRol_NombreAndActivo(String rolNombre, Boolean activo);
+
+    
 
     /* 
     // Buscar por palabra clave en nombres o apellidos

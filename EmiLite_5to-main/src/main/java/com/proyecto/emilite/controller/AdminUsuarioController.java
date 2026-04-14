@@ -108,6 +108,7 @@ public class AdminUsuarioController {
             usuarioForm.setDireccion(usuario.getDireccion());
             usuarioForm.setFechaNacimiento(usuario.getFechaNacimiento());
             usuarioForm.setRolId(usuario.getRol().getId()); 
+            usuarioForm.setDescripcion(usuario.getDescripcion());
 
             model.addAttribute("usuarioForm", usuarioForm);
             model.addAttribute("usuarioId", id);
@@ -146,6 +147,7 @@ public class AdminUsuarioController {
             usuarioExistente.setTelefono(usuarioForm.getTelefono());
             usuarioExistente.setDireccion(usuarioForm.getDireccion());
             usuarioExistente.setFechaNacimiento(usuarioForm.getFechaNacimiento());
+            usuarioExistente.setDescripcion(usuarioForm.getDescripcion());
 
             // Actualizar rol
                 Rol rol = rolService.findByIdOrThrow(usuarioForm.getRolId());

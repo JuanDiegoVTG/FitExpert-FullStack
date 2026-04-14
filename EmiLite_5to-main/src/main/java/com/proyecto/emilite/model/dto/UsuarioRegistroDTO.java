@@ -35,6 +35,7 @@ public class UsuarioRegistroDTO {
     private String direccion; 
 
     private LocalDate fechaNacimiento; 
+    private String descripcion;
 
     @NotNull(message = "El rol es obligatorio")
     private Long rolId; 
