@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service;
 import com.proyecto.emilite.model.Pago;
 import com.proyecto.emilite.model.Servicio;
 import com.proyecto.emilite.model.Usuario;
+import com.proyecto.emilite.model.Notificacion; // <-- NUEVA IMPORTACIÓN
 import com.proyecto.emilite.model.dto.PagoFormDTO;
 import com.proyecto.emilite.repository.PagoRepository;
 import com.proyecto.emilite.repository.ServicioRepository;
-import com.proyecto.emilite.repository.UsuarioRepository; 
+import com.proyecto.emilite.repository.UsuarioRepository;
+import com.proyecto.emilite.repository.NotificacionRepository; // <-- NUEVA IMPORTACIÓN
 
 @Service
 public class PagoService {
@@ -24,6 +26,9 @@ public class PagoService {
 
     @Autowired
     private ServicioRepository servicioRepository; 
+    
+    @Autowired
+    private NotificacionRepository notificacionRepository; // <-- NUEVA INYECCIÓN
     
     // --- MÉTODOS CRUD BÁSICOS ---
 
@@ -86,6 +91,29 @@ public class PagoService {
         pagoRepository.findByReferenciaPago(referencia).ifPresent(pago -> {
             pago.setEstado(estado);
             pagoRepository.save(pago);
+
+            // --- INICIO NUEVA LÓGICA DE NOTIFICACIÓN ---
+            // Si el estado que llega es COMPLETADO o approved, disparamos la campana
+            if ("COMPLETADO".equalsIgnoreCase(estado) || "approved".equalsIgnoreCase(estado)) {
+                
+                Usuario cliente = pago.getUsuario();
+                
+                // Verificamos si el cliente tiene un entrenador asignado
+                if (cliente != null && cliente.getEntrenador() != null) {
+                    Notificacion nuevaNoti = new Notificacion();
+                    nuevaNoti.setUsuario(cliente.getEntrenador()); // El entrenador que recibe
+                    nuevaNoti.setRemitente(cliente);               // El cliente que contrata/paga
+                    
+                    // Si el servicio no es nulo, lo mencionamos, si no, un mensaje genérico
+                    String nombreServicio = (pago.getServicio() != null) ? pago.getServicio().getNombre() : "un servicio";
+                    nuevaNoti.setMensaje("El cliente " + cliente.getNombres() + " ha pagado " + nombreServicio + " contigo.");
+                    
+                    nuevaNoti.setLeida(false);
+
+                    notificacionRepository.save(nuevaNoti);
+                }
+            }
+            // --- FIN NUEVA LÓGICA DE NOTIFICACIÓN ---
         });
     }
 }

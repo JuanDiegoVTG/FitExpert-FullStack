@@ -9,23 +9,75 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header común -->
-        <div class="logo">
-            <i class="fas fa-concierge-bell"></i>
-            <span class="logo-text">Emi-Lite</span>
-        </div>
+        <div class="logo" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+            <div>
+                <i class="fas fa-concierge-bell"></i>
+                <span class="logo-text">Emi-Lite</span>
+            </div>
+            
+            <div id="contenedor-notificaciones" style="display: none; position: relative; cursor: pointer; margin-right: 20px;">
+                <i class="fas fa-bell" id="campana-notificacion" style="font-size: 1.5rem; color: #333;"></i>
+                <span id="contador-notificaciones" style="display: none; position: absolute; top: -8px; right: -12px; background-color: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; font-weight: bold;">
+                    0
+                </span>
+            </div>
+            </div>
 
-        <!-- Aquí se inyecta el contenido específico -->
         <div th:fragment="content">
-            <!-- contenido dinámico -->
-        </div>
+            </div>
 
-        <!-- Footer común -->
         <footer>
             <p style="color: var(--text-light); margin-top: 20px;">
                 © 2026 Emi-Lite. Todos los derechos reservados.
             </p>
         </footer>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Por ahora le ponemos el ID 2 fijo para probar (que es un entrenador en tu BD)
+            // Cuando ya unas todo con el login, esto deberia tomar el ID del usuario en sesión
+            const entrenadorId = 2; 
+
+            // 1. Consultar si hay notificaciones pendientes
+            fetch(`/api/notificaciones/entrenador/${entrenadorId}/pendientes`)
+                .then(response => response.json())
+                .then(data => {
+                    const contenedor = document.getElementById('contenedor-notificaciones');
+                    const contador = document.getElementById('contador-notificaciones');
+
+                    // Mostrar el icono de la campana
+                    contenedor.style.display = 'block'; 
+
+                    if (data.length > 0) {
+                        // Si hay notificaciones, mostramos el número y guardamos el ID
+                        contador.innerText = data.length;
+                        contador.style.display = 'block';
+                        contenedor.dataset.notiId = data[0].id;
+                    }
+                })
+                .catch(error => console.error('Error cargando notificaciones:', error));
+
+            // 2. Apagar la campana al hacer clic
+            document.getElementById('campana-notificacion').addEventListener('click', function(e) {
+                e.preventDefault();
+                const contenedor = document.getElementById('contenedor-notificaciones');
+                const notiId = contenedor.dataset.notiId;
+                
+                if(notiId) {
+                    fetch(`/api/notificaciones/${notiId}/marcar-leida`, { method: 'POST' })
+                    .then(() => {
+                        // Ocultar el contador rojo y lanzar alerta
+                        document.getElementById('contador-notificaciones').style.display = 'none';
+                        contenedor.dataset.notiId = ''; // Limpiar el ID
+                        alert("¡Tienes nuevas solicitudes de clientes!");
+                        // Opcional: Aquí podrías redirigir a una vista de "Mis Clientes"
+                    });
+                } else {
+                    alert("No tienes notificaciones nuevas.");
+                }
+            });
+        });
+    </script>
 </body>
 </html>
