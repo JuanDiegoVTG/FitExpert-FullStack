@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>¡Pago Exitoso! - Fit Expert</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #111a30; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; }
+        .card { background: rgba(20, 47, 130, 0.35); padding: 40px; border-radius: 24px; border: 1px solid rgba(140, 160, 220, 0.15); }
+        .icon { font-size: 4rem; color: #10b981; margin-bottom: 20px; }
+        .btn { display: inline-block; background: #6079C5; color: white; padding: 12px 24px; border-radius: 12px; text-decoration: none; margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <i class="fas fa-check-circle icon"></i>
+        <h1>¡Pago Confirmado!</h1>
+        <p th:text="${mensaje}">Tu suscripción ha sido activada correctamente.</p>
+        <p>Ahora puedes acceder a la <strong>Generación de Rutinas con IA</strong>.</p>
+        <a href="/dashboard" class="btn">Ir al Dashboard</a>
+    </div>
+</body>
+</html>

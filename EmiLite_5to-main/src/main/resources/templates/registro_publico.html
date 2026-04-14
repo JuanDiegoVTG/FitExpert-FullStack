@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registro Pro - FIT EXPERT</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3169B2;
+            --primary-dark: #093E82;
+            --secondary: #0B1F3A;
+            --secondary-light: #122B52;
+            --text: #EAF2FB;
+            --text-muted: #AFC6E9;
+            --card-bg: rgba(18, 43, 82, 0.85);
+            --border: rgba(30, 58, 109, 0.5);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--secondary) url("/images/klipartz3.png") no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            padding: 40px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stepper { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .step-circle {
+            width: 35px; height: 35px;
+            background: var(--secondary-light);
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 0.9rem; z-index: 2; transition: var(--transition);
+        }
+        .step-circle.active { background: var(--primary); border-color: var(--text); box-shadow: 0 0 15px var(--primary); }
+
+        .form-step { display: none; animation: slideIn 0.5s ease; }
+        .form-step.active { display: block; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
+
+        input, select {
+            width: 100%; padding: 14px 14px 14px 45px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border); border-radius: 12px;
+            color: white; font-size: 1rem; transition: var(--transition);
+        }
+
+        /* Estilo específico para el input de fecha (calendario oscuro) */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 10px rgba(49, 105, 178, 0.3); }
+
+        .btn-nav { padding: 14px 25px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: var(--transition); }
+        .btn-next { background: var(--primary); color: white; width: 100%; }
+        .btn-prev { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+        .btn-submit { background: #10b981; color: white; width: 100%; }
+
+        .hidden { display: none; }
+        .login-link { margin-top: 25px; display: block; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header style="margin-bottom: 30px;">
+        <img th:src="@{/images/logofitexpert.jpeg}" style="height:70px; border-radius: 12px; margin-bottom: 15px;" />
+        <h2 style="font-weight: 800; letter-spacing: -1px;">FIT EXPERT</h2>
+    </header>
+
+    <div class="stepper">
+        <div class="step-circle active" id="s1">1</div>
+        <div class="step-circle" id="s2">2</div>
+        <div class="step-circle" id="s3">3</div>
+    </div>
+
+    <form th:action="@{/usuarios/crear-publico}" method="post" th:object="${usuarioForm}" enctype="multipart/form-data">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <div class="form-step active" id="step1">
+            <div class="form-group">
+                <label>Nombre de Usuario</label>
+                <div class="input-wrapper"><i class="fas fa-user"></i><input type="text" th:field="*{userName}" placeholder="Ej: juandiego_fit" required></div>
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <div class="input-wrapper"><i class="fas fa-lock"></i><input type="password" th:field="*{password}" placeholder="••••••••" required></div>
+            </div>
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <div class="input-wrapper"><i class="fas fa-envelope"></i><input type="email" th:field="*{email}" placeholder="correo@ejemplo.com" required></div>
+            </div>
+            <button type="button" class="btn-nav btn-next" onclick="move(1, 2)">Siguiente Paso <i class="fas fa-arrow-right"></i></button>
+        </div>
+
+        <div class="form-step" id="step2">
+            <div class="form-group">
+                <label>Nombres</label>
+                <div class="input-wrapper"><i class="fas fa-id-card"></i><input type="text" th:field="*{nombres}" required></div>
+            </div>
+            <div class="form-group">
+                <label>Apellidos</label>
+                <div class="input-wrapper"><i class="fas fa-id-card"></i><input type="text" th:field="*{apellidos}" required></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Fecha de Nacimiento</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-calendar-alt"></i>
+                    <input type="date" th:field="*{fechaNacimiento}" required>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-nav btn-prev" onclick="move(2, 1)">Atrás</button>
+                <button type="button" class="btn-nav btn-next" onclick="move(2, 3)">Siguiente <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <div class="form-step" id="step3">
+            <div class="form-group">
+                <label>¿Cuál es tu objetivo?</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-bullseye"></i>
+                    <select name="rolId" id="rolSelect" required onchange="checkTrainer()" style="padding-left: 45px;">
+                        <option value="" disabled selected>Selecciona tu rol</option>
+                        <option value="3">Atleta / Cliente</option>
+                        <option value="2">Entrenador</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="trainerUpload" class="form-group hidden" style="border: 1px dashed var(--primary); padding: 15px; border-radius: 12px; background: rgba(49,105,178,0.1);">
+                <label style="color: #ff9f43; font-weight: 700;">Certificación Profesional (PDF)</label>
+                <input type="file" name="archivoCv" id="archivoCv" accept=".pdf">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-nav btn-prev" onclick="move(3, 2)">Atrás</button>
+                <button type="submit" class="btn-nav btn-submit">¡Finalizar Registro! <i class="fas fa-rocket"></i></button>
+            </div>
+        </div>
+    </form>
+
+    <a th:href="@{/login}" class="login-link">¿Ya tienes una cuenta? <b>Inicia sesión</b></a>
+</div>
+
+<script>
+    function move(from, to) {
+        document.getElementById('step' + from).classList.remove('active');
+        document.getElementById('step' + to).classList.add('active');
+        document.getElementById('s' + to).classList.add('active');
+        if (to < from) document.getElementById('s' + from).classList.remove('active');
+    }
+
+    function checkTrainer() {
+        const select = document.getElementById('rolSelect');
+        const box = document.getElementById('trainerUpload');
+        const cvInput = document.getElementById('archivoCv');
+
+        // 🛡️ REGLA: 2 es Entrenador en tu BD (image_43d1be.png)
+        if(select.value === "2") { 
+            box.classList.remove('hidden');
+            cvInput.required = true;
+        } else {
+            box.classList.add('hidden');
+            cvInput.required = false;
+            cvInput.value = ""; // ✨ Limpia el archivo si cambia a Cliente
+        }
+    }
+</script>
+</body>
+</html>

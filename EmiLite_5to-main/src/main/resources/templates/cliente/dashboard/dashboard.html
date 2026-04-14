@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Dashboard Interactivo - Fit Expert</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #111a30;
+            --bg-sidebar: #1e2f62f6;
+            --card-bg: rgba(20, 47, 130, 0.35);
+            --primary: #6079C5;
+            --primary-light: #8CA0DC;
+            --primary-dark: #2444A5;
+            --accent: #8CA0DC;
+            --text-main: #f1f5ff;
+            --text-muted: #a9b4d0;
+            --border-color: rgba(140, 160, 220, 0.15);
+            --primary-glow: rgba(96, 121, 197, 0.45);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg-body); /* Ajustado a bg-body para que se vea el degradado */
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(140,160,220,0.15), transparent 50%),
+                radial-gradient(at 100% 100%, rgba(64,92,176,0.15), transparent 50%);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px; background: var(--bg-sidebar); backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border-color); padding: 2rem 1.5rem;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+        }
+
+        .brand {
+            display: flex; align-items: center; gap: 12px; font-size: 1.5rem;
+            font-weight: 800; color: white; margin-bottom: 3rem; text-decoration: none;
+        }
+
+        .brand i {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; 
+        }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
+            color: var(--text-muted); text-decoration: none; border-radius: 12px;
+            margin-bottom: 0.5rem; transition: var(--transition); font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active { background: rgba(96, 121, 197, 0.15); color: white; }
+
+        /* --- NOTIFICACIONES (JOHAN) --- */
+        .noti-container { position: relative; cursor: pointer; margin-right: 1rem; }
+        .noti-badge {
+            position: absolute; top: -5px; right: -5px; background: #ef4444;
+            color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold;
+        }
+        .noti-dropdown {
+            display: none; position: absolute; right: 0; top: 45px; width: 300px;
+            background: var(--bg-sidebar); border: 1px solid var(--border-color);
+            border-radius: 15px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .noti-container:hover .noti-dropdown { display: block; }
+        .noti-item { padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; transition: 0.2s; }
+        .noti-item:hover { background: rgba(255,255,255,0.05); }
+
+        /* --- MAIN CONTENT --- */
+        .main-content { margin-left: 280px; flex: 1; padding: 2.5rem; }
+
+        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; }
+
+        .user-profile {
+            display: flex; align-items: center; gap: 15px; background: var(--card-bg);
+            padding: 8px 20px 8px 8px; border-radius: 50px; border: 1px solid var(--border-color);
+        }
+
+        .avatar {
+            width: 45px; height: 45px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-weight: bold; box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, rgba(33, 52, 106, 0.816), rgba(60, 95, 198, 0.914));
+            border: 1px solid var(--border-color); border-radius: 24px; padding: 3rem;
+            position: relative; overflow: hidden; margin-bottom: 3rem; backdrop-filter: blur(5px);
+        }
+
+        .hero-content h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+
+        .stats-container {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, rgba(33, 52, 106, 0.95), rgba(36, 68, 165, 0.9));
+            border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 20px;
+            transition: var(--transition); display: flex; flex-direction: column; gap: 1rem; backdrop-filter: blur(6px);
+        }
+
+        .stat-item:hover { transform: translateY(-8px); border-color: var(--primary-light); }
+
+        .btn { padding: 12px 24px; border-radius: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: var(--transition); cursor: pointer; border: none; }
+        .btn-main { background: var(--primary); color: white; box-shadow: 0 4px 14px 0 var(--primary-glow); }
+        .btn-main:hover { filter: brightness(1.1); transform: scale(1.05); }
+        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: white; }
+        .logout-btn { margin-top: auto; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <a href="/dashboard" class="brand"><i class="fas fa-bolt"></i><span>FIT EXPERT</span></a>
+
+        <div class="nav-group">
+            <label style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 1rem; display: block;">Menu Principal</label>
+            <a href="/dashboard" class="nav-link active"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+            <a href="/catalogo" class="nav-link"><i class="fas fa-search"></i><span>Catálogo</span></a>
+            <a href="/cliente/rutinas" class="nav-link"><i class="fas fa-dumbbell"></i><span>Mis Rutinas</span></a>
+        </div>
+
+        <form th:action="@{/logout}" method="post" style="margin-top: auto;">
+            <button type="submit" class="btn logout-btn" style="width: 100%; justify-content: center;">
+                <i class="fas fa-power-off"></i><span>Cerrar Sesión</span>
+            </button>
+        </form>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="top-header">
+            <div>
+                <h2>Panel de Control</h2>
+                <p style="color: var(--text-muted);">¡Bienvenido de nuevo a tu entrenamiento!</p>
+            </div>
+
+            <div style="display: flex; align-items: center;">
+                <div class="noti-container">
+                    <i class="fas fa-bell fs-4" style="color: var(--primary-light);"></i>
+                    <span th:if="${totalNotificaciones > 0}" class="noti-badge" th:text="${totalNotificaciones}">0</span>
+                    
+                    <div class="noti-dropdown">
+                        <div style="padding: 15px; border-bottom: 1px solid var(--border-color); font-weight: bold; color: var(--primary-light);">Avisos Recientes</div>
+                        <div th:if="${#lists.isEmpty(notificaciones)}" style="padding: 20px; text-align: center; color: var(--text-muted);">Sin mensajes nuevos</div>
+                        <div th:each="n : ${notificaciones}" class="noti-item">
+                            <p style="margin-bottom: 5px;" th:text="${n.mensaje}">Mensaje...</p>
+                            <small style="color: var(--accent);" th:text="${#temporals.format(n.fechaCreacion, 'dd/MM HH:mm')}"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-profile">
+                    <div class="avatar">
+                        <span th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">U</span>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.9rem;" sec:authentication="principal.username">Usuario</div>
+                        <div th:if="${tieneContrato}" style="color: #10b981; font-size: 0.75rem; font-weight: 700;">• MIEMBRO PRO</div>
+                        <div th:unless="${tieneContrato}" style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700;">• ESTÁNDAR</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="hero-card">
+            <div class="hero-content">
+                <h1>Hola, <span sec:authentication="principal.username" style="color: white; text-shadow: 0 0 10px var(--primary-glow);">Atleta</span>! 👋</h1>
+                <p>Tu progreso no se detiene. Hoy es un excelente día para superar tus marcas personales.</p>
+                
+                <div style="display: flex; gap: 15px; margin-top: 1.5rem;">
+                    <a href="/cliente/rutinas" class="btn btn-main">
+                        <i class="fas fa-play"></i> Mis Rutinas
+                    </a>
+                    <a th:if="${tieneContrato}" href="/cliente/preparar-rutina" class="btn btn-outline" style="background: rgba(255,255,255,0.1);">
+                        <i class="fas fa-magic"></i> Generar con IA
+                    </a>
+                    <a th:unless="${tieneContrato}" href="/catalogo" class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary-light);">
+                        <i class="fas fa-lock"></i> Desbloquear IA
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-container">
+            <div class="stat-item">
+                <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(96,121,197,0.2); color: var(--primary);">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Estado Suscripción</h4>
+                    <div class="value" th:text="${tieneContrato ? 'Activa' : 'Pendiente'}" style="font-size: 1.2rem;">-</div>
+                </div>
+            </div>
+
+            <div class="stat-item">
+                <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(16, 185, 129, 0.2); color: #10b981;">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Mensajes Nuevos</h4>
+                    <div class="value" th:text="${totalNotificaciones}">0</div>
+                </div>
+            </div>
+
+            <div class="stat-item">
+                <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Rango</h4>
+                    <div class="value" th:style="${tieneContrato} ? 'color: #10b981' : 'color: var(--text-muted)'" th:text="${tieneContrato ? 'PRO' : 'BÁSICO'}">BÁSICO</div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

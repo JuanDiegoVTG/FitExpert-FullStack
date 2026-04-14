@@ -1,0 +1,381 @@
+/* =========================
+   VARIABLES GLOBALES
+========================= */
+:root {
+    --bg-body: #111a30;
+    --bg-sidebar: #1e2f62f6;
+    --card-bg: rgba(20, 47, 130, 0.35);
+
+    --primary: #6079C5;
+    --primary-light: #8CA0DC;
+    --primary-dark: #2444A5;
+
+    --accent: #8CA0DC;
+
+    --text-main: #f1f5ff;
+    --text-muted: #a9b4d0;
+
+    --border-color: rgba(140, 160, 220, 0.15);
+    --primary-glow: rgba(96, 121, 197, 0.45);
+
+    --danger: #ef4444;
+    --warning: #fcf230c1;
+    --success: #10b981;
+
+    --radius: 16px;
+    --transition: all 0.3s ease;
+}
+
+/* =========================
+   RESET
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-body);
+    color: var(--text-main);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.sidebar {
+    width: 260px;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    padding: 2rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 2.5rem;
+    text-decoration: none;
+}
+
+.brand i {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* NAV */
+.nav-group {
+    margin-bottom: 1.5rem;
+}
+
+.nav-group label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    display: block;
+    text-transform: uppercase;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.75rem 0.9rem;
+    border-radius: 10px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: rgba(96, 121, 197, 0.15);
+    color: white;
+    transform: translateX(4px);
+}
+
+/* =========================
+   MAIN
+========================= */
+.main-content {
+    margin-left: 260px;
+    padding: 2rem;
+    width: 100%;
+}
+
+/* =========================
+   HEADER
+========================= */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+/* =========================
+   COMPONENTES GENERALES
+========================= */
+.card {
+    background: linear-gradient(
+        135deg,
+        rgb(33, 52, 106),
+        rgba(60, 94, 198, 0.936)
+    );
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+}
+
+/*CONTAINERS*/
+
+.container {
+            background: linear-gradient(
+                    135deg,
+                rgb(33, 52, 106),
+                rgba(60, 94, 198, 0.936)
+            );
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+}
+
+
+
+/* =========================
+   BOTONES
+========================= */
+.btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.btn-outline {
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: white;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: black;
+}
+
+
+/*a, p, h1, h2, h3 */
+
+html, body, h1, h2, h3, h4, h5, h6, p, label, input, select, button, .logo-text, .section-titulo {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    
+}
+
+
+
+
+
+/* =========================
+   FORMULARIOS / FILTROS
+========================= */
+.filters {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.filter-group select option {
+    background-color:  #111a30d0 ; /* Fondo de cada opción */
+    color: var(--text);                       /* Texto de las opciones */
+}
+
+.form-group select option {
+    background-color:  #111a30d0 ; /* Fondo de cada opción */
+    color: var(--text);                       /* Texto de las opciones */
+}
+
+
+.input,
+.select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: rgba(255,255,255,0.05);
+    color: white;
+    min-width: 180px;
+}
+
+.input:focus,
+.select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* =========================
+   TABLAS
+========================= */
+.table-container {
+    margin-top: 1.5rem;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table tr:hover {
+    background: rgba(255,255,255,0.03);
+}
+
+/* =========================
+   BADGES
+========================= */
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.badge-success {
+    background: rgba(16,185,129,0.2);
+    color: var(--success);
+}
+
+.badge-danger {
+    background: rgba(239,68,68,0.2);
+    color: var(--danger);
+}
+
+/* =========================
+   ACTION BUTTONS TABLE
+========================= */
+.actions {
+    display: flex;
+    gap: 6px;
+}
+
+
+/*LOGO*/
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo i {
+    font-size: 3.5rem;
+    color: white;
+}
+
+.logo-text {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 1px;
+    margin-top: 10px;
+    display: block;
+}
+
+
+
+/*BUTTON*/
+
+button.logout-link {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0 10px;
+    font: inherit;
+    cursor: pointer;
+    color: #931c1c;
+    text-decoration: underline;
+}
+
+button.logout-link:hover {
+    color: #931c1c;
+    text-decoration: none;
+}
+
+.logout-link {
+    color: #dc3545; /* Rojo para logout */
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.logout-link:hover {
+    color: #a71e2a;
+}
+
+.back-link {
+    display: inline-block;
+    padding: 12px 25px;
+    background: var(--gradient-primary); /* Botón con gradiente morado */
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(62, 0, 123, 0.3);
+}
+
+.back-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(62, 0, 123, 0.4);
+}

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Lista de Usuarios - Fit Expert</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/estilo_admin.css}">
+    <style>
+        :root {
+            --primary: #3169B2;
+            --accent: #00D4FF;
+            --bg-dark: #0b1f3a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background: url("/images/klipartz2.png"), #060e1a; /* Fondo coherente */
+            background-size: cover;
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 1200px;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* HEADER */
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .logo-box { display: flex; align-items: center; gap: 15px; }
+        .logo-box img { height: 70px; border-radius: 12px; border: 1px solid var(--primary); }
+        .logo-box h2 { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
+
+        /* FILTROS MEJORADOS */
+        .filters-form {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-light);
+        }
+        .filters-row {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 200px;
+        }
+        .filter-group label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .filter-group select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-light);
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .filter-group select:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
+
+        .btn-filter {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-filter:hover { background: var(--accent); color: var(--bg-dark); transform: translateY(-2px); }
+
+        /* TABLA PREMIUM */
+        .table-responsive {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.02);
+        }
+        th {
+            background: rgba(49, 105, 178, 0.2);
+            padding: 20px;
+            text-align: left;
+            font-size: 0.85rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        td {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.95rem;
+            color: #e2e8f0;
+        }
+
+        /* CORRECCIÓN HOVER: No más blanco */
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05); /* Gris traslúcido elegante */
+            transition: 0.2s;
+        }
+
+        /* BADGES */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .badge-admin { background: rgba(0, 212, 255, 0.1); color: #00D4FF; border: 1px solid #00D4FF; }
+        .badge-coach { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border: 1px solid #fbbf24; }
+        .badge-client { background: rgba(167, 139, 250, 0.1); color: #a78bfa; border: 1px solid #a78bfa; }
+        .badge-active { color: #10b981; font-weight: bold; }
+        .badge-inactive { color: #ef4444; font-weight: bold; }
+
+        /* ACCIONES */
+        .btn-actions {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        .btn-edit { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .btn-approve { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .btn-delete { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .btn-actions:hover { transform: scale(1.1); filter: brightness(1.2); }
+
+        .logout-btn {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .logout-btn:hover { background: #ef4444; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header-top">
+            <div class="logo-box">
+                <img th:src="@{/images/logofitexpert.jpeg}" alt="Fit Expert Logo">
+                <h2>Panel de Usuarios</h2>
+            </div>
+            <a th:href="@{/dashboard}" class="btn-filter" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-light);">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </a>
+        </header>
+
+        <form class="filters-form" th:action="@{/admin/usuarios}" method="get">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label><i class="fas fa-user-tag"></i> Filtrar por Rol</label>
+                    <select name="rolNombre">
+                        <option value="">Cualquier Rol</option>
+                        <option th:each="rol : ${roles}" 
+                                th:value="${rol.nombre}" 
+                                th:text="${rol.nombre}" 
+                                th:selected="${rol.nombre == filtroRol}"></option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-toggle-on"></i> Estado de Cuenta</label>
+                    <select name="activoStr">
+                        <option value="">Cualquier Estado</option>
+                        <option value="true" th:selected="${filtroActivo == 'true'}">Activos</option>
+                        <option value="false" th:selected="${filtroActivo == 'false'}">Inactivos</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-filter">
+                    <i class="fas fa-search"></i> Aplicar Filtros
+                </button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Nombre Completo</th>
+                        <th>Correo Electrónico</th>
+                        <th>Rol / Nivel</th>
+                        <th>Estado</th>
+                        <th style="text-align: center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="usuario : ${usuarios}">
+                        <td th:text="${usuario.userName}" style="font-weight: 800; color: var(--accent);"></td>
+                        <td th:text="${usuario.nombres + ' ' + usuario.apellidos}"></td>
+                        <td th:text="${usuario.email}" style="color: var(--text-muted);"></td>
+                        <td>
+                            <span th:classappend="${usuario.rol.nombre == 'ADMIN' ? 'badge-admin' : (usuario.rol.nombre == 'ENTRENADOR' ? 'badge-coach' : 'badge-client')}" 
+                                  class="badge" th:text="${usuario.rol.nombre}"></span>
+                        </td>
+                        <td>
+                            <span th:class="${usuario.activo ? 'badge-active' : 'badge-inactive'}" 
+                                  th:text="${usuario.activo ? '● Activo' : '○ Inactivo'}"></span>
+                        </td>
+                        <td style="text-align: center;">
+                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                <a th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" class="btn-actions btn-edit" title="Editar Perfil">
+                                    <i class="fas fa-pen-nib"></i>
+                                </a>
+
+                                <a th:if="${usuario.rol.nombre == 'ENTRENADOR' and usuario.validado != true}" 
+                                   th:href="@{/admin/usuarios/aprobar/{id}(id=${usuario.id})}" 
+                                   class="btn-actions btn-approve" title="Verificar Entrenador">
+                                    <i class="fas fa-user-check"></i>
+                                </a>
+
+                                <form th:action="@{/admin/usuarios/{id}/eliminar(id=${usuario.id})}" method="post" onsubmit="return confirm('¿Eliminar usuario de la base de datos?');" style="display:inline;">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn-actions btn-delete" title="Borrar">
+                                        <i class="fas fa-user-minus"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 40px; display: flex; justify-content: flex-end;">
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="logout-btn"><i class="fas fa-power-off"></i> Finalizar Sesión</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

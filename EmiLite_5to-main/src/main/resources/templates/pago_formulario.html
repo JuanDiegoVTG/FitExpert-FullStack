@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title th:if="${pagoId}">Editar Pago - Emi-Lite</title>
+    <title th:unless="${pagoId}">Registrar Nuevo Pago - Emi-Lite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ... TUS MISMOS ESTILOS CSS AQUÍ (se mantienen intactos) ... */
+        :root { --primary: #3e007b; --primary-dark: #340061; --secondary: #0F0F1E; --card-bg: #1E1E2E; --text: #E0E0E0; --text-light: #A0A0A0; --border: #2D2D3D; --success: #28A745; --error: #FF4757; --shadow: 0 8px 25px rgba(0, 0, 0, 0.3); --transition: all 0.3s ease; --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #5a00a8 100%); --gradient-dark: linear-gradient(135deg, #0F0F1E 0%, #1A1A2E 100%); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--gradient-dark); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { background-color: var(--card-bg); padding: 40px 35px; border-radius: 12px; box-shadow: var(--shadow); width: 100%; max-width: 500px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .logo { margin-bottom: 30px; }
+        .logo i { font-size: 3.5rem; color: white; }
+        .logo-text { font-size: 2.2rem; font-weight: 800; color: white; letter-spacing: 1px; margin-top: 10px; display: block; }
+        h2 { font-size: 1.8rem; margin-bottom: 30px; color: var(--text); font-weight: 600; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-light); font-size: 1rem; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 14px 16px; background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 1rem; transition: var(--transition); }
+        input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(62, 0, 123, 0.2); }
+        .btn-submit { width: 100%; padding: 16px; background: var(--gradient-primary); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 10px; }
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(62, 0, 123, 0.4); }
+        .btn-submit:active { transform: translateY(-1px); }
+        .error { color: var(--error); font-size: 0.9rem; margin-top: 5px; text-align: left; }
+        .back-link { display: inline-block; margin-top: 25px; color: var(--primary); text-decoration: none; font-weight: 600; transition: var(--transition); font-size: 0.95rem; }
+        .back-link:hover { text-decoration: underline; color: #5a00a8; }
+        .logout-link { color: #dc3545; text-decoration: none; margin: 0 10px; }
+        .logout-link:hover { color: #a71e2a; }
+        button.logout-link { background: none; border: none; padding: 0; margin: 0 10px; font: inherit; cursor: pointer; color: #dc3545; text-decoration: underline; }
+        button.logout-link:hover { color: #a71e2a; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-credit-card"></i>
+            <span class="logo-text">FitExpert Pro</span>
+        </div>
+
+        <h2 th:if="${pagoId}">Editar Pago</h2>
+        <h2 th:unless="${pagoId}">Registrar Nuevo Pago</h2>
+
+        <form id="pagoMainForm">
+            <div class="form-group">
+                <label for="usuarioId">Cliente:</label>
+                <select id="usuarioId" required>
+                    <option value="">Seleccione un cliente</option>
+                    <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.userName}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="monto">Monto (COP):</label>
+                <input type="number" id="monto" step="0.01" placeholder="Ej: 50000.00" required min="0.01">
+            </div>
+
+            <button type="button" class="btn-submit" onclick="pagar()">
+                Pagar Ahora
+            </button>
+        </form>
+
+        <a href="/pagos" class="back-link">Volver a la Lista</a>
+    </div>
+
+    <script src="https://checkout.wompi.co/widget.js"></script>
+
+    <script>
+    function pagar() {
+        const monto = document.getElementById("monto").value;
+        const usuario = document.getElementById("usuarioId").value;
+
+        if (!monto || !usuario) {
+            alert("Completa los campos obligatorios");
+            return;
+        }
+
+        // Recuperar tokens de Spring Security
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+        const referencia = "EMI-" + Date.now();
+        
+        // 1. Guardar primero en el Backend como PENDIENTE
+        fetch("/pagos/crear", {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                [csrfHeader]: csrfToken // Pasamos el token de seguridad
+            },
+            body: JSON.stringify({
+                usuarioId: usuario,
+                monto: monto,
+                referencia: referencia,
+                estado: "PENDIENTE"
+            })
+        }).then(response => {
+            if(response.ok) {
+                // 2. Si se guardó, abrimos la pasarela de Wompi
+                var checkout = new WidgetCheckout({
+                    currency: 'COP',
+                    amountInCents: monto * 100, // Wompi requiere centavos
+                    reference: referencia,
+                    publicKey: 'pub_test_TU_LLAVE_PUBLICA_AQUI', // Reemplaza con tu llave de pruebas
+                    redirectUrl: 'http://localhost:8080/pagos/respuesta'
+                });
+                
+                checkout.open(function (result) {
+                    console.log("Transacción terminada en widget", result);
+                });
+            } else {
+                alert("Error al registrar el pago preliminar en el servidor.");
+            }
+        }).catch(err => console.error(err));
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title th:if="${rutinaId}">Editar Rutina - Fit Expert</title>
+    <title th:unless="${rutinaId}">Crear Nueva Rutina - Fit Expert</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/estilo.css}">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            /* Restauramos tu fondo original */
+            background: url("/images/klipartz2.png"), #0b1f3a;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            background-color: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px 35px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #00D4FF;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            margin-bottom: 30px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #afc6e9;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        /* 🚀 FIX CRÍTICO: Visibilidad de las opciones en el select */
+        select option {
+            background-color: #1e2f62 !important; /* Fondo sólido oscuro */
+            color: white !important; /* Texto blanco */
+            padding: 10px;
+        }
+
+        textarea { resize: vertical; min-height: 100px; }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #00D4FF;
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3169B2, #1e3a6d);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .error { color: #ff4d4d; font-size: 0.85rem; margin-top: 5px; font-weight: 600; }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #afc6e9;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .back-link:hover { color: #00D4FF; transform: translateX(-5px); }
+
+        .logout-link {
+            color: #ff4d4d;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 15px;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <span class="logo-text">Fit Expert Entrenador</span>
+        </div>
+
+        <h2 th:text="${rutinaId} ? 'Editar Rutina' : 'Crear Nueva Rutina'"></h2>
+
+        <div th:if="${error}" style="background: rgba(255,77,77,0.1); border: 1px solid #ff4d4d; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+            <i class="fas fa-exclamation-circle" style="color: #ff4d4d;"></i> 
+            <span th:text="${error}" style="color: #ff4d4d; font-size: 0.9rem;"></span>
+        </div>
+
+        <form th:action="${rutinaId} ? @{/entrenador/rutinas/{id}(id=${rutinaId})} : @{/entrenador/rutinas}" th:object="${rutinaForm}" method="post">
+            
+            <div class="form-group">
+                <label for="nombre">Nombre de la Rutina:</label>
+                <input type="text" id="nombre" th:field="*{nombre}" placeholder="Ej: Hipertrofia Nivel 1" required>
+                <div class="error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción / Ejercicios:</label>
+                <textarea id="descripcion" th:field="*{descripcion}" placeholder="Detalla los ejercicios, series y repeticiones..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="tipo">Tipo de Entrenamiento:</label>
+                <select id="tipo" th:field="*{tipo}">
+                    <option value="">Seleccione un tipo</option>
+                    <option value="Cardio">Cardio</option>
+                    <option value="Fuerza">Fuerza</option>
+                    <option value="Flexibilidad">Flexibilidad</option>
+                    <option value="IA Generada">IA Generada</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="nivelDificultad">Nivel de Dificultad:</label>
+                <select id="nivelDificultad" th:field="*{nivelDificultad}">
+                    <option value="">Seleccione un nivel</option>
+                    <option value="Principiante">Principiante</option>
+                    <option value="Intermedio">Intermedio</option>
+                    <option value="Avanzado">Avanzado</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="duracionSemanas">Duración (Semanas):</label>
+                <input type="number" id="duracionSemanas" th:field="*{duracionSemanas}" min="1" placeholder="Ej: 4">
+            </div>
+
+            <div class="form-group">
+                <label for="clienteId">Asignar a Cliente:</label>
+                <select id="clienteId" th:field="*{clienteId}" required>
+                    <option value="">Seleccione un cliente</option>
+                    <option th:each="cliente : ${clientes}" 
+                            th:value="${cliente.id}" 
+                            th:text="${cliente.nombres + ' ' + cliente.apellidos}" 
+                            th:selected="${cliente.id == rutinaForm.clienteId}"></option>
+                </select>
+                <div class="error" th:if="${#fields.hasErrors('clienteId')}" th:errors="*{clienteId}"></div>
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="activa" th:field="*{activa}" style="width: 20px; height: 20px; cursor: pointer;">
+                <label for="activa" style="margin-bottom: 0; cursor: pointer;"> Rutina Activa</label>
+            </div>
+
+            <button type="submit" class="btn-submit" th:text="${rutinaId} ? 'Actualizar Rutina' : 'Guardar Rutina'"></button>
+        </form>
+
+        <div style="margin-top: 20px;">
+            <a th:href="@{/entrenador/rutinas}" class="back-link">
+                <i class="fas fa-chevron-left"></i> Volver a la Lista
+            </a>
+
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="logout-link">Cerrar sesión</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title th:if="${usuarioId}">Editar Usuario - Fit Expert</title>
+    <title th:unless="${usuarioId}">Crear Nuevo Usuario</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/estilo_admin.css}">
+
+    <style>
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+
+        .container {
+            width: 100%;
+            max-width: 950px;
+            background: linear-gradient(
+                    135deg,
+                rgb(29, 50, 108),
+                rgb(60, 94, 198)
+            );
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .section {
+            background: var(--bg-sidebar); 
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-titulo {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #8CA0DC;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+    
+        label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.04);
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-glow);
+            outline: none;
+        }
+
+        
+
+        .error {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .btn-submit {
+            margin-top: 25px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background:  var(--bg-sidebar);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px var(--primary-glow);
+        }
+
+        .footer-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .footer-links form{
+            margin-top: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .footer-links a:hover, .footer-links button:hover {
+            text-decoration: underline;
+
+        }
+
+        .logout-link {
+            margin-top: 20px;
+            color: #dc3545; /* Rojo para logout */
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .logout-link:hover {
+            color: #a71e2a;
+        }        
+
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="logo">
+            <img th:src="@{/images/logofitexpert.jpeg}" alt="Emi-Lite" style="height:110px; width:120px; display:inline-block; vertical-align:middle;" />
+             <!-- Icono representativo para usuarios -->
+            <span class="logo-text"></span>
+    </div>
+
+    <h2 th:if="${usuarioId}">Editar Usuario</h2>
+    <h2 th:unless="${usuarioId}">Crear Usuario</h2>
+
+    <form th:action="${usuarioId} ? @{/admin/usuarios/{id}(id=${usuarioId})} : @{/admin/usuarios}" th:object="${usuarioForm}" method="post">
+
+        <div class="form-grid">
+
+            <!-- CUENTA -->
+            <div class="section">
+                <div class="section-titulo">Datos de Cuenta</div>
+
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <input type="text" th:field="*{userName}" placeholder="Nombre de usuario" required>
+                    <div class="error" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" th:field="*{password}" placeholder="Nueva contraseña">
+                    <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" th:field="*{email}" placeholder="correo@email.com">
+                    <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Rol</label>
+                    <select th:field="*{rolId}" required>
+                        <option value="">Seleccione un rol</option>
+                        <option th:each="rol : ${roles}" th:value="${rol.id}" th:text="${rol.nombre}"></option>
+                    </select>
+                    <div class="error" th:if="${#fields.hasErrors('rolId')}" th:errors="*{rolId}"></div>
+                </div>
+            </div>
+
+            <!-- PERSONAL -->
+            <div class="section">
+                <div class="section-titulo">Información Personal</div>
+
+                <div class="form-group">
+                    <label>Nombres</label>
+                    <input type="text" th:field="*{nombres}" required>
+                    <div class="error" th:if="${#fields.hasErrors('nombres')}" th:errors="*{nombres}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Apellidos</label>
+                    <input type="text" th:field="*{apellidos}" required>
+                    <div class="error" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" th:field="*{telefono}">
+                </div>
+
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" th:field="*{direccion}">
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha de Nacimiento</label>
+                    <input type="date" th:field="*{fechaNacimiento}">
+                </div>
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn-submit" th:text="${usuarioId} ? 'Actualizar Usuario' : 'Crear Usuario'"></button>
+    </form>
+
+    <div class="footer-links">
+        <a href="/admin/usuarios" class="back-link">Volver al Panel</a>
+
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="logout-link">Cerrar sesión</button>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

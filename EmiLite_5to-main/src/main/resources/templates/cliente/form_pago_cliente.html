@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Realizar Pago</title>
+    <meta charset="UTF-8">
+    <style>
+        /* Tus estilos aquí */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745; /* Verde para éxito */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .logout-link {
+            color: #dc3545; /* Rojo para logout */
+            text-decoration: none; /* Asegura que no herede subrayado de 'a' */
+            margin: 0 10px; /* Espacio similar al enlace */
+        }
+        .logout-link:hover {
+            color: #a71e2a;
+        }
+        button.logout-link {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0 10px; /* Espacio similar al enlace */
+            font: inherit;
+            cursor: pointer;
+            color: #dc3545;
+            text-decoration: underline; /* Simula el estilo de un enlace */
+        }
+        button.logout-link:hover {
+            color: #a71e2a;
+            text-decoration: none; /* Opcional: quitar subrayado al hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Realizar Pago por Servicio</h2>
+        <p><strong>Servicio:</strong> <span th:text="${servicio.nombre}"></span></p>
+        <p><strong>Descripción:</strong> <span th:text="${servicio.descripcion}"></span></p>
+        <p><strong>Precio:</strong> <span th:text="${#numbers.formatCurrency(servicio.precio, 'COP')}"></span></p>
+        <!-- Aquí puedes agregar un select para elegir promoción (si aplica y es válida) -->
+        <!-- O un campo para ingresar código de promoción -->
+        <form th:action="@{/cliente/pagar/servicio/{id}(id=${servicio.id})}" method="post">
+            <!-- Opcional: Campo para código de promoción -->
+            <!-- <label for="codigoPromocion">Código de Promoción (Opcional):</label>
+            <input type="text" id="codigoPromocion" name="codigoPromocion"> -->
+
+            <label for="metodoPago">Método de Pago:</label>
+            <select id="metodoPago" name="metodoPago" required>
+                <option value="">Seleccione un método</option>
+                <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+                <option value="PSE">PSE</option>
+                <option value="Efecty">Efecty</option>
+                <!-- Agrega más métodos según necesites -->
+            </select>
+
+            <!-- Campo oculto para el monto (o pásalo en el controlador) -->
+            <input type="hidden" name="monto" th:value="${monto}" />
+
+            <button type="submit">Iniciar Pago</button>
+        </form>
+
+        <a href="/cliente/pagos" class="back-link">Volver a Mis Pagos</a>
+
+        <!-- Formulario para cerrar sesión -->
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <button type="submit" class="logout-link">Cerrar sesión</button>
+        </form>
+    </div>
+</body>
+</html>
