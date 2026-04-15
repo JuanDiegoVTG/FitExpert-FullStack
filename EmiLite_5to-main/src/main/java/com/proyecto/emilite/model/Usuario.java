@@ -92,4 +92,6 @@ public class Usuario {
 
     private Double cvScore;
 
+    private Boolean esPremuim;
+
 }

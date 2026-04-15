@@ -1,6 +1,7 @@
 package com.proyecto.emilite.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,17 +26,14 @@ public class UsuarioService {
     @Autowired
     private RolRepository rolRepository;
 
-    // --- 1. REGISTRO Y CREACIÓN ---
+    // --- 1. GESTIÓN Y REGISTRO ---
+
     @Transactional
     public void registrar(UsuarioRegistroDTO dto) {
         if (usuarioRepository.existsByUserName(dto.getUserName())) {
             throw new RuntimeException("El nombre de usuario ya existe.");
         }
         
-        if (dto.getFechaNacimiento() == null) {
-            throw new RuntimeException("La fecha de nacimiento es obligatoria.");
-        }
-
         Usuario usuario = new Usuario();
         usuario.setUserName(dto.getUserName());
         usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -45,16 +43,10 @@ public class UsuarioService {
         usuario.setFechaNacimiento(dto.getFechaNacimiento());
         usuario.setActivo(true);
         usuario.setEnabled(true);
+        usuario.setEsPremuim(false);
 
-        // 🛡️ LÓGICA DE APROBACIÓN SEGÚN TU BD (image_43d1be.png)
-        // ID 2 = ENTRENADOR | ID 3 = CLIENTE
         Long idRol = (dto.getRolId() != null) ? dto.getRolId() : 3L; 
-        
-        if (idRol == 2) { 
-            usuario.setValidado(false); // Entrenador espera aprobación
-        } else {
-            usuario.setValidado(true);  // Clientes entran directo
-        }
+        usuario.setValidado(idRol != 2); 
 
         Rol rol = rolRepository.findById(idRol)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
@@ -62,42 +54,23 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    // Requerido por AdminUsuarioController
     public void crearUsuarioDesdeDTO(UsuarioRegistroDTO dto) {
         registrar(dto);
     }
 
-    // --- 2. BÚSQUEDAS (Limpia los errores de image_434ed9.png) ---
+    // --- 2. BÚSQUEDAS Y FILTROS (Corrige ReporteController y Admin) ---
 
     public List<Usuario> findAll() {
         return usuarioRepository.findAll();
     }
 
+    // Requerido por DashboardController
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
     }
 
-    public Usuario findByUserName(String username) {
-        return usuarioRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
-    }
-
-    public Usuario findById(Long id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ID no encontrado: " + id));
-    }
-
-    public Usuario findByIdOrThrow(Long id) {
-        return findById(id);
-    }
-
-    public List<Usuario> findByRolNombre(String rolNombre) {
-        return usuarioRepository.findByRolNombre(rolNombre);
-    }
-
-    public List<Usuario> findByEntrenadorId(Long entrenadorId) {
-        return usuarioRepository.findByEntrenadorId(entrenadorId);
-    }
-
+    // 🔥 EL QUE TE FALTABA: Requerido por ReporteController y Admin
     public List<Usuario> findByFilters(String rolNombre, Boolean activo) {
         if (rolNombre == null && activo == null) return findAll();
         if (rolNombre != null && activo != null) return usuarioRepository.findByRolNombreAndActivo(rolNombre, activo);
@@ -105,15 +78,44 @@ public class UsuarioService {
         return usuarioRepository.findByActivo(activo);
     }
 
-    // --- 3. GESTIÓN (Requerido por Admin y Cliente Controllers) ---
-
-    public Usuario save(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public Usuario findById(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ID no encontrado: " + id));
     }
 
-    public void deleteById(Long id) {
-        usuarioRepository.deleteById(id);
+    // Requerido por EntrenadorController
+    public Usuario findByIdOrThrow(Long id) {
+        return findById(id);
     }
+
+    public Usuario findByUserName(String username) {
+        return usuarioRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
+    }
+
+    // Requerido por EntrenadorController
+    public List<Usuario> findByEntrenadorId(Long entrenadorId) {
+        return usuarioRepository.findByEntrenadorId(entrenadorId);
+    }
+
+    // --- 3. LÓGICA DEL CATÁLOGO ---
+
+    public List<Usuario> findByRolNombre(String rolNombre) {
+        return usuarioRepository.findByRolNombre(rolNombre);
+    }
+
+    public List<Usuario> buscarPorNombreOEspecialidad(String keyword) {
+        return usuarioRepository.findByNombresContainingIgnoreCaseOrDescripcionContainingIgnoreCase(keyword, keyword)
+                .stream()
+                .filter(u -> u.getRol().getNombre().equals("ENTRENADOR"))
+                .collect(Collectors.toList());
+    }
+
+    public List<Usuario> buscarPorCalificacion(Integer calificacion) {
+        return findByRolNombre("ENTRENADOR"); 
+    }
+
+    // --- 4. VALIDACIONES (Corrige UsuarioController) ---
 
     public boolean existsByUserName(String username) {
         return usuarioRepository.existsByUserName(username);
@@ -121,5 +123,13 @@ public class UsuarioService {
 
     public boolean existsByEmail(String email) {
         return usuarioRepository.existsByEmail(email);
+    }
+
+    public Usuario save(Usuario usuario) {
+        return usuarioRepository.save(usuario);
+    }
+
+    public void deleteById(Long id) {
+        usuarioRepository.deleteById(id);
     }
 }
