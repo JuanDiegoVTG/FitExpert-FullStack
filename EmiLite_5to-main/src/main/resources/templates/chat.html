@@ -1,0 +1,34 @@
+<div id="chat"></div>
+
+<input type="text" id="messageInput" />
+<button onclick="sendMessage()">Enviar</button>
+
+<script>
+async function loadMessages() {
+  const res = await fetch("http://localhost:5000/messages/1");
+  const data = await res.json();
+   console.log(data);
+
+
+  document.getElementById("chat").innerHTML =
+    data.map(m => `<p>${m.content}</p>`).join("");
+}
+
+async function sendMessage() {
+  const content = document.getElementById("messageInput").value;
+
+  await fetch("/send_message", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: 1,
+      sender_id: 2,
+      content: content
+    })
+  });
+
+  loadMessages();
+}
+
+loadMessages();
+</script>
