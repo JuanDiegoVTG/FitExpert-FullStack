@@ -2,7 +2,6 @@ package com.proyecto.emilite.service;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,134 +13,85 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.emilite.model.Perfil;
 import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.repository.UsuarioRepository;
 
-@Service // Le dice a Spring que este es un servicio de lógica
+@Service
 public class PythonService {
+
     @Autowired
-    private RestTemplate restTemplate;
+    private RestTemplate restTemplate; // Usaremos siempre este inyectado
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    //Esta función es el "mensajero" que viaja hasta Python
+    private final String FLASK_URL = "http://localhost:5000";
+
     public String generarRutina(String json) {
-        // RestTemplate es la herramienta para hacer llamadas a otras páginas o APIs
-        RestTemplate restTemplate = new RestTemplate();
-
-        // La dirección donde está prendido nuestro programa de Python (Flask)
-        String url = "http://127.0.0.1:5000/generar-rutina";
-
-        // Avisamos que el paquete que enviamos es de tipo JSON (texto estructurado)
+        String url = FLASK_URL + "/generar-rutina";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // Metemos el contenido (json) y las etiquetas (headers) en un sobre
         HttpEntity<String> request = new HttpEntity<>(json, headers);
-
-        // Hacemos el envío (POST) y recibimos la respuesta de Python
-        ResponseEntity<String> response = restTemplate.postForEntity(
-                url,
-                request,
-                String.class
-        );
-
-        // Sacamos lo que Python escribió dentro de la respuesta y lo devolvemos
+        
+        // Usamos el restTemplate de la clase
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
         return response.getBody();
     }
 
-    //  Esta función prepara todo antes de llamar al mensajero
     public String generarRutinaDesdePerfil(Authentication auth) {
-        // Obtenemos el nombre del usuario que está usando la app
-        String username = auth.getName();
-
-        // Buscamos sus datos completos en la base de datos
-        Usuario usuario = usuarioRepository.findByUserName(username)
+        Usuario usuario = usuarioRepository.findByUserName(auth.getName())
                 .orElseThrow(() -> new RuntimeException("No encontré al usuario"));
 
-        // Miramos su perfil físico (peso, altura, etc.)
         Perfil perfil = usuario.getPerfil();
-
-        if (perfil == null) {
-            throw new RuntimeException("El perfil está vacío");
-        }
+        if (perfil == null) throw new RuntimeException("El perfil está vacío");
 
         try {
-            // Organizamos los datos del perfil en una lista (Mapa)
             Map<String, Object> data = new HashMap<>();
             data.put("peso", perfil.getPeso());
             data.put("altura", perfil.getAltura());
             data.put("objetivo", perfil.getObjetivo());
 
-            // Convertimos esa lista a formato JSON (texto que Python entiende)
             String json = new ObjectMapper().writeValueAsString(data);
-
-            // Ahora sí, llamamos a la función de arriba para que le mande esto a Python
             return generarRutina(json);
-
         } catch (Exception e) {
-            // Si el cable se corta o Python está apagado, mostramos el error
             e.printStackTrace();
             return "Error al conectar con el servidor de rutinas";
         }
     }
 
-    private final String PYTHON_URL = "http://localhost:5000/validar-cv";
-
     public Double validarCvConPython(MultipartFile file, String username) {
         try {
-            RestTemplate restTemplate = new RestTemplate();
-
-            // 1. Configuramos las cabeceras (Headers)
+            String url = FLASK_URL + "/validar-cv";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            // 2. Creamos el cuerpo de la petición (El "paquete")
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            
-            // Convertimos el MultipartFile a algo que RestTemplate entienda
             body.add("file", file.getResource()); 
-            body.add("username", username); // Podemos mandar datos extra
+            body.add("username", username); 
 
-            // 3. Armamos la petición completa
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-            // 4. Disparamos hacia Flask
-            // Recibimos la respuesta en un String para ver qué dijo la IA
-            String respuesta = restTemplate.postForObject(PYTHON_URL, requestEntity, String.class);
+            String respuesta = restTemplate.postForObject(url, requestEntity, String.class);
             
-            // 5. Convertimos el String de respuesta en un objeto que Java entienda
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(respuesta);
-            
-            // Extraemos el valor de la llave "score" que viene en el JSON
-            Double scoreExtraido = root.path("score").asDouble();
-
-            System.out.println("Respuesta de Python: " + respuesta);
-            return scoreExtraido;
-
+            JsonNode root = new ObjectMapper().readTree(respuesta);
+            return root.path("score").asDouble();
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
-            return 0.0; // Si algo falla, devolvemos 0 para no romper el flujo
+            return 0.0;
         }
-       
     }
 
+    // --- MÉTODOS DE CHAT ---
     public String obtenerMensajes(Long chatId) {
-        String url = "http://localhost:5000/messages/" + chatId;
+        String url = FLASK_URL + "/get_messages/" + chatId;
         return restTemplate.getForObject(url, String.class);
     }
 
     public String enviarMensajeChat(String jsonPayload) {
-        String url = "http://localhost:5000/send_message";
+        String url = FLASK_URL + "/send_message";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        
         HttpEntity<String> request = new HttpEntity<>(jsonPayload, headers);
         return restTemplate.postForObject(url, request, String.class);
     }

@@ -25,28 +25,33 @@ def route_validar_cv():
 
 # --- RUTAS DEL CHAT HUMANO ---
 
-@app.route('/messages/<int:chat_id>', methods=['GET'])
-def get_messages(chat_id):
-    # Retorna la lista de mensajes de esa conversación
-    return jsonify(messages_db.get(chat_id, []))
-
 @app.route('/send_message', methods=['POST'])
 def send_message():
     data = request.json
-    chat_id = data.get('chat_id')
+    chat_id = str(data.get('chat_id')) # Lo pasamos a string para que no falle
     
-    if chat_id not in messages_db:
-        messages_db[chat_id] = []
-    
-    # Simplemente guardamos lo que llegue (del cliente o del entrenador)
-    new_message = {
-        "chat_id": chat_id,
-        "sender_id": data.get('sender_id'), # 1 para cliente, 3 para entrenador (ejemplo)
+    # ¡ESTO ERA LO QUE FALTABA! Armar el paquete del mensaje
+    nuevo_mensaje = {
+        "sender_id": data.get('sender_id'),
         "content": data.get('content')
     }
     
-    messages_db[chat_id].append(new_message)
-    return jsonify({"status": "success", "message": new_message}), 201
+    # Si el cuarto de chat no existe, lo creamos vacío
+    if chat_id not in messages_db:
+        messages_db[chat_id] = []
+        
+    # Guardamos el mensaje
+    messages_db[chat_id].append(nuevo_mensaje)
+    
+    return jsonify({"status": "success", "message": "Mensaje guardado"}), 201
+
+@app.route('/get_messages/<chat_id>', methods=['GET'])
+def get_messages(chat_id):
+    # Buscamos los mensajes de este chat_id específico
+    # Si no hay mensajes todavía, devolvemos una lista vacía []
+    mensajes_del_chat = messages_db.get(str(chat_id), [])
+    
+    return jsonify(mensajes_del_chat), 200
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
