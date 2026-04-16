@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>¡Pago Exitoso! - Fit Expert</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .success-card {
+            background: rgba(30, 47, 99, 0.9);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 100px auto;
+            border: 1px solid var(--primary-light);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+        .check-icon {
+            font-size: 5rem;
+            color: #10b981;
+            margin-bottom: 1.5rem;
+        }
+        .btn-dashboard {
+            background: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body style="background-color: #111a30; color: white;">
+
+    <div class="success-card">
+        <i class="fas fa-check-circle check-icon"></i>
+        <h1>¡Pago Confirmado!</h1>
+        <p class="text-muted">Tu suscripción ha sido activada con éxito.</p>
+        
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0;">
+        
+        <div class="details text-start">
+            <p><strong>Entrenador:</strong> <span th:text="${entrenador.nombres + ' ' + entrenador.apellidos}"></span></p>
+            <p><strong>ID de Transacción:</strong> <span th:text="${paymentId}"></span></p>
+            <p><strong>Estado:</strong> <span class="badge bg-success">Aprobado</span></p>
+        </div>
+
+        <a href="/dashboard" class="btn-dashboard">Ir a mi Dashboard</a>
+    </div>
+
+</body>
+</html>

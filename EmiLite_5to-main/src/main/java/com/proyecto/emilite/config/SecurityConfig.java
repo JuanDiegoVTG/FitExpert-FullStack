@@ -34,7 +34,9 @@ public class SecurityConfig {
             .ignoringRequestMatchers(
                 "/pagos/**", 
                 "/admin/pagos/crear-preferencia/**", 
-                "/admin/pagos/pago-exitoso/**"
+                "/admin/pagos/pago-exitoso/**",
+                "/catalogo/crear-preferencia",
+                "/catalogo/pago-exitoso/**"
             )
         )
         .authorizeHttpRequests(authorize -> authorize
@@ -48,6 +50,8 @@ public class SecurityConfig {
                 "/js/**", 
                 "/images/**", 
                 "/error",
+                "/catalogo/**",
+                "/catalogo/pago-exitoso/**",
                 "/pagos/respuesta", 
                 "/pagos/webhook"
             ).permitAll()

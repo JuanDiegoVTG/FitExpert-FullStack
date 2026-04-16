@@ -43,9 +43,8 @@ public class PythonController {
 
     /**
      * PROCESO DE GENERACIÓN DE RUTINA CON IA
-     * Ruta completa: /api/rutina-real
      */
-    @PostMapping("/rutina-real") // CAMBIADO A POST para coincidir con el form
+    @PostMapping("/rutina-real")
     public String rutinaReal(
         @RequestParam(name = "peso", defaultValue = "70") Double peso,     
         @RequestParam(name = "altura") Double altura,  
@@ -55,7 +54,7 @@ public class PythonController {
         String username = auth.getName();
         
         try {
-            // 1. Buscamos al usuario y actualizamos su perfil
+            // 1. Buscamos al usuario
             Usuario usuario = usuarioRepository.findByUserName(username)
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
             
@@ -65,9 +64,22 @@ public class PythonController {
                 perfil.setUsuario(usuario);
             }
 
+            // Si el nombre completo es obligatorio, lo sacamos del objeto Usuario
+            if (perfil.getNombreCompleto() == null || perfil.getNombreCompleto().isEmpty()) {
+                perfil.setNombreCompleto(usuario.getNombres() + " " + usuario.getApellidos());
+            }
+
+            // Si la edad es obligatoria y está nula, ponemos una por defecto (ej. 20 años)
+            if (perfil.getEdad() == null) {
+                perfil.setEdad(20); 
+            }
+            // --------------------------------------------------
+
             perfil.setPeso(peso);
             perfil.setAltura(altura);
             perfil.setObjetivo(objetivo);
+            
+            // Guardamos el perfil sin que Hibernate se queje
             perfilRepository.save(perfil);
 
             // 2. Preparamos los datos para Flask
@@ -88,10 +100,9 @@ public class PythonController {
                 new TypeReference<Map<String, Object>>() {}
             );
 
-            // 5. Creamos el objeto Rutina para nuestra BD
+            // 5. Creamos el objeto Rutina
             Rutina nuevaRutina = new Rutina(); 
 
-            // Extraemos y limpiamos los ejercicios
             Object ejerciciosRaw = rutinaGenerada.get("ejercicios");
             if (ejerciciosRaw != null) {
                 String ejerciciosLimpios = ejerciciosRaw.toString()
@@ -101,7 +112,6 @@ public class PythonController {
                 nuevaRutina.setDescripcion("Rutina personalizada generada por FitExpert IA");
             }
 
-            // Extraemos el nombre de la rutina (validando llaves de Flask)
             String nombreIA = (String) rutinaGenerada.get("rutina");
             if (nombreIA == null) nombreIA = (String) rutinaGenerada.get("nombre_rutina");
             if (nombreIA == null) nombreIA = "Mi Plan FitExpert IA";
@@ -110,16 +120,14 @@ public class PythonController {
             nuevaRutina.setTipo("IA Generada");
             nuevaRutina.setNivelDificultad("Personalizado");
             
-            // Extraemos días
             Object dias = rutinaGenerada.get("dias");
             nuevaRutina.setDuracionSemanas(dias instanceof Integer ? (Integer) dias : 4);
             
             nuevaRutina.setCliente(usuario); 
 
-            // 6. ¡IMPORTANTE! Guardamos y mandamos a la vista con el nombre "rutina"
+            // 6. Guardamos la rutina
             rutinaRepository.save(nuevaRutina);
             
-            // Aquí corregimos el Error 500: el HTML busca ${rutina}
             model.addAttribute("rutina", nuevaRutina); 
 
             return "cliente/rutina";

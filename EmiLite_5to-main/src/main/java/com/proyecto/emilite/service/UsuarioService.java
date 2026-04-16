@@ -1,8 +1,6 @@
 package com.proyecto.emilite.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.proyecto.emilite.model.Rol;
 import com.proyecto.emilite.model.Usuario;
-import com.proyecto.emilite.model.dto.UsuarioRegistroDTO;
+import com.proyecto.emilite.model.dto.UsuarioRegistroDTO; // Ajustado a tu estructura
 import com.proyecto.emilite.repository.RolRepository;
 import com.proyecto.emilite.repository.UsuarioRepository;
 
@@ -26,7 +24,7 @@ public class UsuarioService {
     @Autowired
     private RolRepository rolRepository;
 
-    // --- 1. GESTIÓN Y REGISTRO ---
+    // --- 1. GESTIÓN Y REGISTRO (Resuelve AdminUsuarioController) ---
 
     @Transactional
     public void registrar(UsuarioRegistroDTO dto) {
@@ -45,7 +43,10 @@ public class UsuarioService {
         usuario.setEnabled(true);
         usuario.setEsPremuim(false);
 
+        // ID 2 = ENTRENADOR | ID 3 = CLIENTE
         Long idRol = (dto.getRolId() != null) ? dto.getRolId() : 3L; 
+        
+        // Entrenadores (2) quedan inactivos hasta que el admin los valide
         usuario.setValidado(idRol != 2); 
 
         Rol rol = rolRepository.findById(idRol)
@@ -54,28 +55,20 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    // Requerido por AdminUsuarioController
+    // Requerido por AdminUsuarioController.java
     public void crearUsuarioDesdeDTO(UsuarioRegistroDTO dto) {
         registrar(dto);
     }
 
-    // --- 2. BÚSQUEDAS Y FILTROS (Corrige ReporteController y Admin) ---
+    // --- 2. BÚSQUEDAS GENERALES (Resuelve Dashboard y Reportes) ---
 
     public List<Usuario> findAll() {
         return usuarioRepository.findAll();
     }
 
-    // Requerido por DashboardController
+    // Requerido por DashboardController.java
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
-    }
-
-    // 🔥 EL QUE TE FALTABA: Requerido por ReporteController y Admin
-    public List<Usuario> findByFilters(String rolNombre, Boolean activo) {
-        if (rolNombre == null && activo == null) return findAll();
-        if (rolNombre != null && activo != null) return usuarioRepository.findByRolNombreAndActivo(rolNombre, activo);
-        if (rolNombre != null) return usuarioRepository.findByRolNombre(rolNombre);
-        return usuarioRepository.findByActivo(activo);
     }
 
     public Usuario findById(Long id) {
@@ -83,7 +76,7 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("ID no encontrado: " + id));
     }
 
-    // Requerido por EntrenadorController
+    // Requerido por EntrenadorController.java
     public Usuario findByIdOrThrow(Long id) {
         return findById(id);
     }
@@ -93,34 +86,45 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
     }
 
-    // Requerido por EntrenadorController
+    // Requerido por EntrenadorController.java (Lista de alumnos)
     public List<Usuario> findByEntrenadorId(Long entrenadorId) {
         return usuarioRepository.findByEntrenadorId(entrenadorId);
     }
 
-    // --- 3. LÓGICA DEL CATÁLOGO ---
+    // Requerido por ReporteController y Admin para los filtros de tablas
+    public List<Usuario> findByFilters(String rolNombre, Boolean activo) {
+        if (rolNombre == null && activo == null) return findAll();
+        if (rolNombre != null && activo != null) return usuarioRepository.findByRolNombreAndActivo(rolNombre, activo);
+        if (rolNombre != null) return usuarioRepository.findByRolNombre(rolNombre);
+        return usuarioRepository.findByActivo(activo);
+    }
+
+    // --- 3. LÓGICA DEL CATÁLOGO (Optimizado para Mercado Pago) ---
 
     public List<Usuario> findByRolNombre(String rolNombre) {
         return usuarioRepository.findByRolNombre(rolNombre);
     }
 
+    /**
+     * Usa la @Query personalizada del Repository para buscar entrenadores
+     * Es mucho más rápido que usar streams de Java.
+     */
     public List<Usuario> buscarPorNombreOEspecialidad(String keyword) {
-        return usuarioRepository.findByNombresContainingIgnoreCaseOrDescripcionContainingIgnoreCase(keyword, keyword)
-                .stream()
-                .filter(u -> u.getRol().getNombre().equals("ENTRENADOR"))
-                .collect(Collectors.toList());
+        return usuarioRepository.buscarEntrenadores(keyword);
     }
 
     public List<Usuario> buscarPorCalificacion(Integer calificacion) {
-        return findByRolNombre("ENTRENADOR"); 
+        // Por ahora devuelve todos los entrenadores activos
+        return usuarioRepository.listarEntrenadoresActivos();
     }
 
-    // --- 4. VALIDACIONES (Corrige UsuarioController) ---
+    // --- 4. VALIDACIONES Y PERSISTENCIA (Resuelve UsuarioController) ---
 
     public boolean existsByUserName(String username) {
         return usuarioRepository.existsByUserName(username);
     }
 
+    // Requerido por UsuarioController.java
     public boolean existsByEmail(String email) {
         return usuarioRepository.existsByEmail(email);
     }

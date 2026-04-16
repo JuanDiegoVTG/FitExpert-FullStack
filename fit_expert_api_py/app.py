@@ -11,7 +11,7 @@ def route_generar_rutina():
     # El Service procesa la lógica
     resultado = generar_rutina_ia(datos)
     
-    # El Controller responde al cliente (Java)
+    # El Controller responde al cliente (Java) 
     return jsonify(resultado)
 
 @app.route("/validar-cv", methods=["POST"])
