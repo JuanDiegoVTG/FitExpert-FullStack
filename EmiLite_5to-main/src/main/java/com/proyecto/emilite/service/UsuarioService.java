@@ -136,4 +136,23 @@ public class UsuarioService {
     public void deleteById(Long id) {
         usuarioRepository.deleteById(id);
     }
+
+    /**
+     * Obtiene la lista de clientes asignados a un entrenador específico.
+     */
+    @Transactional(readOnly = true)
+    public List<Usuario> obtenerClientesDeEntrenador(Long entrenadorId) {
+        return usuarioRepository.findByEntrenadorId(entrenadorId);
+    }
+
+    /**
+     * Busca un usuario por su nombre de usuario.
+     * Lanza una excepción si no se encuentra.
+     */
+    @Transactional(readOnly = true)
+    public Usuario obtenerPorUsername(String username) {
+        return usuarioRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
+    }
+
 }

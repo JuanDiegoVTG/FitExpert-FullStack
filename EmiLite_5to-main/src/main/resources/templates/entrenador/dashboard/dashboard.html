@@ -267,6 +267,32 @@
             background: #ef4444;
             color: white;
         }
+
+        .btn-chat-entrenador {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-chat-entrenador:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -327,6 +353,7 @@
                     <div class="badge-coach" style="font-size: 0.6rem; padding: 2px 6px;">Certified Trainer</div>
                 </div>
             </div>
+
         </header>
 
         <section class="trainer-hero">
@@ -350,13 +377,23 @@
         </section>
 
         <section class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
-                    <i class="fas fa-user-check"></i>
+            <div class="card shadow" style="background: rgba(30, 41, 59, 0.9) !important; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 15px;">
+                <div class="card-body text-center" style="padding: 30px;">
+                    <div class="display-4 mb-3">
+                        <i class="fas fa-envelope-open-text" style="color: #10b981;"></i>
+                    </div>
+                    <h5 class="card-title" style="color: white; font-weight: bold; font-size: 1.5rem;">
+                        Bandeja de Mensajes
+                    </h5>
+                    <p class="card-text" style="color: #94a3b8; margin-bottom: 25px;">
+                        Revisa las consultas técnicas de tus alumnos asignados y responde en tiempo real.
+                    </p>
+                    <a th:href="@{/api/chat/bandeja}" class="btn-chat-entrenador">
+                        <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Abrir WhatsApp FitExpert
+                    </a>
                 </div>
-                <div class="stat-value">8</div>
-                <div class="stat-label">Clientes Asignados</div>
             </div>
+
 
             <div class="stat-card">
                 <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--accent);">

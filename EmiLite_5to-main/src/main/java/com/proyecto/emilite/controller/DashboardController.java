@@ -1,5 +1,6 @@
 package com.proyecto.emilite.controller;
 
+import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,13 @@ public class DashboardController {
         if (auth == null) {
             return "redirect:/login";
         }
+
+        // A. Buscamos el objeto Usuario completo para tener el ID
+        Usuario usuarioActual = usuarioService.obtenerPorUsername(auth.getName());
+        
+        // B. Pasamos el objeto 'usuario' al modelo (Esto arregla tus botones)
+        model.addAttribute("usuario", usuarioActual);
+        model.addAttribute("nombreUsuario", usuarioActual.getNombres());
 
         // 2. Extraer datos del usuario actual
         String username = auth.getName();

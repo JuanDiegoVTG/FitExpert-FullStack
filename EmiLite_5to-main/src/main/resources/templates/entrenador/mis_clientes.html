@@ -26,7 +26,7 @@
             border-radius: 20px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             width: 100%;
-            max-width: 1100px;
+            max-width: 1200px; /* Un poco más ancho para la nueva columna */
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -59,10 +59,38 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             color: #ffffff; /* Texto blanco para máxima visibilidad */
             text-align: left;
+            vertical-align: middle;
         }
 
         tbody tr:hover {
             background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ESTILOS DEL NUEVO BOTÓN DE CHAT */
+        .btn-chat {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #00D4FF, #3169B2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-chat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+            color: #ffffff;
+            /* Invertimos el gradiente al pasar el mouse */
+            background: linear-gradient(135deg, #3169B2, #00D4FF);
         }
 
         .back-link {
@@ -79,6 +107,10 @@
             margin-top: 25px;
         }
 
+        .back-link:hover {
+            background: #25528d;
+        }
+
         .logout-link {
             background: transparent;
             border: 1px solid rgba(239, 68, 68, 0.4);
@@ -88,6 +120,11 @@
             cursor: pointer;
             margin-left: 15px;
             font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .logout-link:hover {
+            background: rgba(239, 68, 68, 0.1);
         }
     </style>
 </head>
@@ -102,6 +139,7 @@
                     <th>Nombre Completo</th>
                     <th>Email</th>
                     <th>Estado</th>
+                    <th style="text-align: center;">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -112,6 +150,11 @@
                     <td>
                         <span th:text="${cliente.activo ? '● Activo' : '○ Inactivo'}"
                               th:style="${cliente.activo ? 'color: #10b981' : 'color: #ef4444'}"></span>
+                    </td>
+                    <td style="text-align: center;">
+                        <a th:href="@{/api/chat/{id}(id=${cliente.id})}" class="btn-chat" title="Iniciar chat con el alumno">
+                            <i class="fab fa-whatsapp" style="font-size: 1.1rem;"></i> Chatear
+                        </a>
                     </td>
                 </tr>
             </tbody>

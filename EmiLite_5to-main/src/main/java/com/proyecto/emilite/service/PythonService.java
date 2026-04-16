@@ -23,6 +23,8 @@ import com.proyecto.emilite.repository.UsuarioRepository;
 
 @Service // Le dice a Spring que este es un servicio de lógica
 public class PythonService {
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -33,7 +35,7 @@ public class PythonService {
         RestTemplate restTemplate = new RestTemplate();
 
         // La dirección donde está prendido nuestro programa de Python (Flask)
-        String url = "http://127.0.0.1:8000/generar-rutina";
+        String url = "http://127.0.0.1:5000/generar-rutina";
 
         // Avisamos que el paquete que enviamos es de tipo JSON (texto estructurado)
         HttpHeaders headers = new HttpHeaders();
@@ -89,7 +91,7 @@ public class PythonService {
         }
     }
 
-    private final String PYTHON_URL = "http://localhost:8000/validar-cv";
+    private final String PYTHON_URL = "http://localhost:5000/validar-cv";
 
     public Double validarCvConPython(MultipartFile file, String username) {
         try {
@@ -128,5 +130,19 @@ public class PythonService {
             return 0.0; // Si algo falla, devolvemos 0 para no romper el flujo
         }
        
+    }
+
+    public String obtenerMensajes(Long chatId) {
+        String url = "http://localhost:5000/messages/" + chatId;
+        return restTemplate.getForObject(url, String.class);
+    }
+
+    public String enviarMensajeChat(String jsonPayload) {
+        String url = "http://localhost:5000/send_message";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        
+        HttpEntity<String> request = new HttpEntity<>(jsonPayload, headers);
+        return restTemplate.postForObject(url, request, String.class);
     }
 }

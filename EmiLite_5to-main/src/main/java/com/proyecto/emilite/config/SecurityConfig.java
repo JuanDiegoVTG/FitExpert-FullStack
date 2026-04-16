@@ -36,7 +36,8 @@ public class SecurityConfig {
                 "/admin/pagos/crear-preferencia/**", 
                 "/admin/pagos/pago-exitoso/**",
                 "/catalogo/crear-preferencia",
-                "/catalogo/pago-exitoso/**"
+                "/catalogo/pago-exitoso/**",
+                "/api/chat/enviar"
             )
         )
         .authorizeHttpRequests(authorize -> authorize
@@ -56,11 +57,14 @@ public class SecurityConfig {
                 "/pagos/webhook"
             ).permitAll()
 
-            // 3. ⚡ EXCEPCIÓN DE PASARELA (EL ARREGLO DEL ERROR 414):
+            // 3. EXCEPCIÓN DE PASARELA 
             // Permitimos que el CLIENTE entre a estas rutas de "admin" específicas para pagar.
             // DEBEN IR ANTES de la restricción general de /admin/**
             .requestMatchers("/admin/pagos/crear-preferencia/**").hasAnyRole("ADMIN", "CLIENTE")
             .requestMatchers("/admin/pagos/pago-exitoso/**").hasAnyRole("ADMIN", "CLIENTE")
+            
+            //RUTAS DE CHAT (Para que ambos roles entren)
+            .requestMatchers("/api/chat/**").authenticated()
 
             // 4. RUTAS DE ADMIN: Solo personal autorizado
             .requestMatchers("/admin/**", "/api/usuarios/**", "/reportes/**").hasRole("ADMIN")
