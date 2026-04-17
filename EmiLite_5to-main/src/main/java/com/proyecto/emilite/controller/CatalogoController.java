@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -100,17 +101,19 @@ public class CatalogoController {
                     .currencyId("COP")
                     .build();
 
+            // 1. Armamos las URLs
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
                     .success("http://localhost:8082/catalogo/pago-exitoso")
                     .failure("http://localhost:8082/catalogo")
                     .pending("http://localhost:8082/catalogo")
                     .build();
 
+            // 2. Metemos al paquete
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()
-                    .items(List.of(itemRequest))
-                    .backUrls(backUrls)
-                    .externalReference(entrenadorId) 
+                    .items(List.of(itemRequest)) // (Asegúrate de que tu variable se llame itemRequest o items)
+                    .backUrls(backUrls) // <--- ¡MP se estaba quejando de que no encontraba esto!
                     //.autoReturn("approved")
+                    .externalReference(String.valueOf(entrenadorId)) 
                     .build();
 
             PreferenceClient client = new PreferenceClient();
@@ -119,7 +122,7 @@ public class CatalogoController {
             // 4. Respuesta Exitosa
             Map<String, String> response = new HashMap<>();
             response.put("init_point", preference.getInitPoint());
-            
+            response.put("id", preference.getId());
             return ResponseEntity.ok(response);
 
         } catch (com.mercadopago.exceptions.MPApiException apiEx) {
@@ -136,25 +139,63 @@ public class CatalogoController {
         }
     }
 
+    // --- 1. MUESTRA LA PANTALLA Y RECIBE LOS DATOS DE MP ---
     @GetMapping("/pago-exitoso")
-        public String pagoExitoso(
-                @RequestParam("payment_id") String paymentId,
-                @RequestParam("status") String status,
-                @RequestParam("external_reference") String entrenadorId, 
-                Model model) {
+    public String mostrarPantallaExito(
+            @RequestParam(name = "payment_id", required = false) String paymentId,
+            @RequestParam(name = "external_reference", required = false) String externalReference,
+            Model model) {
+        
+        System.out.println("Llegó a la pantalla de éxito. ID Profe: " + externalReference);
+        
+        // 1. Pasar el ID del entrenador al HTML para el botón
+        model.addAttribute("entrenadorId", externalReference);
+        
+        // 2. Pasar el ID del pago que nos da Mercado Pago (para que se vea bonito en el recibo)
+        model.addAttribute("paymentId", paymentId != null ? paymentId : "Pendiente/Prueba");
 
-            // 1. Buscamos al entrenador para mostrar sus datos en la confirmación
-            Long id = Long.parseLong(entrenadorId);
-            Usuario entrenador = usuarioService.findByIdOrThrow(id);
-
-            // 2. Lógica de negocio: Aquí Kevin marcaba al usuario como Premium 
-            // o creaba la relación en la base de datos.
-            // usuarioService.activarSuscripcion(entrenadorId); 
-
-            model.addAttribute("paymentId", paymentId);
-            model.addAttribute("entrenador", entrenador);
-            model.addAttribute("status", status);
-
-            return "cliente/pago-exitoso";
+        // 3. Buscar al entrenador en la BD para mostrar su nombre en el recibo
+        if (externalReference != null) {
+            try {
+                Long id = Long.parseLong(externalReference);
+                // NOTA: Ajusta el nombre de este método según como lo tengas en tu UsuarioService
+                Usuario entrenador = usuarioService.findById(id); 
+                model.addAttribute("entrenador", entrenador);
+            } catch (Exception e) {
+                System.out.println("Error buscando entrenador para la vista: " + e.getMessage());
+            }
         }
+        
+        return "cliente/pago-exitoso"; 
+    }
+
+    // --- 2. HACE LA MAGIA EN LA BD (Recibe el clic de tu botón) ---
+    @PostMapping("/activar-entrenador")
+    public String activarEntrenador(
+            @RequestParam("entrenadorId") Long entrenadorId, 
+            Authentication auth) {
+        
+        try {
+            // 1. Obtener el email del cliente que está logueado
+            String emailCliente = auth.getName();
+            
+            // 2. Buscar al Cliente y al Entrenador en la base de datos
+            Usuario cliente = usuarioService.findByEmail(emailCliente); 
+            Usuario entrenador = usuarioService.findById(entrenadorId); 
+            
+            // 3. Conectarlos y Guardar
+            if (cliente != null && entrenador != null) {
+                cliente.setEntrenador(entrenador);
+                // NOTA: Ajusta este método al que uses para actualizar/guardar en tu Service/Repository
+                usuarioService.save(cliente); 
+                System.out.println("¡ÉXITO! Cliente " + cliente.getNombres() + " asignado al entrenador " + entrenador.getNombres());
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error al enlazar en la BD: " + e.getMessage());
+        }
+        
+        // 4. Redirigimos al chat para que empiecen a hablar
+        return "redirect:/api/chat/" + entrenadorId;
+    }
 }

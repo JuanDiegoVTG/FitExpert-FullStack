@@ -271,43 +271,54 @@
         </div>
     </div>
 
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script>
-    // 1. Lógica de búsqueda local (Filtra las cards mientras escribes)
-    const searchBar = document.getElementById("searchBar");
-    searchBar.addEventListener("keyup", function() {
-        const query = searchBar.value.toLowerCase().trim();
-        document.querySelectorAll(".rutina-card").forEach(card => {
-            const text = card.innerText.toLowerCase();
-            card.style.display = text.includes(query) ? "" : "none";
-        });
+    // 1. Inicializa MercadoPago con tu PUBLIC_KEY (La de prueba o producción)
+    const mp = new MercadoPago('TEST-fec0febe-f2ed-497a-bace-576313d7d822', {
+        locale: 'es-CO' // Ajusta el idioma y país según corresponden
     });
 
-    // 2. Variables globales para capturar al entrenador seleccionado
+    // 2. Lógica de búsqueda local (Filtra las cards mientras escribes)
+    const searchBar = document.getElementById("searchBar");
+    if (searchBar) {
+        searchBar.addEventListener("keyup", function() {
+            const query = searchBar.value.toLowerCase().trim();
+            document.querySelectorAll(".rutina-card").forEach(card => {
+                const text = card.innerText.toLowerCase();
+                card.style.display = text.includes(query) ? "" : "none";
+            });
+        });
+    }
+
+    // 3. Variables globales para capturar al entrenador seleccionado
     let entrenadorIdActual = null;
     let nombreEntrenadorActual = null;
     let precioActual = 0;
 
-    // 3. Lógica para llenar el Modal con los datos de la card
+    // 4. Lógica para llenar el Modal con los datos de la card
     const modal = document.getElementById("modalEntrenador");
-    modal.addEventListener("show.bs.modal", function (event) {
-        const button = event.relatedTarget; // El botón "Ver perfil" que se clickeó
-        
-        // Capturamos los datos que vienen en los th:attr del botón
-        entrenadorIdActual = button.getAttribute("data-id");
-        nombreEntrenadorActual = button.getAttribute("data-nombre");
-        precioActual = button.getAttribute("data-precio") || 50000;
+    if (modal) {
+        modal.addEventListener("show.bs.modal", function (event) {
+            const button = event.relatedTarget; // El botón "Ver perfil" que se clickeó
+            
+            // Capturamos los datos que vienen en los th:attr del botón
+            entrenadorIdActual = button.getAttribute("data-id");
+            nombreEntrenadorActual = button.getAttribute("data-nombre");
+            precioActual = button.getAttribute("data-precio") || 50000;
 
-        // Llenamos el contenido visual del modal
-        document.getElementById("modalNombre").innerText = nombreEntrenadorActual;
-        document.getElementById("modalDescripcion").innerText = button.getAttribute("data-descripcion") || "Sin descripción disponible.";
-        document.getElementById("modalPrecio").innerText = "$" + precioActual + " / sesión";
-        
-        // Si tienes campo de foto en el modal:
-        const foto = button.getAttribute("data-foto") || "/images/entrenador2.jpg";
-        document.getElementById("modalFoto").src = foto;
-    });
+            // Llenamos el contenido visual del modal
+            document.getElementById("modalNombre").innerText = nombreEntrenadorActual;
+            document.getElementById("modalDescripcion").innerText = button.getAttribute("data-descripcion") || "Sin descripción disponible.";
+            document.getElementById("modalPrecio").innerText = "$" + precioActual + " / sesión";
+            
+            // Si tienes campo de foto en el modal:
+            const foto = button.getAttribute("data-foto") || "/images/entrenador2.jpg";
+            const fotoElement = document.getElementById("modalFoto");
+            if(fotoElement) fotoElement.src = foto;
+        });
+    }
 
-    // 4. Lógica de Mercado Pago (Llamada al Controller)
+    // 5. Lógica de Mercado Pago MODAL (Llamada al Controller)
     function procesarPagoMercadoPago() {
         if (!entrenadorIdActual) {
             alert("Error: No se pudo identificar al entrenador.");
@@ -316,7 +327,7 @@
 
         const btn = document.getElementById("btnConfirmarPago");
         btn.disabled = true;
-        btn.innerText = "Conectando con Mercado Pago...";
+        btn.innerText = "Cargando Mercado Pago...";
 
         fetch("/catalogo/crear-preferencia", { 
             method: "POST",
@@ -334,16 +345,29 @@
             return res.json();
         })
         .then(data => {
-            if (data.init_point) {
-                // Redirección a la pasarela de pago
-                window.location.href = data.init_point;
+            // AQUÍ ESTÁ EL CAMBIO: En vez de redirigir, abrimos el modal
+            if (data.id) { // El JSON del back ahora debe retornar el "id" de la preferencia, no solo el "init_point"
+                mp.checkout({
+                    preference: {
+                        id: data.id // El ID que te devolvió Spring Boot
+                    },
+                    autoOpen: true // Abre el modal inmediatamente
+                });
+                
+                // Restauramos el botón por si el usuario cierra el modal
+                btn.disabled = false;
+                btn.innerText = "Contratar Ahora";
+            } else if (data.init_point) {
+                // Si tu backend solo manda el init_point, intentamos abrir el modal igual (algunas versiones viejas lo permitían)
+                // Pero lo ideal es que devuelvas el ID de la preferencia.
+                 window.location.href = data.init_point;
             } else {
-                throw new Error(data.error || "No se recibió el punto de inicio");
+                throw new Error(data.error || "No se recibió el ID de la preferencia");
             }
         })
         .catch(error => {
             console.error("Error en el pago:", error);
-            alert("Hubo un problema al generar el pago. Revisa la consola.");
+            alert("Hubo un problema al cargar el pago. Revisa la consola.");
             btn.disabled = false;
             btn.innerText = "Contratar Ahora";
         });

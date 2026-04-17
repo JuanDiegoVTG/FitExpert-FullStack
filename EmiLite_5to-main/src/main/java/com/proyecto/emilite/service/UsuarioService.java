@@ -124,9 +124,14 @@ public class UsuarioService {
         return usuarioRepository.existsByUserName(username);
     }
 
-    // Requerido por UsuarioController.java
     public boolean existsByEmail(String email) {
         return usuarioRepository.existsByEmail(email);
+    }
+    
+    // Este es el que necesitamos para el Catálogo y la activación
+    public Usuario findByEmail(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElse(null); 
     }
 
     public Usuario save(Usuario usuario) {
