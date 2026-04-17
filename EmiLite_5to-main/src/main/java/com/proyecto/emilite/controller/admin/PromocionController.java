@@ -1,7 +1,7 @@
 package com.proyecto.emilite.controller.admin; // Carpeta específica para controladores de ADMIN
 
+import com.proyecto.emilite.dto.PromocionFormDTO;
 import com.proyecto.emilite.model.Promocion;
-import com.proyecto.emilite.model.dto.PromocionFormDTO; // Asegúrate de tener este DTO
 import com.proyecto.emilite.service.PromocionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

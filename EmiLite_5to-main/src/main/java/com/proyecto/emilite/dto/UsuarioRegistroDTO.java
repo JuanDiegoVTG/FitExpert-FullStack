@@ -1,4 +1,4 @@
-package com.proyecto.emilite.model.dto;
+package com.proyecto.emilite.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -29,6 +29,9 @@ public class UsuarioRegistroDTO {
 
     @NotBlank(message = "Los apellidos son obligatorios")
     private String apellidos; 
+
+    @NotBlank(message = "Debes seleccionar tu sexo biológico")
+    private String sexo;
 
     private String telefono; 
 

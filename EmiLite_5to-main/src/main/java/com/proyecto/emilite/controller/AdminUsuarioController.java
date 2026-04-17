@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.proyecto.emilite.dto.UsuarioRegistroDTO;
 import com.proyecto.emilite.model.Rol;
 import com.proyecto.emilite.model.Usuario;
-import com.proyecto.emilite.model.dto.UsuarioRegistroDTO;
 import com.proyecto.emilite.repository.UsuarioRepository;
 import com.proyecto.emilite.service.RolService;
 import com.proyecto.emilite.service.UsuarioService;

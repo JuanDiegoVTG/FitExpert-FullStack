@@ -46,6 +46,16 @@ public class Perfil {
     @NotNull(message = "El objetivo es obligatorio")
     private String objetivo;
 
+    //Atrivutos Personales
+    private String sexo;
+    private String nivelActividad;
+
+    // Medidas para cálculos de composición corporal
+    private Double cuello;
+    private Double cintura;
+    private Double cadera;
+
+
     private String telefono;
 
     @Email(message = "El email debe tener un formato válido")

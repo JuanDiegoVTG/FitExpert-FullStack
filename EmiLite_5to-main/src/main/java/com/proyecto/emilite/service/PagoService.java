@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.proyecto.emilite.dto.PagoFormDTO;
 import com.proyecto.emilite.model.Pago;
 import com.proyecto.emilite.model.Servicio;
 import com.proyecto.emilite.model.Usuario;
-import com.proyecto.emilite.model.dto.PagoFormDTO;
 import com.proyecto.emilite.repository.PagoRepository;
 import com.proyecto.emilite.repository.ServicioRepository;
 import com.proyecto.emilite.repository.UsuarioRepository; 

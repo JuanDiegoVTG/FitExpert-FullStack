@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<body>
+<div th:fragment="content">
+    
+    <style>
+        .result-container {
+            padding: 3rem 1rem;
+            display: flex;
+            justify-content: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .result-card {
+            background: rgba(30, 41, 59, 0.8) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 210, 255, 0.3) !important;
+            border-radius: 35px;
+            padding: 3.5rem;
+            max-width: 850px;
+            width: 100%;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+            color: white;
+        }
+
+        .header-section h1 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #5d00e8, #00d2ff);
+            --webkit-background-clip: text;
+            -webkit-text-fill-color:#0f172a;
+        }
+
+        /* GRID DE MÉTRICAS */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 22px;
+            padding: 25px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d2ff;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 900;
+            display: block;
+            line-height: 1;
+        }
+
+        .imc-normal { color: #00ff88; text-shadow: 0 0 15px rgba(0, 255, 136, 0.4); }
+        .imc-alerta { color: #ff9f43; text-shadow: 0 0 15px rgba(255, 159, 67, 0.4); }
+        .imc-peligro { color: #ff0055; text-shadow: 0 0 15px rgba(255, 0, 85, 0.4); }
+
+        /* RECOMENDACIÓN IA */
+        .ai-box {
+            background: rgba(0, 210, 255, 0.05);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 5px solid #00d2ff;
+        }
+
+        .ai-title {
+            color: #00d2ff;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* BOTONES */
+        .btn-group-fit {
+            margin-top: 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-neon {
+            background: #00d2ff;
+            color: #0f172a;
+            padding: 12px 30px;
+            border-radius: 14px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .btn-neon:hover {
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        .btn-outline-fit {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 14px;
+            text-decoration: none;
+        }
+    </style>
+
+    <div class="result-container">
+        <div class="result-card">
+            
+            <div class="text-center">
+                <i class="fas fa-microchip" style="color: #00d2ff; font-size: 2rem; margin-bottom: 1rem;"></i>
+                <div class="header-section">
+                    <h1>INFORME DE <span style="color: #00d2ff;">PROGRESO</span></h1>
+                </div>
+                <p style="color: #94a3b8; font-size: 0.9rem;">Analítica procesada para: <span th:text="${#authentication.principal.username}" style="color: #fff; font-weight: 700;">Atleta</span></p>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Tu IMC</span>
+                    <span class="stat-value" 
+                          th:classappend="${diagnostico.estado == 'Normal' ? 'imc-normal' : (diagnostico.estado == 'Sobrepeso' ? 'imc-alerta' : 'imc-peligro')}"
+                          th:text="${diagnostico.imc}">24.5</span>
+                    <small style="font-size: 0.6rem; text-transform: uppercase; font-weight: 800;" th:text="${diagnostico.estado}">Normal</small>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-label">% Grasa</span>
+                    <span class="stat-value" style="color: #00ff88;" th:text="${diagnostico.grasa_corporal + '%'}">18%</span>
+                    <small style="font-size: 0.6rem; color: #94a3b8;">Protocolo Navy</small>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-label">Calorías/Día</span>
+                    <span class="stat-value" style="color: #fff;" th:text="${diagnostico.mantenimiento}">2400</span>
+                    <small style="font-size: 0.6rem; color: #94a3b8;">Meta Diaria</small>
+                </div>
+            </div>
+
+            <div class="ai-box">
+                <span class="ai-title"><i class="fas fa-brain me-2"></i> Estrategia de la IA</span>
+                <p style="color: #cbd5e1; font-size: 1rem; line-height: 1.6; margin-bottom: 0;" th:text="${diagnostico.recomendacion_ia}">
+                    Analizando composición corporal...
+                </p>
+            </div>
+
+            <div class="btn-group-fit">
+                <a th:href="@{/api/chat/bandeja}" class="btn-neon">
+                    <i class="fas fa-comments me-2"></i> CONSULTAR ENTRENADOR
+                </a>
+                <a th:href="@{/dashboard}" class="btn-outline-fit">
+                    <i class="fas fa-th-large me-2"></i> PANEL
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

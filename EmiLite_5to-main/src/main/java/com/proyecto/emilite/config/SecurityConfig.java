@@ -37,7 +37,8 @@ public class SecurityConfig {
                 "/admin/pagos/pago-exitoso/**",
                 "/catalogo/crear-preferencia",
                 "/catalogo/pago-exitoso/**",
-                "/api/chat/enviar"
+                "/api/chat/enviar",
+                "/api/generar-diagnostico"
             )
         )
         .authorizeHttpRequests(authorize -> authorize
@@ -59,7 +60,6 @@ public class SecurityConfig {
 
             // 3. EXCEPCIÓN DE PASARELA 
             // Permitimos que el CLIENTE entre a estas rutas de "admin" específicas para pagar.
-            // DEBEN IR ANTES de la restricción general de /admin/**
             .requestMatchers("/admin/pagos/crear-preferencia/**").hasAnyRole("ADMIN", "CLIENTE")
             .requestMatchers("/admin/pagos/pago-exitoso/**").hasAnyRole("ADMIN", "CLIENTE")
             
@@ -77,6 +77,9 @@ public class SecurityConfig {
 
             // 7. RUTAS COMPARTIDAS
             .requestMatchers("/dashboard").hasAnyRole("CLIENTE", "ENTRENADOR", "ADMIN")
+
+            // 8. Rutas del Diagnóstico (Solo para Clientes)
+            .requestMatchers("/api/valoracion", "/api/generar-diagnostico").hasRole("CLIENTE")              
 
             .anyRequest().authenticated()
         )

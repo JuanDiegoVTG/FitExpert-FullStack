@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.proyecto.emilite.dto.UsuarioRegistroDTO;
 import com.proyecto.emilite.model.Rol;
-import com.proyecto.emilite.model.dto.UsuarioRegistroDTO;
 import com.proyecto.emilite.service.EmailService;
 import com.proyecto.emilite.service.PythonService;
 import com.proyecto.emilite.service.RolService;

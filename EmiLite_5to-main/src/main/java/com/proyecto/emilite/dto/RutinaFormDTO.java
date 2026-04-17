@@ -1,4 +1,4 @@
-package com.proyecto.emilite.model.dto;
+package com.proyecto.emilite.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

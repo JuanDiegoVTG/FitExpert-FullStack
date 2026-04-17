@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.proyecto.emilite.dto.RutinaFormDTO;
 import com.proyecto.emilite.model.Rutina;
 import com.proyecto.emilite.model.Usuario;
-import com.proyecto.emilite.model.dto.RutinaFormDTO;
 import com.proyecto.emilite.service.RutinaService;
 import com.proyecto.emilite.service.UsuarioService;
 

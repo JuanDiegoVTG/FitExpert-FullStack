@@ -6,9 +6,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.proyecto.emilite.dto.UsuarioRegistroDTO;
+import com.proyecto.emilite.model.Perfil;
 import com.proyecto.emilite.model.Rol;
 import com.proyecto.emilite.model.Usuario;
-import com.proyecto.emilite.model.dto.UsuarioRegistroDTO; // Ajustado a tu estructura
 import com.proyecto.emilite.repository.RolRepository;
 import com.proyecto.emilite.repository.UsuarioRepository;
 
@@ -28,10 +29,19 @@ public class UsuarioService {
 
     @Transactional
     public void registrar(UsuarioRegistroDTO dto) {
+        // 1. VALIDACIONES DE CAMPOS OBLIGATORIOS (Blindaje total)
+        validarCamposRegistro(dto);
+
+        // 2. VALIDACIONES DE UNICIDAD (Base de Datos)
         if (usuarioRepository.existsByUserName(dto.getUserName())) {
-            throw new RuntimeException("El nombre de usuario ya existe.");
+            throw new RuntimeException("El nombre de usuario '" + dto.getUserName() + "' ya está en uso.");
         }
         
+        if (usuarioRepository.existsByEmail(dto.getEmail())) {
+            throw new RuntimeException("El correo '" + dto.getEmail() + "' ya está registrado.");
+        }
+
+        // 3. CREACIÓN DEL USUARIO
         Usuario usuario = new Usuario();
         usuario.setUserName(dto.getUserName());
         usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -43,16 +53,50 @@ public class UsuarioService {
         usuario.setEnabled(true);
         usuario.setEsPremuim(false);
 
-        // ID 2 = ENTRENADOR | ID 3 = CLIENTE
+        // Asignación de Rol
         Long idRol = (dto.getRolId() != null) ? dto.getRolId() : 3L; 
-        
-        // Entrenadores (2) quedan inactivos hasta que el admin los valide
         usuario.setValidado(idRol != 2); 
 
         Rol rol = rolRepository.findById(idRol)
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Error: El rol seleccionado no es válido."));
         usuario.setRol(rol);
+
+        // 4. CREACIÓN DEL PERFIL CON ATRIBUTO SEXO (Lógica Pro)
+        Perfil perfil = new Perfil();
+        perfil.setUsuario(usuario);
+        perfil.setSexo(dto.getSexo()); 
+        perfil.setNombreCompleto(dto.getNombres() + " " + dto.getApellidos());
+        
+        usuario.setPerfil(perfil);
+
+        // 5. GUARDADO
         usuarioRepository.save(usuario);
+    }
+
+    /**
+     * Método auxiliar para validar que nada llegue vacío
+     */
+    private void validarCamposRegistro(UsuarioRegistroDTO dto) {
+        if (dto.getUserName() == null || dto.getUserName().trim().isEmpty()) 
+            throw new RuntimeException("El nombre de usuario es obligatorio.");
+        
+        if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) 
+            throw new RuntimeException("La contraseña no puede estar vacía.");
+        
+        if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) 
+            throw new RuntimeException("El correo electrónico es obligatorio.");
+        
+        if (dto.getNombres() == null || dto.getNombres().trim().isEmpty()) 
+            throw new RuntimeException("El nombre es obligatorio.");
+        
+        if (dto.getApellidos() == null || dto.getApellidos().trim().isEmpty()) 
+            throw new RuntimeException("El apellido es obligatorio.");
+        
+        if (dto.getFechaNacimiento() == null) 
+            throw new RuntimeException("La fecha de nacimiento es obligatoria.");
+        
+        if (dto.getSexo() == null || dto.getSexo().trim().isEmpty()) 
+            throw new RuntimeException("El sexo biológico es obligatorio para cálculos de salud.");
     }
 
     // Requerido por AdminUsuarioController.java

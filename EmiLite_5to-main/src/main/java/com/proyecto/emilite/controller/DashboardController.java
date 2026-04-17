@@ -1,7 +1,8 @@
 package com.proyecto.emilite.controller;
 
-import com.proyecto.emilite.model.Usuario;
-import com.proyecto.emilite.service.UsuarioService;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,13 +10,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Collection;
+import com.proyecto.emilite.model.Progreso;
+import com.proyecto.emilite.model.Usuario;
+import com.proyecto.emilite.repository.ProgresoRepository;
+import com.proyecto.emilite.service.UsuarioService;
 
 @Controller
 public class DashboardController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private ProgresoRepository progresoRepository;
 
     @GetMapping("/dashboard")
     public String mostrarDashboard(Model model, Authentication auth) {
@@ -56,6 +63,13 @@ public class DashboardController {
             return "entrenador/dashboard/dashboard"; 
             
         } else {
+
+            // 2. Buscamos todos los registros de progreso de este usuario
+            List<Progreso> historial = progresoRepository.findByUsuarioOrderByFechaRegistroAsc(usuarioActual);
+            
+            // 3. Pasamos el historial al modelo para que el JS de la gráfica lo vea
+            model.addAttribute("historial", historial);
+            
             // Apunta a: src/main/resources/templates/dashboard/dashboard.html
             return "cliente/dashboard/dashboard"; 
         }
