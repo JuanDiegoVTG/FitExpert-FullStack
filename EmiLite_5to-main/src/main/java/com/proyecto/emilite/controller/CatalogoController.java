@@ -25,6 +25,10 @@ import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.preference.Preference;
 import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.service.UsuarioService;
+import com.proyecto.emilite.util.Constantes;
+
+import jakarta.transaction.Transactional;
+
 
 @Controller
 @RequestMapping("/catalogo")
@@ -45,9 +49,11 @@ public class CatalogoController {
         List<Usuario> entrenadores;
 
         if (keyword != null && !keyword.isEmpty()) {
-            entrenadores = usuarioService.buscarPorNombreOEspecialidad(keyword);
+        // Si estás en la vista de entrenadores, aquí debes usar el nuevo método dinámico
+        entrenadores = usuarioService.buscarPorRolYKeyword("ROLE_ENTRENADOR", keyword);
         } else {
-            entrenadores = usuarioService.findByRolNombre("ENTRENADOR");
+            // Aquí está el error, cámbialo a ROLE_ENTRENADOR
+            entrenadores = usuarioService.listarPorRolActivo(Constantes.ROL_ENTRENADOR);
         }
 
         model.addAttribute("entrenadores", entrenadores);
@@ -155,47 +161,54 @@ public class CatalogoController {
         model.addAttribute("paymentId", paymentId != null ? paymentId : "Pendiente/Prueba");
 
         // 3. Buscar al entrenador en la BD para mostrar su nombre en el recibo
-        if (externalReference != null) {
+        if (externalReference != null && !externalReference.isEmpty()) {
             try {
-                Long id = Long.parseLong(externalReference);
-                // NOTA: Ajusta el nombre de este método según como lo tengas en tu UsuarioService
+                Long id = Long.valueOf(externalReference);
                 Usuario entrenador = usuarioService.findById(id); 
-                model.addAttribute("entrenador", entrenador);
-            } catch (Exception e) {
-                System.out.println("Error buscando entrenador para la vista: " + e.getMessage());
+                
+                if (entrenador != null) {
+                    model.addAttribute("nombreEntrenador", entrenador.getNombres() + " " + entrenador.getApellidos());
+                } else {
+                    System.out.println("DEBUG: El entrenador con ID " + id + " no existe en BD.");
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("DEBUG: El external_reference no es un número válido: " + externalReference);
             }
         }
-        
         return "cliente/pago-exitoso"; 
-    }
+        }
 
-    // --- 2. HACE LA MAGIA EN LA BD (Recibe el clic de tu botón) ---
-    @PostMapping("/activar-entrenador")
-    public String activarEntrenador(
+        // --- 2. HACE LA MAGIA EN LA BD (Recibe el clic de tu botón) ---
+        @PostMapping("/activar-entrenador")
+        @Transactional
+        public String activarEntrenador(
             @RequestParam("entrenadorId") Long entrenadorId, 
             Authentication auth) {
         
         try {
-            // 1. Obtener el email del cliente que está logueado
             String emailCliente = auth.getName();
-            
-            // 2. Buscar al Cliente y al Entrenador en la base de datos
             Usuario cliente = usuarioService.findByEmail(emailCliente); 
             Usuario entrenador = usuarioService.findById(entrenadorId); 
             
-            // 3. Conectarlos y Guardar
             if (cliente != null && entrenador != null) {
+                // 1. Vinculamos el cliente al entrenador
                 cliente.setEntrenador(entrenador);
-                // NOTA: Ajusta este método al que uses para actualizar/guardar en tu Service/Repository
-                usuarioService.save(cliente); 
+                
+                // 2. Vinculamos el entrenador al cliente (Sincronización bidireccional)
+                if (!entrenador.getAlumnos().contains(cliente)) {
+                        entrenador.getAlumnos().add(cliente);
+                    }
+                    
+                    usuarioService.save(cliente); 
+                    // Opcional: usuarioService.save(entrenador); si el cascade no está actuando
+                }
+                
                 System.out.println("¡ÉXITO! Cliente " + cliente.getNombres() + " asignado al entrenador " + entrenador.getNombres());
-            }
-
+            
         } catch (Exception e) {
             System.err.println("Error al enlazar en la BD: " + e.getMessage());
         }
         
-        // 4. Redirigimos al chat para que empiecen a hablar
         return "redirect:/api/chat/" + entrenadorId;
     }
 }

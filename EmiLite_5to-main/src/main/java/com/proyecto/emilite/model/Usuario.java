@@ -1,7 +1,12 @@
 package com.proyecto.emilite.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
@@ -67,11 +73,12 @@ public class Usuario {
     private String descripcion;
 
     @ToString.Exclude
-    @OneToOne(mappedBy = "usuario", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "usuario",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Perfil perfil;
     public Perfil getPerfil() {
     return perfil;
     }
+
     // Relación con la tabla rol
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER) 
@@ -82,8 +89,13 @@ public class Usuario {
     @Column(name = "activo", nullable = false)
     private Boolean activo = true; 
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "entrenador", cascade = CascadeType.ALL)
+    private List<Usuario> alumnos = new ArrayList<>();
+
+    @JsonIgnore
     @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "entrenador_id")
     private Usuario entrenador;
 
@@ -93,5 +105,18 @@ public class Usuario {
     private Double cvScore;
 
     private Boolean esPremuim;
+
+    
+    public void setEntrenador(Usuario entrenador) {
+        // Si el usuario ya tenía un entrenador, lo sacamos de la lista del anterior
+        if (this.entrenador != null) {
+            this.entrenador.getAlumnos().remove(this);
+        }
+        this.entrenador = entrenador;
+        // Agregamos este usuario a la lista del nuevo entrenador
+        if (entrenador != null) {
+            entrenador.getAlumnos().add(this);
+        }
+    }
 
 }

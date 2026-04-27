@@ -25,6 +25,9 @@ public class UsuarioService {
     @Autowired
     private RolRepository rolRepository;
 
+    public static final String ROL_ENTRENADOR = "ROLE_ENTRENADOR";
+    public static final String ROL_CLIENTE = "ROLE_CLIENTE";
+
     // --- 1. GESTIÓN Y REGISTRO (Resuelve AdminUsuarioController) ---
 
     @Transactional
@@ -149,17 +152,31 @@ public class UsuarioService {
         return usuarioRepository.findByRolNombre(rolNombre);
     }
 
-    /**
-     * Usa la @Query personalizada del Repository para buscar entrenadores
-     * Es mucho más rápido que usar streams de Java.
+   /**
+     * Ahora el servicio decide qué rol buscar, 
+     * pasando el nombre correcto de la base de datos: 'ROLE_ENTRENADOR'
      */
-    public List<Usuario> buscarPorNombreOEspecialidad(String keyword) {
-        return usuarioRepository.buscarEntrenadores(keyword);
+    public List<Usuario> buscarEntrenadores(String keyword) {
+        // Pasamos el parámetro 'ROLE_ENTRENADOR' al nuevo método del repository
+        return usuarioRepository.buscarPorRolYKeyword("ROLE_ENTRENADOR", keyword);
     }
 
-    public List<Usuario> buscarPorCalificacion(Integer calificacion) {
-        // Por ahora devuelve todos los entrenadores activos
-        return usuarioRepository.listarEntrenadoresActivos();
+    public List<Usuario> listarEntrenadoresActivos() {
+        return usuarioRepository.listarPorRolActivo("ROLE_ENTRENADOR");
+    }
+
+    // --- ¡Y AHORA TAMBIÉN PUEDES HACER ESTO PARA CLIENTES! ---
+    public List<Usuario> buscarClientes(String keyword) {
+        // Basta con cambiar el parámetro a 'ROLE_CLIENTE'
+        return usuarioRepository.buscarPorRolYKeyword("ROLE_CLIENTE", keyword);
+    }
+
+    public List<Usuario> buscarPorRolYKeyword(String nombreRol, String keyword) {
+        return usuarioRepository.buscarPorRolYKeyword(nombreRol, keyword);
+    }
+
+    public List<Usuario> listarPorRolActivo(String nombreRol) {
+        return usuarioRepository.listarPorRolActivo(nombreRol);
     }
 
     // --- 4. VALIDACIONES Y PERSISTENCIA (Resuelve UsuarioController) ---

@@ -63,36 +63,36 @@ public class EntrenadorController {
     }
 
     @GetMapping("/rutinas/nueva")
-    public String mostrarFormularioCreacionRutina(Model model) {
+    public String mostrarFormularioCreacionRutina(Authentication auth, Model model) { // <--- Agregamos Authentication
         model.addAttribute("rutinaForm", new RutinaFormDTO());
         
-        // Cargamos todos los clientes con rol CLIENTE para la selección inicial
-        List<Usuario> todosLosClientes = usuarioService.findByRolNombre("CLIENTE");
-        model.addAttribute("clientes", todosLosClientes);
+        // 🚀 CORRECCIÓN: Traemos SOLO a los clientes de ESTE entrenador
+        Usuario entrenador = usuarioService.findByUserName(auth.getName());
+        List<Usuario> misClientes = usuarioService.findByEntrenadorId(entrenador.getId());
+        model.addAttribute("clientes", misClientes);
         
         return "entrenador/form_rutina";
     }
 
-    /**
-     * Procesa la creación de rutina y fuerza la vinculación Entrenador-Cliente
-     */
     @PostMapping("/rutinas")
     public String crearRutina(@Valid @ModelAttribute("rutinaForm") RutinaFormDTO rutinaForm,
                               BindingResult result,
                               Authentication auth,
                               Model model) {
+        
+        Usuario entrenadorActual = usuarioService.findByUserName(auth.getName());
+
         if (result.hasErrors()) {
-            model.addAttribute("clientes", usuarioService.findByRolNombre("CLIENTE"));
+            // Si hay error en el formulario, recargamos la lista de MIS clientes, no la de todos
+            model.addAttribute("clientes", usuarioService.findByEntrenadorId(entrenadorActual.getId()));
             return "entrenador/form_rutina";
         }
 
         try {
-            Usuario entrenadorActual = usuarioService.findByUserName(auth.getName());
             Usuario cliente = usuarioService.findByIdOrThrow(rutinaForm.getClienteId());
 
-            // 🚀 VINCULACIÓN FORZADA: 
-            // Cada vez que un entrenador crea una rutina para un cliente, 
-            // ese cliente queda vinculado a él para aparecer en su lista de "Mis Clientes"
+            // Ya no es necesario forzar la vinculación porque MercadoPago ya lo hizo.
+            // Pero lo dejamos por seguridad.
             cliente.setEntrenador(entrenadorActual);
             usuarioService.save(cliente);
 
@@ -101,7 +101,7 @@ public class EntrenadorController {
             
         } catch (Exception e) {
             model.addAttribute("error", "Error al crear la rutina: " + e.getMessage());
-            model.addAttribute("clientes", usuarioService.findByRolNombre("CLIENTE"));
+            model.addAttribute("clientes", usuarioService.findByEntrenadorId(entrenadorActual.getId()));
             return "entrenador/form_rutina";
         }
     }
@@ -121,22 +121,26 @@ public class EntrenadorController {
 
         model.addAttribute("rutinaForm", rutinaForm);
         model.addAttribute("rutinaId", id);
-        model.addAttribute("clientes", usuarioService.findByRolNombre("CLIENTE"));
+        
+        // 🚀 CORRECCIÓN: Cargar solo mis clientes
+        Usuario entrenador = usuarioService.findByUserName(auth.getName());
+        model.addAttribute("clientes", usuarioService.findByEntrenadorId(entrenador.getId()));
+        
         return "entrenador/form_rutina";
     }
 
-    /**
-     * Actualiza la rutina y mantiene/asegura el vínculo con el entrenador
-     */
     @PostMapping("/rutinas/{id}")
     public String actualizarRutina(@PathVariable Long id,
                                    @Valid @ModelAttribute("rutinaForm") RutinaFormDTO rutinaForm,
                                    BindingResult result,
                                    Authentication auth,
                                    Model model) {
+        
+        Usuario entrenadorActual = usuarioService.findByUserName(auth.getName());
+
         if (result.hasErrors()) {
             model.addAttribute("rutinaId", id);
-            model.addAttribute("clientes", usuarioService.findByRolNombre("CLIENTE"));
+            model.addAttribute("clientes", usuarioService.findByEntrenadorId(entrenadorActual.getId()));
             return "entrenador/form_rutina";
         }
 
@@ -149,24 +153,10 @@ public class EntrenadorController {
         rutinaExistente.setActivo(rutinaForm.getActiva());
 
         Usuario cliente = usuarioService.findByIdOrThrow(rutinaForm.getClienteId());
-        Usuario entrenadorActual = usuarioService.findByUserName(auth.getName());
-
-        // Aseguramos que el cliente siga vinculado a este entrenador
-        cliente.setEntrenador(entrenadorActual);
-        usuarioService.save(cliente);
-
+        
         rutinaExistente.setCliente(cliente);
         rutinaService.save(rutinaExistente);
         
-        return "redirect:/entrenador/rutinas";
-    }
-
-    @PostMapping("/rutinas/{id}/eliminar")
-    public String eliminarRutina(@PathVariable Long id) {
-        java.util.Optional<Rutina> rutinaOpt = rutinaService.findById(id);
-        if (rutinaOpt.isPresent()) {
-            rutinaService.deleteById(id);
-        }
         return "redirect:/entrenador/rutinas";
     }
 }

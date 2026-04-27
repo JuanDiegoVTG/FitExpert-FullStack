@@ -51,6 +51,7 @@ public class SecurityConfig {
                 "/css/**", 
                 "/js/**", 
                 "/images/**", 
+                "/webjars/**",
                 "/error",
                 "/catalogo/**",
                 "/catalogo/pago-exitoso/**",
@@ -65,6 +66,9 @@ public class SecurityConfig {
             
             //RUTAS DE CHAT (Para que ambos roles entren)
             .requestMatchers("/api/chat/**").authenticated()
+
+            //RUTA: ACTIVAR ENTRENADOR 
+            .requestMatchers("/activar-entrenador").authenticated()
 
             // 4. RUTAS DE ADMIN: Solo personal autorizado
             .requestMatchers("/admin/**", "/api/usuarios/**", "/reportes/**").hasRole("ADMIN")
@@ -103,33 +107,26 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
+   @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
             Usuario usuario = usuarioRepository.findByUserNameWithRol(username)
                     .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-            // 🕵️ DEBUG: Esto saldrá en tu consola de Eclipse/VS Code
-            System.out.println("DEBUG LOGIN - Usuario: " + username);
-            System.out.println("DEBUG LOGIN - Rol: " + usuario.getRol().getNombre());
-            System.out.println("DEBUG LOGIN - Validado: " + usuario.isValidado());
-
-            // 🛡️ VALIDACIÓN REFORZADA
             String nombreRol = usuario.getRol().getNombre().toUpperCase().trim();
-            
-            if (nombreRol.equals("ENTRENADOR") && !usuario.isValidado()) {
-                System.out.println("🛑 BLOQUEO ACTIVADO para: " + username);
+
+            //  VALIDACIÓN REFORZADA
+            if (nombreRol.equals("ROLE_ENTRENADOR") && !usuario.isValidado()) {
                 throw new DisabledException("Tu cuenta aún no ha sido aprobada por el administrador.");
             }
 
-            // ... resto del código de authorities ...
-            String roleName = "ROLE_" + nombreRol;
+            // usamos los datos reales de la BD
             return new User(
                 usuario.getUserName(),
-                usuario.getPassword(),
-                usuario.isEnabled(), // Usa el campo que pusimos en la entidad
+                usuario.getPassword(), // Usa el hash 
+                usuario.isEnabled(),
                 true, true, true, 
-                Collections.singletonList(new SimpleGrantedAuthority(roleName))
+                Collections.singletonList(new SimpleGrantedAuthority(nombreRol))
             );
         };
     }

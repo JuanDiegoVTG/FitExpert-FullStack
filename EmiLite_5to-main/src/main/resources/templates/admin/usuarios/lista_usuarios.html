@@ -249,16 +249,17 @@
                             <span th:class="${usuario.activo ? 'badge-active' : 'badge-inactive'}" 
                                   th:text="${usuario.activo ? '● Activo' : '○ Inactivo'}"></span>
                         </td>
+                        
                         <td style="text-align: center;">
                             <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" class="btn-actions btn-edit" title="Editar Perfil">
                                     <i class="fas fa-pen-nib"></i>
                                 </a>
 
-                                <a th:if="${usuario.rol.nombre == 'ENTRENADOR' and usuario.validado != true}" 
-                                   th:href="@{/admin/usuarios/aprobar/{id}(id=${usuario.id})}" 
-                                   class="btn-actions btn-approve" title="Verificar Entrenador">
-                                    <i class="fas fa-user-check"></i>
+                                <a th:if="${usuario.rol.nombre == 'ROLE_ENTRENADOR' and usuario.validado != true}" 
+                                    th:href="@{/admin/usuarios/aprobar/{id}(id=${usuario.id})}" 
+                                    class="btn-actions btn-approve" title="Verificar Entrenador">
+                                        <i class="fas fa-user-check"></i>
                                 </a>
 
                                 <form th:action="@{/admin/usuarios/{id}/eliminar(id=${usuario.id})}" method="post" onsubmit="return confirm('¿Eliminar usuario de la base de datos?');" style="display:inline;">

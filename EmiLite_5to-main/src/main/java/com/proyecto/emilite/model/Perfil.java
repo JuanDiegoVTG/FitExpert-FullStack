@@ -1,27 +1,18 @@
 package com.proyecto.emilite.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@ToString
-@Setter
-@EqualsAndHashCode
-@Getter
 @Entity
-@Data
+@Table(name = "perfil")
+@Data // @Data ya incluye @Getter, @Setter, @ToString, @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "perfil")
+@Builder // Te permite crear objetos perfil más fácil en el servicio: Perfil.builder().edad(20)...
 public class Perfil {
 
     @Id
@@ -31,45 +22,36 @@ public class Perfil {
     @NotBlank(message = "El nombre completo es obligatorio")
     private String nombreCompleto;
 
-    @NotNull(message = "La edad es obligatoria")
-    @Positive(message = "La edad debe ser un número positivo")
+    // Quitamos los @NotNull y @Positive de aquí para que el registro sea flexible.
+    // Los validaremos más adelante cuando el usuario complete su configuración técnica.
     private Integer edad;
-
-    @NotNull(message = "El peso es obligatorio")
-    @Positive(message = "El peso debe ser un número positivo")
     private Double peso;
-
-    @NotNull(message = "La estatura es obligatoria")
-    @Positive(message = "La estatura debe ser un número positivo")
     private Double altura;
-
-    @NotNull(message = "El objetivo es obligatorio")
     private String objetivo;
 
-    //Atrivutos Personales
+    // Atributos Personales
     private String sexo;
     private String nivelActividad;
 
-    // Medidas para cálculos de composición corporal
+    // Medidas para cálculos
     private Double cuello;
     private Double cintura;
     private Double cadera;
-
 
     private String telefono;
 
     @Email(message = "El email debe tener un formato válido")
     private String email;
 
+    @Column(columnDefinition = "TEXT") // TEXT permite descripciones más largas
     private String observaciones;
 
     // Relación bidireccional con Usuario
+    @JsonIgnore
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "entrenador_id")
-    private Usuario entrenador;
 }

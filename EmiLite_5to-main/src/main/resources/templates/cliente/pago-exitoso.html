@@ -130,7 +130,6 @@
     </style>
 </head>
 <body>
-
     <div class="success-card">
         <div class="check-container">
             <i class="fas fa-check-circle check-icon"></i>
@@ -139,16 +138,20 @@
         <h1>¡PAGO EXITOSO!</h1>
         <p class="text-muted">Tu nueva vida fitness comienza aquí.</p>
         
-        <div class="details text-start">
+        <div class="details text-start" th:if="${nombreEntrenador != null}">
             <p><strong>Entrenador Asignado:</strong> 
-                <span th:text="${entrenador.nombres + ' ' + entrenador.apellidos}"></span>
+                <span th:text="${nombreEntrenador}">Nombre del Coach</span>
             </p>
-            <p><strong>Referencia:</strong> 
+            <p><strong>Referencia de Pago:</strong> 
                 <span th:text="${paymentId}" style="font-family: monospace;"></span>
             </p>
             <p><strong>Estado:</strong> 
                 <span class="badge-pago">Suscripción Activa</span>
             </p>
+        </div>
+
+        <div th:if="${nombreEntrenador == null}" class="alert alert-warning">
+            <p>Procesando los datos de tu coach...</p>
         </div>
 
         <form th:action="@{/catalogo/activar-entrenador}" method="post">
@@ -163,6 +166,5 @@
             Haz clic para activar tu chat y recibir tu rutina personalizada.
         </p>
     </div>
-
 </body>
 </html>

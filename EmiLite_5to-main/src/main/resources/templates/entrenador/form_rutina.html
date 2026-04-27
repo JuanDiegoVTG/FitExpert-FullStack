@@ -186,14 +186,15 @@
             </div>
 
             <div class="form-group">
-                <label for="clienteId">Asignar a Cliente:</label>
-                <select id="clienteId" th:field="*{clienteId}" required>
-                    <option value="">Seleccione un cliente</option>
-                    <option th:each="cliente : ${clientes}" 
-                            th:value="${cliente.id}" 
-                            th:text="${cliente.nombres + ' ' + cliente.apellidos}" 
-                            th:selected="${cliente.id == rutinaForm.clienteId}"></option>
-                </select>
+                <label>Asignar a Cliente:</label>
+                    <select th:field="*{clienteId}" class="form-select" required>
+                        <option value="" disabled selected>Seleccione un cliente</option>
+                        
+                        <option th:each="cliente : ${clientes}" 
+                                th:value="${cliente.id}" 
+                                th:text="${cliente.nombres + ' ' + cliente.apellidos}">
+                        </option>
+                    </select>
                 <div class="error" th:if="${#fields.hasErrors('clienteId')}" th:errors="*{clienteId}"></div>
             </div>
 

@@ -129,21 +129,21 @@
 
 <div class="container">
     <header style="margin-bottom: 30px;">
-        <h2 style="font-weight: 900; letter-spacing: -2px; font-size: 2.2rem; background: linear-gradient(to right, #fff, var(--primary)); --webkit-background-clip: text; -webkit-text-fill-color: transparent;">FIT EXPERT</h2>
+        <h2 style="font-weight: 900; letter-spacing: -2px; font-size: 2.2rem; background: linear-gradient(to right, #0f172a, var(--primary)); --webkit-background-clip: text; -webkit-text-fill-color: #000000;">FIT EXPERT</h2>
         <p style="color: var(--text-muted); font-size: 0.9rem;">Crea tu perfil de alto rendimiento</p>
     </header>
 
-    <div th:if="${#fields.hasErrors('global')}" class="alert-error">
-        <i class="fas fa-exclamation-triangle"></i> <span th:errors="*{global}"></span>
-    </div>
-
-    <div class="stepper">
-        <div class="step-circle active" id="s1">1</div>
-        <div class="step-circle" id="s2">2</div>
-        <div class="step-circle" id="s3">3</div>
-    </div>
-
     <form th:action="@{/usuarios/crear-publico}" method="post" th:object="${usuarioForm}" enctype="multipart/form-data">
+
+        <div th:if="${#fields.hasErrors('global')}" class="alert-error">
+            <i class="fas fa-exclamation-triangle"></i> <span th:errors="*{global}"></span>
+        </div>
+
+        <div class="stepper">
+            <div class="step-circle active" id="s1">1</div>
+            <div class="step-circle" id="s2">2</div>
+            <div class="step-circle" id="s3">3</div>
+        </div>
         
         <div class="form-step active" id="step1">
             <div class="form-group">

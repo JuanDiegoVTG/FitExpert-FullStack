@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.proyecto.emilite.model.Mensaje;
 import com.proyecto.emilite.model.Perfil;
 import com.proyecto.emilite.model.Progreso;
 import com.proyecto.emilite.model.Rutina;
 import com.proyecto.emilite.model.Usuario;
+import com.proyecto.emilite.repository.MensajeRepository;
 import com.proyecto.emilite.repository.PerfilRepository;
 import com.proyecto.emilite.repository.ProgresoRepository;
 import com.proyecto.emilite.repository.RutinaRepository;
@@ -52,6 +54,9 @@ public class PythonController {
     @Autowired
     private RutinaRepository rutinaRepository;
 
+    @Autowired
+    private MensajeRepository mensajeRepository;
+
     public PythonController(PerfilRepository perfilRepository) {
         this.perfilRepository = perfilRepository;
     }
@@ -74,26 +79,27 @@ public class PythonController {
     /**
      * MÉTODOS DEL CHAT (VISTAS Y LOGICA)
      */
-    @GetMapping("/chat/{id}")
-    public String verChat(@PathVariable Long id, Model model, Authentication auth) {
+    @GetMapping("/chat/{usuarioDestinoId}")
+    public String verChat(@PathVariable Long usuarioDestinoId, Model model, Authentication auth) {
         Usuario usuarioActual = usuarioService.obtenerPorUsername(auth.getName());
-        model.addAttribute("chatId", id);
+        
+        // YA NO USAMOS Chat chat = chatService... 
+        // Usamos el ID del usuario destino directamente como nuestro "chatId"
+        model.addAttribute("chatId", usuarioDestinoId); 
         model.addAttribute("usuarioId", usuarioActual.getId());
 
+        // El resto de tu lógica de Roles se queda igual
         if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ENTRENADOR"))) {
-            List<Usuario> alumnos = usuarioService.obtenerClientesDeEntrenador(usuarioActual.getId());
-            model.addAttribute("clientes", alumnos);
-            
-            Usuario alumnoActual = usuarioRepository.findById(id).orElse(null);
-            model.addAttribute("nombreCliente", alumnoActual != null ? alumnoActual.getNombres() + " " + alumnoActual.getApellidos() : "Alumno");
-            
+            model.addAttribute("clientes", usuarioService.obtenerClientesDeEntrenador(usuarioActual.getId()));
+            Usuario alumnoActual = usuarioRepository.findById(usuarioDestinoId).orElse(null);
+            model.addAttribute("nombreCliente", alumnoActual != null ? 
+                            alumnoActual.getNombres() + " " + alumnoActual.getApellidos() : "Alumno");
             return "entrenador/chat";
         }
 
+        // Lógica Cliente
         if (usuarioActual.getEntrenador() != null) {
             model.addAttribute("nombreEntrenador", "Prof. " + usuarioActual.getEntrenador().getNombres());
-        } else {
-            model.addAttribute("nombreEntrenador", "Entrenador Asignado");
         }
         
         return "cliente/chat";
@@ -105,35 +111,57 @@ public class PythonController {
         
         if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ENTRENADOR"))) {
             List<Usuario> alumnos = usuarioService.obtenerClientesDeEntrenador(usuario.getId());
-            if (!alumnos.isEmpty()) {
+            
+            // ¡AGREGA ESTO PARA DEPURAR!
+            System.out.println("DEBUG: Alumnos encontrados: " + (alumnos != null ? alumnos.size() : "null"));
+            
+            if (alumnos != null && !alumnos.isEmpty()) {
                 return "redirect:/api/chat/" + alumnos.get(0).getId();
             }
+            System.out.println("DEBUG: El entrenador no tiene alumnos o la lista está vacía.");
             return "redirect:/dashboard?error=sin_alumnos";
         }
         
-        return "redirect:/api/chat/" + usuario.getId();
+        if (usuario.getEntrenador() != null) {
+            // El cliente viaja al chat del ENTRENADOR (ej. ID 7)
+            return "redirect:/api/chat/" + usuario.getEntrenador().getId();
+        }
+        
+        return "redirect:/dashboard?error=sin_entrenador";
+        
     }
 
-    @GetMapping("/chat/mensajes/{id}")
+    @GetMapping("/chat/mensajes/{idDestino}")
     @ResponseBody
-    public ResponseEntity<String> cargarMensajes(@PathVariable Long id) {
-        try {
-            String mensajes = pythonService.obtenerMensajes(id);
-            return ResponseEntity.ok(mensajes);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("[]");
-        }
+    public List<Mensaje> cargarMensajes(@PathVariable Long idDestino, Authentication auth) {
+        Usuario usuarioActual = usuarioService.obtenerPorUsername(auth.getName());
+        // Busca en la base de datos MySQL los mensajes entre los dos
+        return mensajeRepository.findChatMessages(usuarioActual.getId(), idDestino);
     }
 
     @PostMapping("/chat/enviar")
     @ResponseBody
-    public ResponseEntity<String> enviarMensaje(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<String> enviarMensaje(@RequestBody Map<String, Object> payload, Authentication auth) {
         try {
+            // 1. Identificar quién envía
+            Usuario emisor = usuarioService.obtenerPorUsername(auth.getName());
+            Long idDestino = Long.valueOf(payload.get("chat_id").toString()); // El ID del entrenador o alumno
+            String contenido = payload.get("content").toString();
+
+            // 2. GUARDAR EN TU BASE DE DATOS (Para que no se borren)
+            Mensaje msg = new Mensaje();
+            msg.setSender(emisor);
+            msg.setReceiver(usuarioRepository.findById(idDestino).get());
+            msg.setContent(contenido);
+            mensajeRepository.save(msg); // ¡AQUÍ SE GUARDAN PARA SIEMPRE!
+
+            // 3. (Opcional) Llamar a Python solo si necesitas que la IA responda
             String json = objectMapper.writeValueAsString(payload);
             String respuesta = pythonService.enviarMensajeChat(json); 
+            
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error de mensajería");
+            return ResponseEntity.status(500).body("Error al guardar mensaje");
         }
     }
 
