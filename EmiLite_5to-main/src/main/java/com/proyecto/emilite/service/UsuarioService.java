@@ -1,6 +1,7 @@
 package com.proyecto.emilite.service;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class UsuarioService {
 
     @Autowired
     private RolRepository rolRepository;
+    
 
     public static final String ROL_ENTRENADOR = "ROLE_ENTRENADOR";
     public static final String ROL_CLIENTE = "ROLE_CLIENTE";
@@ -221,4 +223,37 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
     }
 
+    public void registrarConCv(UsuarioRegistroDTO dto, String nombrePdf) {
+        // 1. Creamos la instancia de la Entidad (El modelo de la BD)
+        Usuario usuario = new Usuario();
+
+        // 2. Mapeamos uno por uno los campos del DTO al Usuario
+        usuario.setNombres(dto.getNombres());
+        usuario.setApellidos(dto.getApellidos());
+        usuario.setUserName(dto.getUserName());
+        usuario.setEmail(dto.getEmail());
+        // 3. ¡IMPORTANTE! Encriptar la contraseña antes de guardar
+        usuario.setFechaNacimiento(dto.getFechaNacimiento()); 
+        usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
+        usuario.setRutaHojaVida(nombrePdf);
+        
+        
+
+        // 5. Asignar el Rol
+        Rol rol = rolRepository.findById(dto.getRolId())
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+        
+        usuario.setRol(rol);
+        
+        // Lógica de validación
+        if (dto.getRolId() == 2) {
+            usuario.setValidado(false);
+            usuario.setActivo(false); // Inactivo hasta que el admin apruebe
+        } else {
+            usuario.setValidado(true);
+            usuario.setActivo(true);
+        }
+
+        usuarioRepository.save(usuario);
+    }
 }

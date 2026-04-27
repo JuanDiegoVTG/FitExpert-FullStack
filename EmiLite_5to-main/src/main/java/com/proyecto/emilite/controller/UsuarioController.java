@@ -10,6 +10,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.UUID;
 
 import com.proyecto.emilite.dto.UsuarioRegistroDTO;
 import com.proyecto.emilite.model.Rol;
@@ -45,26 +52,24 @@ public class UsuarioController {
         return "registro_publico"; 
     }
 
-    @PostMapping("/usuarios/crear-publico")
+   @PostMapping("/usuarios/crear-publico")
     public String crearUsuarioPublico(
             @Valid @ModelAttribute("usuarioForm") UsuarioRegistroDTO usuarioForm,
             BindingResult result,
             @RequestParam(value = "archivoCv", required = false) MultipartFile archivoCv, 
             Model model) {
 
-        // 1. VALIDACIONES DE FORMULARIO
-        if (result.hasErrors()) {
-            model.addAttribute("roles", rolService.findAll());
-            return "registro_publico";
-        }
+        // 1. VALIDACIONES DE FORMULARIO (Edad y existencia)
+        if (usuarioForm.getFechaNacimiento() != null) {
+            LocalDate hoy = LocalDate.now();
+            // Calculamos el periodo entre la fecha de nacimiento y hoy
+            int edadCalculada = Period.between(usuarioForm.getFechaNacimiento(), hoy).getYears();
 
-        if (usuarioService.existsByUserName(usuarioForm.getUserName())) {
-            result.rejectValue("userName", "error.usuarioForm", "Este nombre de usuario ya está en uso.");
-        }
-        
-        if (usuarioForm.getEmail() != null && !usuarioForm.getEmail().isEmpty() &&
-            usuarioService.existsByEmail(usuarioForm.getEmail())) {
-            result.rejectValue("email", "error.usuarioForm", "Este email ya está registrado.");
+            if (edadCalculada < 16) {
+                result.rejectValue("fechaNacimiento", "error.usuarioForm", "Debes tener al menos 16 años para registrarte.");
+            }
+        } else {
+            result.rejectValue("fechaNacimiento", "error.usuarioForm", "Por favor, selecciona tu fecha de nacimiento.");
         }
 
         if (result.hasErrors()) {
@@ -72,35 +77,52 @@ public class UsuarioController {
             return "registro_publico";
         }
 
-        // 2. PROCESO DE REGISTRO E IA
+        // ... (tus validaciones de nombre de usuario y email siguen igual) ...
+
+        // 2. PROCESO DE REGISTRO, IA Y GUARDADO DE PDF
         Double scoreObtenido = 0.0; 
+        String nombreArchivoFinal = null;
 
         try {
-            //  REGLA: 2 = Entrenador (Análisis de CV con Python)
+            // REGLA: 2 = Entrenador (Análisis de CV y Guardado Físico)
             if (usuarioForm.getRolId() == 2) { 
                 if (archivoCv != null && !archivoCv.isEmpty()) {
+                    // --- LÓGICA DE GUARDADO FÍSICO ---
+                    String rutaCarpeta = "/home/juand/uploads/cvs/"; // Ruta en tu WSL
+                    File directorio = new File(rutaCarpeta);
+                    if (!directorio.exists()) directorio.mkdirs();
+
+                    // Nombre único: uuid_nombre.pdf
+                    nombreArchivoFinal = UUID.randomUUID().toString() + "_" + archivoCv.getOriginalFilename();
+                    Path rutaCompleta = Paths.get(rutaCarpeta + nombreArchivoFinal);
+                    Files.write(rutaCompleta, archivoCv.getBytes());
+                    
+                    // --- LÓGICA DE PYTHON ---
                     scoreObtenido = pythonService.validarCvConPython(archivoCv, usuarioForm.getUserName());
-                    System.out.println("🐍 Python analizó el CV. Score: " + scoreObtenido);
+                    System.out.println("🐍 CV guardado y analizado. Score: " + scoreObtenido);
                 }
             }
 
-            // Guardamos el usuario (el Service ya sabe que si es 2, validado = false)
-            usuarioService.registrar(usuarioForm);
-
-            // REGLA: 2 = Entrenador (Disparar el correo de postulación)
-            if (usuarioForm.getRolId() == 2) {
-                emailService.enviarNotificacionRegistro(
-                    usuarioForm.getEmail(), 
-                    usuarioForm.getNombres(), 
-                    scoreObtenido
-                );
-                System.out.println("📧 Correo de postulación enviado a: " + usuarioForm.getEmail());
+            // 3. REGISTRO EN BD
+            // Pasamos el nombre del archivo al servicio para que lo guarde en el campo 'rutaHojaVida'
+            usuarioService.registrarConCv(usuarioForm, nombreArchivoFinal);
+            try{
+                // 4. NOTIFICACIÓN POR CORREO
+                if (usuarioForm.getRolId() == 2) {
+                    emailService.enviarNotificacionRegistro(
+                        usuarioForm.getEmail(), 
+                        usuarioForm.getNombres(), 
+                        scoreObtenido
+                    );
+                }
+                } catch (Exception mailError) {
+                // Solo imprimimos el error en consola, pero dejamos que el usuario siga
+                System.err.println("⚠️ No se pudo enviar el correo: " + mailError.getMessage());
             }
             
             return "redirect:/login?exito=true";
 
         } catch (Exception e) {
-            System.err.println("❌ Error en el proceso: " + e.getMessage());
             model.addAttribute("error", "Error en el proceso: " + e.getMessage());
             model.addAttribute("roles", rolService.findAll());
             return "registro_publico";

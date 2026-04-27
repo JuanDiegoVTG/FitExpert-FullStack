@@ -1,8 +1,11 @@
 package com.proyecto.emilite.controller;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.proyecto.emilite.dto.UsuarioRegistroDTO;
@@ -213,5 +217,24 @@ public class AdminUsuarioController {
         }
         
         return "redirect:/admin/usuarios"; // Redirige a la lista para ver el cambio
+    }
+
+    @GetMapping("/ver-cv/{nombreArchivo}")
+    @ResponseBody
+    public ResponseEntity<org.springframework.core.io.Resource> servirCv(@PathVariable String nombreArchivo) {
+        try {
+            Path ruta = Paths.get("/home/juand/uploads/cvs/").resolve(nombreArchivo);
+            org.springframework.core.io.Resource recurso = new org.springframework.core.io.UrlResource(ruta.toUri());
+
+            if (recurso.exists() || recurso.isReadable()) {
+                return ResponseEntity.ok()
+                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + nombreArchivo + "\"")
+                    .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                    .body(recurso);
+            }
+        } catch (Exception e) {
+            // Manejar error
+        }
+        return ResponseEntity.notFound().build();
     }
 }
