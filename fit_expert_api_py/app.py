@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from services.ia_services import generar_rutina_ia 
+from services.ia_services import IAService
 from services.cv_services import analizar_cv_entrenador
 
 app = Flask(__name__)
@@ -10,11 +10,6 @@ CORS(app)
 # Aquí se guardarán los mensajitos de verdad
 messages_db = {}
 
-# --- RUTAS DE IA Y CV ---
-@app.route("/generar-rutina", methods=["POST"])
-def route_generar_rutina():
-    datos = request.get_json()
-    return jsonify(generar_rutina_ia(datos))
 
 @app.route("/validar-cv", methods=["POST"])
 def route_validar_cv():
@@ -52,6 +47,20 @@ def get_messages(chat_id):
     mensajes_del_chat = messages_db.get(str(chat_id), [])
     
     return jsonify(mensajes_del_chat), 200
+
+@app.route('/api/diagnostico', methods=['POST'])
+def diagnostico_endpoint():
+    try:
+        data = request.get_json(force=True)
+        # Llamamos al service para que haga las matemáticas
+        resultado = IAService.calcular_diagnostico_completo(data)
+        
+        print(f"✅ Diagnóstico generado para {data.get('sexo')}")
+        return jsonify(resultado), 200
+
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        return jsonify({"error": "No se pudo procesar la analítica"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

@@ -1,7 +1,7 @@
 package com.proyecto.emilite.service;
 
+import com.proyecto.emilite.dto.PromocionFormDTO;
 import com.proyecto.emilite.model.Promocion;
-import com.proyecto.emilite.model.dto.PromocionFormDTO;
 import com.proyecto.emilite.repository.PromocionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

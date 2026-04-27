@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.proyecto.emilite.dto.UsuarioRegistroDTO;
 import com.proyecto.emilite.model.Rol;
 import com.proyecto.emilite.model.Usuario;
-import com.proyecto.emilite.model.dto.UsuarioRegistroDTO;
 import com.proyecto.emilite.repository.UsuarioRepository;
 import com.proyecto.emilite.service.RolService;
 import com.proyecto.emilite.service.UsuarioService;
@@ -186,19 +187,31 @@ public class AdminUsuarioController {
         return "redirect:/admin/usuarios";
     }
 
-    @GetMapping("/aprobar/{id}")
-    public String aprobarEntrenador(@PathVariable Long id) {
-        // Buscamos al usuario en la BD
+    
+    @GetMapping("/aprobar/{id}") 
+    public String aprobarEntrenador(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        
+        // 1. Buscamos al usuario en la BD
         Usuario usuario = usuarioRepository.findById(id).orElse(null);
         
-        if (usuario != null && usuario.getRol().getNombre().equals("ENTRENADOR")) {
-            // Le damos el pase VIP
+        // 2. Debug rápido (Mira tu consola de Linux, ahí verás qué nombre de rol está llegando)
+        if (usuario != null) {
+            System.out.println("DEBUG: Rol encontrado -> " + usuario.getRol().getNombre());
+        }
+
+        // 3. Condición corregida con "ROLE_ENTRENADOR"
+        if (usuario != null && "ROLE_ENTRENADOR".equals(usuario.getRol().getNombre())) {
+            
             usuario.setValidado(true);
-            usuario.setActivo(true); // Por si acaso también estaba inactivo
+            usuario.setActivo(true);
             usuarioRepository.save(usuario);
+            
+            redirectAttributes.addFlashAttribute("mensaje", "¡Entrenador aprobado!");
+        } else {
+            // Esto te ayuda a saber si falló el IF
+            System.out.println("DEBUG: No se cumplió la condición de aprobación.");
         }
         
-        // Lo devolvemos al panel de control
-        return "redirect:/dashboard"; 
+        return "redirect:/admin/usuarios"; // Redirige a la lista para ver el cambio
     }
 }

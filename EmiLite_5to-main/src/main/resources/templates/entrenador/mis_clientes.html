@@ -149,12 +149,23 @@
                     <td th:text="${cliente.email}"></td>
                     <td>
                         <span th:text="${cliente.activo ? '● Activo' : '○ Inactivo'}"
-                              th:style="${cliente.activo ? 'color: #10b981' : 'color: #ef4444'}"></span>
+                            th:style="${cliente.activo ? 'color: #10b981; font-weight: 800;' : 'color: #ef4444; font-weight: 800;'}">
+                        </span>
                     </td>
-                    <td style="text-align: center;">
-                        <a th:href="@{/api/chat/{id}(id=${cliente.id})}" class="btn-chat" title="Iniciar chat con el alumno">
-                            <i class="fab fa-whatsapp" style="font-size: 1.1rem;"></i> Chatear
-                        </a>
+                    <td style="text-align: right;">
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a th:href="@{/api/chat/{id}(id=${cliente.id})}" 
+                            class="btn-chat" 
+                            style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 5px 12px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                <i class="fab fa-whatsapp"></i> Chatear
+                            </a>
+
+                            <a th:href="@{/api/entrenador/cliente/{id}(id=${cliente.id})}" 
+                            class="btn-ficha" 
+                            style="background: #6366f1; color: white; padding: 5px 12px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700;">
+                                <i class="fas fa-eye"></i> Ver Ficha IA
+                            </a>
+                        </div>
                     </td>
                 </tr>
             </tbody>

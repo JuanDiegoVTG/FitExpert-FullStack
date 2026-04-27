@@ -1,7 +1,7 @@
 package com.proyecto.emilite.controller;
 
+import com.proyecto.emilite.dto.PromocionFormDTO;
 import com.proyecto.emilite.model.Promocion;
-import com.proyecto.emilite.model.dto.PromocionFormDTO;
 import com.proyecto.emilite.service.PromocionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

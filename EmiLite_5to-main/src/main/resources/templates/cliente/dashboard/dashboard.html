@@ -9,39 +9,26 @@
     
     <style>
         :root {
-            --bg-body: #111a30;
-            --bg-sidebar: #1e2f62f6;
-            --card-bg: rgba(20, 47, 130, 0.35);
-
-            --primary: #6079C5;
-            --primary-light: #8CA0DC;
-            --primary-dark: #2444A5;
-
-            /* IMPORTANTE: redefinimos accent para que no rompa */
-            --accent: #8CA0DC;
-
-            --text-main: #f1f5ff;
-            --text-muted: #a9b4d0;
-
-            --border-color: rgba(140, 160, 220, 0.15);
-
-            --primary-glow: rgba(96, 121, 197, 0.45);
-
+            --bg-body: #0f172a;
+            --bg-sidebar: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --accent-neon: #00d2ff;
+            --success-neon: #00ff88;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         body {
-            background-color: var(--primary-light);
+            background-color: var(--bg-body);
             background-image: 
-                radial-gradient(at 0% 0%, rgba(140,160,220,0.15), transparent 50%),
-                radial-gradient(at 100% 100%, rgba(64,92,176,0.15), transparent 50%);
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15), transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 210, 255, 0.1), transparent 50%);
             color: var(--text-main);
             display: flex;
             min-height: 100vh;
@@ -72,25 +59,7 @@
             text-decoration: none;
         }
 
-        .brand i {
-        background: linear-gradient(135deg, var(--primary), var(--accent));
-        -webkit-background-clip: text; 
-        background-clip: text; 
-        -webkit-text-fill-color: transparent; 
-        }
-        .nav-group {
-            margin-bottom: 2rem;
-        }
-
-        .nav-group label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            display: block;
-            padding-left: 0.75rem;
-        }
+        .brand i { color: var(--accent-neon); text-shadow: 0 0 10px var(--accent-neon); }
 
         .nav-link {
             display: flex;
@@ -102,37 +71,24 @@
             border-radius: 12px;
             margin-bottom: 0.5rem;
             transition: var(--transition);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .nav-link:hover, .nav-link.active {
-            background: rgba(96, 121, 197, 0.15);
+            background: rgba(99, 102, 241, 0.1);
             color: white;
         }
 
-        .nav-link i {
-            font-size: 1.2rem;
-            transition: var(--transition);
-        }
-
-        .nav-link:hover i {
-            color: var(--primary);
-            transform: scale(1.1);
-        }
+        .nav-link.active i { color: var(--accent-neon); }
 
         /* --- MAIN CONTENT --- */
-        .main-content {
-            margin-left: 280px;
-            flex: 1;
-            padding: 2.5rem;
-        }
+        .main-content { margin-left: 280px; flex: 1; padding: 2.5rem; }
 
-        /* Header */
         .top-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
         }
 
         .user-profile {
@@ -140,200 +96,146 @@
             align-items: center;
             gap: 15px;
             background: var(--card-bg);
-            padding: 8px 20px 8px 8px;
+            padding: 8px 15px;
             border-radius: 50px;
             border: 1px solid var(--border-color);
         }
 
         .avatar {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent-neon));
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            box-shadow: 0 0 15px var(--primary-glow);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; color: white;
         }
 
         /* Hero Card */
         .hero-card {
-            background: linear-gradient(
-                135deg, 
-                rgba(33, 52, 106, 0.816), 
-                rgba(60, 95, 198, 0.914)
-            );
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
             border: 1px solid var(--border-color);
             border-radius: 24px;
-            padding: 3rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
             position: relative;
             overflow: hidden;
-            margin-bottom: 3rem;
-            backdrop-filter: blur(5px);
         }
 
-        .hero-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 300px;
-            height: 300px;
-            background: var(--primary);
-            filter: blur(120px);
-            opacity: 0.2;
-            z-index: 0;
+        .hero-card h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; }
+
+        /* BANNER DE VALORACIÓN (EL NUEVO PROTAGONISTA) */
+        .assessment-banner {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--accent-neon);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.15);
         }
 
-        .hero-content {
-            position: relative;
-            z-index: 1;
+        .btn-neon-action {
+            background: linear-gradient(45deg, var(--accent-neon), var(--success-neon));
+            color: #0f172a !important;
+            font-weight: 800;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+            border: none;
         }
 
-        .hero-content h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .hero-content p {
-            color: var(--primary-light);
-            font-size: 1.1rem;
-            max-width: 500px;
-            margin-bottom: 2rem;
+        .btn-neon-action:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.5);
+            filter: brightness(1.1);
         }
 
         /* Stats Grid */
-        .stats-container {
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 1.5rem;
         }
 
-        .stat-item {
-            background: linear-gradient(
-            135deg, 
-            rgba(33, 52, 106, 0.95), 
-            rgba(36, 68, 165, 0.9)
-            );
+        .stat-card {
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             padding: 1.5rem;
             border-radius: 20px;
             transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(10px);
         }
 
-        .stat-item:hover {
-            transform: translateY(-8px);
-            border-color: var(--primary-light);
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
             background: rgba(30, 41, 59, 0.9);
-            box-shadow: 0 20px 40px rgba(20, 47, 130, 0.5);
         }
 
-        .icon-box {
-            width: 48px;
-            height: 48px;
+        .icon-circle {
+            width: 45px; height: 45px;
             border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-
-        .stat-info h4 {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 4px;
-        }
-
-        .stat-info .value {
-            font-size: 1.75rem;
-            font-weight: 700;
-        }
-
-        /* Buttons */
-        .action-btns {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition);
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-main {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 14px 0 var(--primary-glow);
-        }
-
-        .btn-main:hover {
-            filter: brightness(1.1);
-            transform: scale(1.05);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: white;
-        }
-
-        .btn-outline:hover {
-            background: rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
         }
 
         .logout-btn {
             margin-top: auto;
+            padding: 12px;
             background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
+            color: #f87171;
             border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .logout-btn:hover {
-            background: #ef4444;
-            color: white;
-        }
-
-        .top-header h2 {
+            border-radius: 12px;
             font-weight: 700;
-        }
-
-        .btn-chat-cliente {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #00D4FF, #3169B2);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px; /* Bordes redondeados modernos */
-            font-weight: 700;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
-            border: none;
             cursor: pointer;
-            width: 100%;
+            transition: 0.3s;
         }
 
-        .btn-chat-cliente:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
-            background: linear-gradient(135deg, #3169B2, #00D4FF);
-            color: white;
+        .logout-btn:hover { background: #ef4444; color: white; }
+
+        /* Contenedor del grupo de botones */
+        .fit-btn-group {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 5px;
+            border-radius: 14px;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            display: inline-flex;
+            gap: 5px;
+        }
+
+        /* Estilo base de los botones */
+        .btn-toggle-fit {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Efecto Hover */
+        .btn-toggle-fit:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Estado ACTIVO (El toque neón) */
+        .btn-toggle-fit.active {
+            background: linear-gradient(45deg, #00d2ff, #00ff88);
+            color: #0f172a;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
         }
     </style>
 </head>
@@ -345,139 +247,229 @@
             <span>FIT EXPERT</span>
         </a>
 
-        <div class="nav-group">
-            <label>Menu Principal</label>
-            <a href="/dashboard" class="nav-link active">
-                <i class="fas fa-th-large"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="/cliente/rutinas" class="nav-link">
-                <i class="fas fa-dumbbell"></i>
-                <span>Mis Rutinas</span>
-            </a>
-            <a href="/cliente/servicios" class="nav-link">
-                <i class="fas fa-rocket"></i>
-                <span>Servicios</span>
-            </a>
-            <a href="/catalogo" class="nav-link">
-                <i class="fas  fa-chalkboard-teacher"></i>
-                <span>Entrenadores</span>
-            </a>
+        <div class="nav-group" style="margin-bottom: 2rem;">
+            <label style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; display: block;">Menú</label>
+            <a href="/dashboard" class="nav-link active"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+            <a href="/cliente/rutinas" class="nav-link"><i class="fas fa-dumbbell"></i><span>Mis Rutinas</span></a>
+            <a href="/catalogo" class="nav-link"><i class="fas fa-user-tie"></i><span>Entrenadores</span></a>
         </div>
 
         <div class="nav-group">
-            <label>Cuenta</label>
-            <a href="/cliente/perfil/editar" class="nav-link">
-                <i class="fas fa-user-circle"></i>
-                <span>Mi Perfil</span>
-            </a>
-            <a href="/cliente/pagos" class="nav-link">
-                <i class="fas fa-wallet"></i>
-                <span>Pagos y Facturas</span>
-            </a>
+            <label style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; display: block;">Cuenta</label>
+            <a href="/cliente/perfil/editar" class="nav-link"><i class="fas fa-user-circle"></i><span>Mi Perfil</span></a>
+            <a href="/cliente/pagos" class="nav-link"><i class="fas fa-wallet"></i><span>Pagos</span></a>
         </div>
 
         <form th:action="@{/logout}" method="post" style="margin-top: auto;">
-            <button type="submit" class="btn logout-btn" style="width: 100%; justify-content: center;">
-                <i class="fas fa-power-off"></i>
-                <span>Cerrar Sesión</span>
-            </button>
+            <button type="submit" class="logout-btn w-100"><i class="fas fa-power-off me-2"></i> Cerrar Sesión</button>
         </form>
     </nav>
 
     <main class="main-content">
-        
         <header class="top-header">
             <div>
-                <h2 style="font-weight: 700;">Panel de Control</h2>
-                <p style="color: var(--bg-sidebar);">¡Bienvenido de nuevo a tu entrenamiento!</p>
+                <h2 class="fw-bold">Panel de Control</h2>
+                <p class="text-muted">Estado actual de tu rendimiento</p>
             </div>
 
             <div class="user-profile">
                 <div class="avatar">
                     <span th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">U</span>
                 </div>
-                <div>
-                    <div style="font-weight: 600; font-size: 0.9rem;" sec:authentication="principal.username">Usuario</div>
-                    <div style="color: var(--accent); font-size: 0.75rem; font-weight: 700;">• MIEMBRO PRO</div>
+                <div class="ms-2">
+                    <div style="font-weight: 700; font-size: 0.85rem;" sec:authentication="principal.username">Usuario</div>
+                    <div style="color: var(--success-neon); font-size: 0.65rem; font-weight: 800;">• MIEMBRO PRO</div>
                 </div>
             </div>
         </header>
 
         <section class="hero-card">
-            <div class="hero-content">
-                <h1>Hola, <span sec:authentication="principal.username" style="color: var(--bg-sidebar);">Atleta</span>! 👋</h1>
-                <p>Tu progreso no se detiene. Hoy es un excelente día para superar tus marcas personales. Revisa tus nuevas rutinas generadas.</p>
-                
-                <div class="action-btns">
-                    <a href="/cliente/rutinas" class="btn btn-main">
-                        <i class="fas fa-play"></i> Empezar Rutina
-                    </a>
-                    <a href="/cliente/preparar-rutina" class="btn btn-outline">
-                        <i class="fas fa-magic"></i> Generar con IA
-                    </a>
-                </div>
-            </div>
-
+            <h1>¡Hola, <span sec:authentication="principal.username" style="color: var(--accent-neon);">Atleta</span>! 👋</h1>
+            <p class="text-muted">Tu progreso no se detiene. Hoy es un excelente día para superar tus marcas personales.</p>
+            <a href="/cliente/rutinas" class="btn btn-primary px-4 py-2 fw-bold" style="border-radius: 10px;">
+                <i class="fas fa-play me-2"></i> Ver mis Rutinas
+            </a>
         </section>
 
-        <section class="stats-container">
-            <div class="stat-item" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 15px; padding: 25px; text-align: center;">
-                <h5 style="color: #00D4FF; font-weight: bold; margin-bottom: 15px;">
-                    <i class="fas fa-comments"></i> Asesoría Técnica
-                </h5>      
-                <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5;">
-                    ¿Dudas con tu rutina? Escríbele a tu entrenador ahora mismo.
-                </p>
-                <a th:href="@{/api/chat/bandeja}" class="btn-chat-cliente">
-                    <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Abrir Chat
+        <section class="assessment-banner">
+            <div>
+                <h3 class="fw-bold text-white mb-1">📊 Mi Estado Físico <span style="color: var(--accent-neon);">IA</span></h3>
+                <p class="text-muted mb-0 small">Calcula tu % de grasa, IMC y tasa metabólica para tu plan personalizado.</p>
+            </div>
+            <div>
+                <a th:href="@{/api/valoracion}" class="btn-neon-action">
+                    NUEVA VALORACIÓN <i class="fas fa-rocket"></i>
+                </a>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="icon-circle" style="background: rgba(0, 210, 255, 0.1); color: var(--accent-neon);">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Asesoría Técnica</h5>
+                <p class="text-muted small mb-3">¿Dudas con tu progreso? Habla con tu entrenador.</p>
+                <a th:href="@{/api/chat/bandeja}" class="btn btn-outline-info w-100 fw-bold border-info text-info" style="border-radius: 10px;">
+                    Abrir Chat
                 </a>
             </div>
 
-            <div class="stat-item">
-                <div class="icon-box" style="background: rgba(16, 185, 129, 0.2); color: var(--accent);">
+            <div class="stat-card">
+                <div class="icon-circle" style="background: rgba(0, 255, 136, 0.1); color: var(--success-neon);">
                     <i class="fas fa-calendar-check"></i>
                 </div>
-                <div class="stat-info">
-                    <h4>Rutinas Listas</h4>
-                    <div class="value">2</div>
-                </div>
+                <h5 class="fw-bold mb-1">Rutinas</h5>
+                <div class="h3 fw-black">2</div>
+                <p class="text-muted small">Asignadas este mes</p>
             </div>
 
-            <div class="stat-item">
-                <div class="icon-box" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">
+            <div class="stat-card">
+                <div class="icon-circle" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
                     <i class="fas fa-gem"></i>
                 </div>
-                <div class="stat-info">
-                    <h4>Servicios</h4>
-                    <div class="value">3</div>
-                </div>
+                <h5 class="fw-bold mb-1">Servicios</h5>
+                <div class="h3 fw-black">3</div>
+                <p class="text-muted small">Planes activos</p>
             </div>
 
-            <div class="stat-item">
-                <div class="icon-box" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+            <div class="stat-card">
+                <div class="icon-circle" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
                     <i class="fas fa-shield-alt"></i>
                 </div>
-                <div class="stat-info">
-                    <h4>Membresía</h4>
-                    <div class="value" style="color: var(--accent); font-size: 1.2rem;">ACTIVA</div>
+                <h5 class="fw-bold mb-1">Membresía</h5>
+                <div class="fw-bold" style="color: var(--success-neon);">ACTIVA</div>
+                <p class="text-muted small">Nivel Elite</p>
+            </div>
+        </section>
+        <br><br>
+        <section class="mt-5">
+            <div class="glass-card" style="background: rgba(30, 41, 59, 0.7); border-radius: 25px; padding: 2rem; border: 1px solid rgba(0, 210, 255, 0.2);">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="text-white fw-bold"><i class="fas fa-chart-line text-info me-2"></i> Mi Evolución</h3>
+                        <p class="text-muted small">Comparativa de progreso semanal y mensual</p>
+                    </div>
+                    <div class="fit-btn-group" role="group">
+                        <button type="button" 
+                                id="btn-semanal"
+                                class="btn-toggle-fit active" 
+                                onclick="toggleView('semanal')">
+                            <i class="fas fa-calendar-week me-1"></i> Semanal
+                        </button>
+                        
+                        <button type="button" 
+                                id="btn-mensual"
+                                class="btn-toggle-fit" 
+                                onclick="toggleView('mensual')">
+                            <i class="fas fa-calendar-alt me-1"></i> Mensual
+                        </button>
+                    </div>
+                </div>
+
+                <div style="height: 300px; position: relative;">
+                    <canvas id="progressChart"></canvas>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <script>
-        // Efecto hover sutil para las tarjetas de stats
-        document.querySelectorAll('.stat-item').forEach(item => {
-            item.addEventListener('mousemove', e => {
-                const rect = item.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                item.style.setProperty('--x', `${x}px`);
-                item.style.setProperty('--y', `${y}px`);
-            });
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script th:inline="javascript">
+    // 1. Declaramos la variable de la gráfica ARRIBA para que updateChart la vea
+    let progressChart;
+
+    // 2. Función de actualización (La definimos antes para evitar el ReferenceError)
+    function updateChart(tipo) {
+        if (!progressChart) return; // Si la gráfica no se ha creado, no hacemos nada
+
+        // Datos reales procesados
+        /*[[${historial}]]*/ 
+        const historialRaw = /*[[${historial}]]*/ [];
+        const historial = historialRaw || [];
+
+        if (tipo === 'mensual') {
+            progressChart.data.labels = ['Ene', 'Feb', 'Mar', 'Abr']; // O lógica de meses
+            progressChart.data.datasets[0].data = [85, 82, 80, 75]; 
+        } else {
+            // Volver a semanal (datos reales)
+            progressChart.data.labels = historial.length > 0 
+                ? historial.map(p => new Date(p.fechaRegistro).toLocaleDateString('es-ES', {day:'2-digit', month:'short'}))
+                : ['Semana 1'];
+            progressChart.data.datasets[0].data = historial.length > 0 
+                ? historial.map(p => p.peso) 
+                : [0];
+        }
+        progressChart.update();
+    }
+
+    // 3. Inicialización cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        const canvas = document.getElementById('progressChart');
+        if (!canvas) return; // Seguridad por si no encuentra el elemento
+
+        const ctx = canvas.getContext('2d');
+        
+        // Recuperar datos de Thymeleaf de forma segura
+        const historialData = /*[[${historial}]]*/ [];
+        const safeHistorial = historialData || [];
+
+        // Mapeo seguro: si no hay datos, usamos valores por defecto
+        const labels = safeHistorial.length > 0 
+            ? safeHistorial.map(p => new Date(p.fechaRegistro).toLocaleDateString('es-ES', {day:'2-digit', month:'short'}))
+            : ['Inicio'];
+
+        const pesos = safeHistorial.length > 0 
+            ? safeHistorial.map(p => p.peso) 
+            : [0];
+
+        // Crear la gráfica
+        progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Peso Corporal (Kg)',
+                    data: pesos,
+                    borderColor: '#00d2ff',
+                    backgroundColor: 'rgba(0, 210, 255, 0.1)',
+                    borderWidth: 4,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#00ff88',
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
         });
-    </script>
+    });
+
+    function toggleView(tipo) {
+        // 1. Quitamos la clase 'active' de todos los botones del grupo
+        document.querySelectorAll('.btn-toggle-fit').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // 2. Se la ponemos al que acabamos de clickear
+        if (tipo === 'semanal') {
+            document.getElementById('btn-semanal').classList.add('active');
+        } else {
+            document.getElementById('btn-mensual').classList.add('active');
+        }
+
+        // 3. Llamamos a tu función de actualización del gráfico que ya sirve
+        updateChart(tipo);
+    }
+</script>
 </body>
 </html>
