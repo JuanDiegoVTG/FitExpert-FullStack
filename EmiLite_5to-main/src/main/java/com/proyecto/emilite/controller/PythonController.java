@@ -1,5 +1,6 @@
 package com.proyecto.emilite.controller;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,17 +21,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.emilite.model.Mensaje;
+import com.proyecto.emilite.model.Notificacion;
 import com.proyecto.emilite.model.Perfil;
 import com.proyecto.emilite.model.Progreso;
 import com.proyecto.emilite.model.Rutina;
 import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.repository.MensajeRepository;
+import com.proyecto.emilite.repository.NotificacionRepository;
 import com.proyecto.emilite.repository.PerfilRepository;
 import com.proyecto.emilite.repository.ProgresoRepository;
 import com.proyecto.emilite.repository.RutinaRepository;
 import com.proyecto.emilite.repository.UsuarioRepository;
 import com.proyecto.emilite.service.PythonService;
 import com.proyecto.emilite.service.UsuarioService;
+
 
 @Controller
 @RequestMapping("/api") 
@@ -56,6 +60,9 @@ public class PythonController {
 
     @Autowired
     private MensajeRepository mensajeRepository;
+
+    @Autowired
+    private NotificacionRepository notificacionRepository;
 
     public PythonController(PerfilRepository perfilRepository) {
         this.perfilRepository = perfilRepository;
@@ -143,25 +150,44 @@ public class PythonController {
     @ResponseBody
     public ResponseEntity<String> enviarMensaje(@RequestBody Map<String, Object> payload, Authentication auth) {
         try {
-            // 1. Identificar quién envía
-            Usuario emisor = usuarioService.obtenerPorUsername(auth.getName());
-            Long idDestino = Long.valueOf(payload.get("chat_id").toString()); // El ID del entrenador o alumno
+            String loginName = auth.getName(); 
+            Usuario emisor = usuarioRepository.findByUserName(loginName)
+                .orElseThrow(() -> new RuntimeException("Emisor no encontrado: " + loginName));
+
+            Long idDestino = Long.valueOf(payload.get("chat_id").toString());
             String contenido = payload.get("content").toString();
 
-            // 2. GUARDAR EN TU BASE DE DATOS (Para que no se borren)
+            // 2. BUSCAR RECEPTOR
+            Usuario receptor = usuarioRepository.findById(idDestino)
+                    .orElseThrow(() -> new RuntimeException("Receptor no encontrado"));
+
+            // 3. GUARDAR MENSAJE
             Mensaje msg = new Mensaje();
             msg.setSender(emisor);
-            msg.setReceiver(usuarioRepository.findById(idDestino).get());
+            msg.setReceiver(receptor);
             msg.setContent(contenido);
-            mensajeRepository.save(msg); // ¡AQUÍ SE GUARDAN PARA SIEMPRE!
+            mensajeRepository.save(msg);
 
-            // 3. (Opcional) Llamar a Python solo si necesitas que la IA responda
+            // 4. CREAR NOTIFICACIÓN (Con fecha asegurada)
+            Notificacion noti = new Notificacion();
+            noti.setUsuario(receptor);
+            noti.setMensaje("Nuevo mensaje de " + emisor.getNombres());
+            noti.setLeida(false);
+            noti.setFechaCreacion(LocalDateTime.now()); 
+
+            notificacionRepository.save(noti);
+
+            // Debug para consola de Java
+            System.out.println("✅ Noti guardada para " + receptor.getUserName());
+
+            // 5. LLAMAR A PYTHON
             String json = objectMapper.writeValueAsString(payload);
             String respuesta = pythonService.enviarMensajeChat(json); 
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error al guardar mensaje");
+            e.printStackTrace(); // Para ver el error real en la consola
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
 
@@ -177,40 +203,35 @@ public class PythonController {
             Model model) {
 
         try {
-            // 1. OBTENER EL USUARIO ACTUAL (Resuelve: usuarioActual)
+            // 1. Obtener el usuario que está frente a la pantalla
             Usuario usuarioActual = usuarioRepository.findByUserName(auth.getName())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            // 2. PREPARAR DATOS PARA PYTHON
+            // 2. Preparar datos y llamar a la IA (Python)
             Map<String, Object> datos = new HashMap<>();
             datos.put("peso", peso);
             datos.put("altura", altura);
             datos.put("cuello", cuello);
             datos.put("cintura", cintura);
             datos.put("cadera", cadera != null ? cadera : 0.0);
-            datos.put("sexo", usuarioActual.getPerfil().getSexo()); // M o F
+            datos.put("sexo", usuarioActual.getPerfil().getSexo()); 
             datos.put("edad", usuarioActual.getPerfil().getEdad());
             datos.put("nivel_actividad", nivelActividad);
 
-            // 3. LLAMAR A LA IA (Aquí obtenemos los resultados)
-            // Asumiendo que pythonService.generarDiagnostico devuelve un Map o un objeto con los datos
             Map<String, Object> diagnosticoIA = pythonService.obtenerDiagnosticoDesdePython(datos);
 
-            // EXTRAER VALORES (Resuelve: grasaCalculada e imcCalculado)
-            // Asegúrate de que los nombres coincidan con lo que devuelve tu JSON de Python
             Double grasaCalculada = Double.parseDouble(diagnosticoIA.get("grasa_corporal").toString());
             Double imcCalculado = Double.parseDouble(diagnosticoIA.get("imc").toString());
 
-            // 4. GUARDAR EN LA NUEVA TABLA DE PROGRESO (Punto A a Punto B)
+            // 3. GUARDAR HISTORIAL (Punto A a Punto B)
             Progreso nuevoProgreso = new Progreso();
             nuevoProgreso.setUsuario(usuarioActual);
             nuevoProgreso.setPeso(peso);
             nuevoProgreso.setGrasa(grasaCalculada);
             nuevoProgreso.setImc(imcCalculado);
-            
-            progresoRepository.save(nuevoProgreso); // ¡Aquí se guarda el historial!
+            progresoRepository.save(nuevoProgreso);
 
-            // 5. ACTUALIZAR EL PERFIL ACTUAL (Para que siempre tenga lo último)
+            // 4. ACTUALIZAR PERFIL ACTUAL
             Perfil perfil = usuarioActual.getPerfil();
             perfil.setPeso(peso);
             perfil.setAltura(altura);
@@ -219,14 +240,26 @@ public class PythonController {
             perfil.setCadera(cadera);
             perfilRepository.save(perfil);
 
+            // --- 🤖 AQUÍ EL TIMBRAZO PARA EL COACH ---
+            // Si el cliente tiene entrenador, le avisamos de una vez
+            if (usuarioActual.getEntrenador() != null) {
+                Notificacion noti = new Notificacion();
+                noti.setUsuario(usuarioActual.getEntrenador()); // El receptor es el Coach
+                noti.setMensaje("📊 " + usuarioActual.getNombres() + " ha completado una valoración IA.");
+                noti.setLeida(false);
+                noti.setFechaCreacion(LocalDateTime.now());
+                
+                notificacionRepository.save(noti); // ¡AQUÍ se activa la campana del entrenador!
+            }
+            // ------------------------------------------
+
             model.addAttribute("diagnostico", diagnosticoIA);
             return "cliente/resultado_diagnostico";
 
         } catch (Exception e) {
             return "redirect:/api/valoracion?error=true";
         }
-    }
-
+}
     @GetMapping("/valoracion")
     public String mostrarValoracion(Authentication auth, Model model) {
         Usuario usuario = usuarioRepository.findByUserName(auth.getName())
@@ -257,4 +290,5 @@ public class PythonController {
         
         return "entrenador/detalle_alumno"; 
     }
+
 }

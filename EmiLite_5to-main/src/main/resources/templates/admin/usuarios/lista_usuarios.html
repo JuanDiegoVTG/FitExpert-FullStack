@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/estilo_admin.css}">
     <style>
         :root {
             --primary: #3169B2;
@@ -22,9 +21,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         body {
-            background: url("/images/klipartz2.png"), #060e1a; /* Fondo coherente */
-            background-size: cover;
-            background-attachment: fixed;
+            background: #060e1a;
             color: var(--text-main);
             min-height: 100vh;
             padding: 40px 20px;
@@ -43,7 +40,6 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        /* HEADER */
         .header-top {
             display: flex;
             justify-content: space-between;
@@ -52,9 +48,8 @@
         }
         .logo-box { display: flex; align-items: center; gap: 15px; }
         .logo-box img { height: 70px; border-radius: 12px; border: 1px solid var(--primary); }
-        .logo-box h2 { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
+        .logo-box h2 { font-size: 1.8rem; font-weight: 800; }
 
-        /* FILTROS MEJORADOS */
         .filters-form {
             background: rgba(255, 255, 255, 0.03);
             padding: 25px;
@@ -62,25 +57,9 @@
             margin-bottom: 30px;
             border: 1px solid var(--border-light);
         }
-        .filters-row {
-            display: flex;
-            gap: 20px;
-            align-items: flex-end;
-            flex-wrap: wrap;
-        }
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            min-width: 200px;
-        }
-        .filter-group label {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .filters-row { display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; }
+        .filter-group { display: flex; flex-direction: column; gap: 8px; min-width: 200px; }
+        .filter-group label { font-size: 0.8rem; font-weight: 700; color: var(--accent); text-transform: uppercase; }
         .filter-group select {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border-light);
@@ -88,10 +67,7 @@
             border-radius: 10px;
             color: white;
             outline: none;
-            cursor: pointer;
-            transition: var(--transition);
         }
-        .filter-group select:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
 
         .btn-filter {
             background: var(--primary);
@@ -100,6 +76,7 @@
             padding: 12px 25px;
             border-radius: 10px;
             font-weight: 700;
+            text-decoration: none;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
@@ -108,17 +85,8 @@
         }
         .btn-filter:hover { background: var(--accent); color: var(--bg-dark); transform: translateY(-2px); }
 
-        /* TABLA PREMIUM */
-        .table-responsive {
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border-light);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: rgba(255, 255, 255, 0.02);
-        }
+        .table-responsive { border-radius: 16px; overflow: hidden; border: 1px solid var(--border-light); }
+        table { width: 100%; border-collapse: collapse; background: rgba(255, 255, 255, 0.02); }
         th {
             background: rgba(49, 105, 178, 0.2);
             padding: 20px;
@@ -126,37 +94,18 @@
             font-size: 0.85rem;
             color: var(--accent);
             text-transform: uppercase;
-            letter-spacing: 1px;
             border-bottom: 1px solid var(--border-light);
         }
-        td {
-            padding: 18px 20px;
-            border-bottom: 1px solid var(--border-light);
-            font-size: 0.95rem;
-            color: #e2e8f0;
-        }
+        td { padding: 18px 20px; border-bottom: 1px solid var(--border-light); font-size: 0.95rem; color: #e2e8f0; }
+        tbody tr:hover { background: rgba(255, 255, 255, 0.05); }
 
-        /* CORRECCIÓN HOVER: No más blanco */
-        tbody tr:hover {
-            background: rgba(255, 255, 255, 0.05); /* Gris traslúcido elegante */
-            transition: 0.2s;
-        }
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border: 1px solid transparent; }
+        .badge-admin { background: rgba(0, 212, 255, 0.1); color: #00D4FF; border-color: #00D4FF; }
+        .badge-coach { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border-color: #fbbf24; }
+        .badge-client { background: rgba(167, 139, 250, 0.1); color: #a78bfa; border-color: #a78bfa; }
+        .badge-active { color: #10b981; }
+        .badge-inactive { color: #ef4444; }
 
-        /* BADGES */
-        .badge {
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-        .badge-admin { background: rgba(0, 212, 255, 0.1); color: #00D4FF; border: 1px solid #00D4FF; }
-        .badge-coach { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border: 1px solid #fbbf24; }
-        .badge-client { background: rgba(167, 139, 250, 0.1); color: #a78bfa; border: 1px solid #a78bfa; }
-        .badge-active { color: #10b981; font-weight: bold; }
-        .badge-inactive { color: #ef4444; font-weight: bold; }
-
-        /* ACCIONES */
         .btn-actions {
             width: 38px; height: 38px;
             border-radius: 10px;
@@ -167,10 +116,12 @@
             transition: var(--transition);
             border: none;
             cursor: pointer;
+            font-size: 1.1rem;
         }
         .btn-edit { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
         .btn-approve { background: rgba(16, 185, 129, 0.2); color: #10b981; }
         .btn-delete { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .btn-pdf { background: rgba(239, 68, 68, 0.1); color: #ff4d4d; }
         .btn-actions:hover { transform: scale(1.1); filter: brightness(1.2); }
 
         .logout-btn {
@@ -181,7 +132,9 @@
             border-radius: 12px;
             font-weight: 700;
             cursor: pointer;
-            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .logout-btn:hover { background: #ef4444; color: white; }
     </style>
@@ -238,33 +191,49 @@
                 </thead>
                 <tbody>
                     <tr th:each="usuario : ${usuarios}">
-                        <td th:text="${usuario.userName}" style="font-weight: 800; color: var(--accent);"></td>
+                        <td th:text="${usuario.userName}" style="font-weight: 800; color: #ffc107;"></td>
                         <td th:text="${usuario.nombres + ' ' + usuario.apellidos}"></td>
-                        <td th:text="${usuario.email}" style="color: var(--text-muted);"></td>
+                        <td th:text="${usuario.email}" style="color: #adb5bd;"></td>
+                        
                         <td>
-                            <span th:classappend="${usuario.rol.nombre == 'ADMIN' ? 'badge-admin' : (usuario.rol.nombre == 'ENTRENADOR' ? 'badge-coach' : 'badge-client')}" 
-                                  class="badge" th:text="${usuario.rol.nombre}"></span>
+                            <div th:if="${usuario.roles != null and !usuario.roles.isEmpty()}">
+                                <span th:with="roleName=${usuario.roles[0].nombre}"
+                                      th:classappend="${roleName == 'ROLE_ADMIN' ? 'badge-admin' : (roleName == 'ROLE_ENTRENADOR' ? 'badge-coach' : 'badge-client')}" 
+                                      class="badge" 
+                                      th:text="${roleName}"></span>
+                            </div>
+                            <span th:if="${usuario.roles == null or usuario.roles.isEmpty()}" class="badge">N/A</span>
                         </td>
+
                         <td>
                             <span th:class="${usuario.activo ? 'badge-active' : 'badge-inactive'}" 
                                   th:text="${usuario.activo ? '● Activo' : '○ Inactivo'}"></span>
                         </td>
                         
                         <td style="text-align: center;">
-                            <div style="display: flex; gap: 8px; justify-content: center;">
+                            <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                
                                 <a th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" class="btn-actions btn-edit" title="Editar Perfil">
                                     <i class="fas fa-pen-nib"></i>
                                 </a>
 
-                                <a th:if="${usuario.rol.nombre == 'ROLE_ENTRENADOR' and usuario.validado != true}" 
-                                    th:href="@{/admin/usuarios/aprobar/{id}(id=${usuario.id})}" 
-                                    class="btn-actions btn-approve" title="Verificar Entrenador">
-                                        <i class="fas fa-user-check"></i>
+                                <a th:if="${usuario.rutaHojaVida != null}" 
+                                   th:href="@{/admin/usuarios/ver-cv/{file}(file=${usuario.rutaHojaVida})}" 
+                                   target="_blank" class="btn-actions btn-pdf" title="Ver Hoja de Vida">
+                                    <i class="fas fa-file-pdf"></i>
                                 </a>
 
-                                <form th:action="@{/admin/usuarios/{id}/eliminar(id=${usuario.id})}" method="post" onsubmit="return confirm('¿Eliminar usuario de la base de datos?');" style="display:inline;">
+                                <div th:if="${usuario.rol != null}">
+                                    <a th:if="${usuario.rol.nombre == 'ROLE_ENTRENADOR' and usuario.validado != true}" 
+                                        th:href="@{/admin/usuarios/aprobar/{id}(id=${usuario.id})}" 
+                                        class="btn-actions btn-approve" title="Verificar Entrenador">
+                                        <i class="fas fa-user-check"></i>
+                                    </a>
+                                </div>
+
+                                <form th:action="@{/admin/usuarios/{id}/eliminar(id=${usuario.id})}" method="post" onsubmit="return confirm('¿Eliminar usuario definitivamente?');" style="display:inline;">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                    <button type="submit" class="btn-actions btn-delete" title="Borrar">
+                                    <button type="submit" class="btn-actions btn-delete">
                                         <i class="fas fa-user-minus"></i>
                                     </button>
                                 </form>
@@ -278,7 +247,9 @@
         <div style="margin-top: 40px; display: flex; justify-content: flex-end;">
             <form th:action="@{/logout}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <button type="submit" class="logout-btn"><i class="fas fa-power-off"></i> Finalizar Sesión</button>
+                <button type="submit" class="logout-btn">
+                    <i class="fas fa-power-off"></i> Finalizar Sesión
+                </button>
             </form>
         </div>
     </div>

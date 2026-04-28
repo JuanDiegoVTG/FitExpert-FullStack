@@ -14,6 +14,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -99,13 +101,27 @@ public class Usuario {
     @JoinColumn(name = "entrenador_id")
     private Usuario entrenador;
 
+    private String edad;
+
+    
+    @Column(name = "validado")
     private boolean validado = false; // El campo que usa la IA y el Admin
     private boolean enabled = true;   // Para que Spring Security sepa que la cuenta está activa
+
+    @Column(name = "ruta_hoja_vida")
+    private String rutaHojaVida;
 
     private Double cvScore;
 
     private Boolean esPremuim;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "usuarios_roles",
+        joinColumns = @JoinColumn(name = "usuario_id"),
+        inverseJoinColumns = @JoinColumn(name = "rol_id")
+    )
+    private List<Rol> roles = new ArrayList<>();
     
     public void setEntrenador(Usuario entrenador) {
         // Si el usuario ya tenía un entrenador, lo sacamos de la lista del anterior
@@ -118,5 +134,6 @@ public class Usuario {
             entrenador.getAlumnos().add(this);
         }
     }
+
 
 }

@@ -217,7 +217,7 @@
                 <label>¿Cuál es tu perfil?</label>
                 <div class="input-wrapper">
                     <i class="fas fa-user-tag"></i>
-                    <select name="rolId" id="rolSelect" required onchange="checkTrainer()">
+                    <select th:field="*{rolId}" id="rolSelect" required onchange="checkTrainer()">
                         <option value="" disabled selected>Selecciona tu rol</option>
                         <option value="3">Atleta (Quiero entrenar)</option>
                         <option value="2">Entrenador (Busco clientes)</option>
@@ -225,10 +225,10 @@
                 </div>
             </div>
 
-            <div id="trainerUpload" class="form-group hidden" style="border: 2px dashed var(--primary); padding: 20px; border-radius: 18px; background: rgba(0, 210, 255, 0.05);">
+            <div id="trainerUpload" class="form-group" style="display:none; border: 2px dashed var(--primary); padding: 20px; border-radius: 18px; background: rgba(0, 210, 255, 0.05);">
                 <label style="color: var(--neon-green);"><i class="fas fa-file-pdf"></i> Certificación / CV</label>
                 <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 10px;">Para ser entrenador, adjunta tu título profesional.</p>
-                <input type="file" name="archivoCv" id="archivoCv" accept=".pdf" style="padding: 10px; font-size: 0.8rem;">
+                <input type="file" id="archivoCv" name="archivoCv" class="form-control" accept="application/pdf">
             </div>
 
             <div style="display: flex; gap: 10px;">
@@ -255,19 +255,25 @@
     }
 
     function checkTrainer() {
-        const select = document.getElementById('rolSelect');
-        const box = document.getElementById('trainerUpload');
-        const cvInput = document.getElementById('archivoCv');
+    // Asegúrate de que el select de roles tenga id="rolSelect"
+    var rolElement = document.getElementById("rolSelect");
+    if(!rolElement) return; // Seguridad por si no encuentra el select
 
-        if(select.value === "2") { 
-            box.classList.remove('hidden');
-            cvInput.required = true;
-        } else {
-            box.classList.add('hidden');
-            cvInput.required = false;
-            cvInput.value = "";
+    var rol = rolElement.value;
+    var seccion = document.getElementById("trainerUpload"); // ID corregido
+    var inputCv = document.getElementById("archivoCv");   // ID corregido
+
+    if (rol == "2") { // 2 es el ID de Entrenador en tu BD
+        seccion.style.display = "block";
+        if (inputCv) inputCv.required = true;
+    } else {
+        seccion.style.display = "none";
+        if (inputCv) {
+            inputCv.required = false;
+            inputCv.value = ""; // Limpia el archivo si cambia a Cliente
         }
     }
+}
 </script>
 </body>
 </html>

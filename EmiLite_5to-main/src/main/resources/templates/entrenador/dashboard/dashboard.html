@@ -1,44 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>FITEXPERT - Panel de Entrenador</title>
+    <title>FITEXPERT - Panel de Coach</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="data:,">
+
     <style>
         :root {
             --bg-body: #0f172a; 
             --bg-sidebar: #1e293b;
-            --primary: #6366f1; /* Indigo */
-            --primary-glow: rgba(99, 102, 241, 0.4);
-            --accent: #10b981; /* Emerald */
+            --primary: #6366f1;
+            --accent: #10b981;
             --card-bg: rgba(30, 41, 59, 0.7);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --text-main: #ffffff !important;
+            --text-muted: #cbd5e1;
             --border-color: rgba(255, 255, 255, 0.1);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         body {
             background-color: var(--bg-body);
             background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
-            color: var(--text-main);
-            display: flex;
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15), transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1), transparent 50%);
+            color: white;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* --- SIDEBAR --- */
+        /* --- SIDEBAR RESPONSIVE --- */
         .sidebar {
             width: 280px;
             background: var(--bg-sidebar);
@@ -49,379 +46,335 @@
             flex-direction: column;
             position: fixed;
             height: 100vh;
-            z-index: 100;
+            z-index: 1050;
+            transition: var(--transition);
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 3rem;
-            text-decoration: none;
+        .main-content {
+            margin-left: 280px;
+            padding: 2.5rem;
+            transition: var(--transition);
         }
 
-        .brand i {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text; /* Estándar para evitar errores */
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 5px var(--primary-glow));
+        /* --- ESTILO DEL LOGO BRAND --- */
+        .logo-container { width: 50px; height: 50px; border-radius: 12px; /* Bordes redondeados modernos */ overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent-neon); box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); /* Brillo neón alrededor del logo */ background: white; /* Por si el JPEG tiene fondo blanco, que se vea uniforme */ transition: var(--transition); }
+
+        .brand-img { width: 100%; height: 100%; object-fit: cover; }
+
+        .brand-text { font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; color: white !important; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+        /* Efecto al pasar el mouse por la marca */
+        .brand:hover .logo-container { transform: scale(1.1) rotate(-5deg); box-shadow: 0 0 25px var(--accent-neon); }
+        .brand:hover .brand-text { filter: brightness(1.2); }
+
+        /* Header para Móviles */
+        .mobile-header {
+            display: none;
+            background: var(--bg-sidebar);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1100;
         }
 
-        .nav-group {
-            margin-bottom: 1.5rem;
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 1.5rem; }
+            .mobile-header { display: flex; justify-content: space-between; align-items: center; }
         }
 
-        .nav-group label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
-            margin-bottom: 0.8rem;
-            display: block;
-            padding-left: 0.5rem;
-            font-weight: 700;
-        }
-
+        /* --- ENLACES ÉLITE --- */
         .nav-link {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 0.8rem 1rem;
-            color: var(--text-muted);
+            padding: 12px 15px;
+            color: #cbd5e1 !important;
             text-decoration: none;
             border-radius: 12px;
-            margin-bottom: 0.3rem;
+            margin-bottom: 8px;
+            font-weight: 600;
             transition: var(--transition);
-            font-weight: 500;
-            font-size: 0.95rem;
+            border-left: 4px solid transparent;
         }
 
         .nav-link:hover, .nav-link.active {
-            background: rgba(99, 102, 241, 0.1);
-            color: white;
-            transform: translateX(5px);
+            background: rgba(99, 102, 241, 0.1) !important;
+            color: white !important;
+            transform: translateX(8px);
+            border-left: 4px solid var(--accent);
         }
 
-        .nav-link i {
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
+        .nav-link i { color: var(--accent); font-size: 1.1rem; }
+
+        /* --- CAMPANA FACEBOOK STYLE --- */
+        .dropdown-menu-dark {
+            background: #1e293b !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 15px !important;
+            width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 0;
+            overflow: hidden;
         }
 
-        /* --- MAIN CONTENT --- */
-        .main-content {
-            margin-left: 280px;
-            flex: 1;
-            padding: 2.5rem;
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            color: white !important;
+            display: block;
+            text-decoration: none;
+            transition: 0.3s;
         }
 
-        /* Top Header */
-        .top-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: var(--card-bg);
-            padding: 8px 20px 8px 8px;
-            border-radius: 50px;
-            border: 1px solid var(--border-color);
-        }
+        .notification-item:hover { background: rgba(255,255,255,0.05); }
 
         .avatar {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #8b5cf6, #3b82f6); /* Violeta/Azul para Coach */
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 50% !important;
+            background: linear-gradient(135deg, #6366f1, #10b981) !important; /* Colores de FitExpert */
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+            overflow: hidden;
+        }
+
+        .avatar span {
+            color: white !important;
             font-weight: 800;
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+            line-height: 1; /* Esto evita que la letra se suba o baje */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* Trainer Hero */
-        .trainer-hero {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 2.5rem;
-            margin-bottom: 2.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .hero-text h1 {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .badge-coach {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--accent);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .stat-card {
+        /* --- CARDS Y BOTONES --- */
+        .glass-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 1.8rem;
-            border-radius: 20px;
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
             transition: var(--transition);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--primary);
-            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.3);
-        }
-
-        .stat-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.2rem;
-            font-size: 1.2rem;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 0.2rem;
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        /* Buttons */
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn-action {
-            background: var(--primary);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition);
-        }
-
-        .btn-action:hover {
-            filter: brightness(1.1);
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        .logout-btn {
-            margin-top: auto;
-            padding: 0.8rem;
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: var(--transition);
-        }
-
-        .logout-btn:hover {
-            background: #ef4444;
-            color: white;
         }
 
         .btn-chat-entrenador {
-            display: inline-flex;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white !important;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-            border: none;
-            cursor: pointer;
-            width: 100%;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+            transition: 0.3s;
         }
 
-        .btn-chat-entrenador:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
-            background: linear-gradient(135deg, #059669, #10b981);
-            color: white;
-        }
+        .btn-chat-entrenador:hover { transform: translateY(-3px); filter: brightness(1.1); }
+
+        /* Forzar textos blancos */
+        h1, h2, h3, h4, h5, h6, span, div, p { color: white !important; }
+        .text-muted { color: #cbd5e1 !important; }
     </style>
 </head>
 <body>
 
+    <div class="mobile-header">
+        <span class="fw-bold"><i class="fas fa-bolt text-success me-2"></i>FIT EXPERT COACH</span>
+        <button class="btn text-white" onclick="document.querySelector('.sidebar').classList.toggle('active')">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
     <nav class="sidebar">
-        <a href="#" class="brand">
-            <i class="fas fa-bolt"></i>
-            <span>FIT EXPERT</span>
+        <a href="/dashboard" class="brand d-flex align-items-center gap-3 mb-5 text-decoration-none">
+            <div class="logo-container">
+                <img th:src="@{/images/logofitexpert.jpeg}" alt="Fit Expert Logo" class="brand-img">
+            </div>
+            <span class="brand-text">FIT <span style="color: var(--accent-neon);">EXPERT</span></span>
         </a>
 
-        <div class="nav-group">
-            <label>Gestión Atletas</label>
-            <a href="/dashboard" class="nav-link active">
-                <i class="fas fa-chart-line"></i>
-                <span>Mi Dashboard</span>
-            </a>
-            <a href="/entrenador/clientes" class="nav-link">
-                <i class="fas fa-users"></i>
-                <span>Mis Clientes</span>
-            </a>
+        <div class="nav-group mb-4">
+            <label class="small text-uppercase mb-3 d-block" style="color: var(--accent); font-weight: 800;">Gestión Atletas</label>
+            <a href="/dashboard" class="nav-link active"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="/entrenador/clientes" class="nav-link"><i class="fas fa-users"></i> Mis Clientes</a>
         </div>
 
-        <div class="nav-group">
-            <label>Programación</label>
-            <a href="/entrenador/rutinas/nueva" class="nav-link">
-                <i class="fas fa-plus-square"></i>
-                <span>Crear Rutina</span>
-            </a>
-            <a href="/entrenador/rutinas" class="nav-link">
-                <i class="fas fa-folder-open"></i>
-                <span>Ver Rutinas</span>
-            </a>
+        <div class="nav-group mb-4">
+            <label class="small text-uppercase mb-3 d-block" style="color: var(--accent); font-weight: 800;">Programación</label>
+            <a href="/entrenador/rutinas/nueva" class="nav-link"><i class="fas fa-plus-square"></i> Crear Rutina</a>
+            <a href="/entrenador/rutinas" class="nav-link"><i class="fas fa-folder-open"></i> Ver Rutinas</a>
         </div>
 
-        <form th:action="@{/logout}" method="post" style="margin-top: auto;">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="logout-btn" style="width: 100%;">
-                <i class="fas fa-power-off"></i>
-                <span>Cerrar Sesión</span>
+        <form th:action="@{/logout}" method="post" class="mt-auto">
+            <button type="submit" class="logout-btn w-100 py-2 border-0 rounded-3">
+                <i class="fas fa-power-off"></i> Cerrar Sesión
             </button>
         </form>
     </nav>
 
     <main class="main-content">
-        
-        <header class="top-header">
+        <header class="d-flex justify-content-between align-items-center mb-5">
             <div>
-                <h2 style="font-weight: 800; letter-spacing: -0.02em;">Panel de Coach</h2>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Impulsando el rendimiento de tus atletas</p>
+                <h2 class="fw-bold m-0">Panel de Coach</h2>
+                <p class="text-muted small">Gestionando el éxito de tus atletas</p>
             </div>
 
-            <div class="user-profile">
-                <div class="avatar">
-                    <span th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">E</span>
+            <div class="d-flex align-items-center gap-3">
+                <div class="dropdown">
+                    <a class="nav-link position-relative p-0" href="#" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" onclick="cargarListaNotificaciones()">
+                        <i class="fas fa-bell fs-4 text-white"></i>
+                        <span id="global-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none; font-size: 0.6rem;">0</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="notifDropdown">
+                        <li class="p-3 border-bottom border-secondary d-flex justify-content-between">
+                            <span class="fw-bold">Notificaciones</span>
+                            <button onclick="marcarTodasComoLeidas()" class="btn btn-sm text-info p-0 small">Limpiar</button>
+                        </li>
+                        <div id="notif-items-container" style="max-height: 300px; overflow-y: auto;">
+                            <li class="p-4 text-center text-muted small">Sin novedades</li>
+                        </div>
+                    </ul>
                 </div>
-                <div>
-                    <div style="font-weight: 700; font-size: 0.9rem;" sec:authentication="principal.username">Coach</div>
-                    <div class="badge-coach" style="font-size: 0.6rem; padding: 2px 6px;">Certified Trainer</div>
+
+                <div class="user-profile d-flex align-items-center gap-2 bg-dark bg-opacity-25 p-2 rounded-pill border border-secondary">
+                    <div class="avatar" style="width: 35px; height: 35px;">
+                        <span th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">D</span>
+                    </div>
+                    <div class="d-none d-sm-block me-2">
+                        <div class="small fw-bold" sec:authentication="principal.username">Coach</div>
+                        <div class="text-success fw-bold" style="font-size: 0.6rem;">• CERTIFIED</div>
+                    </div>
                 </div>
             </div>
-
         </header>
 
-        <section class="trainer-hero">
-            <div class="hero-text">
-                <h1>Hola, <span style="color: var(--primary);" sec:authentication="principal.username">Coach</span>! 🏋️‍♂️</h1>
-                <p style="color: var(--text-muted); max-width: 500px; margin-bottom: 1.5rem;">
-                    Tienes nuevas solicitudes de seguimiento. Revisa el progreso de tus clientes y ajusta sus planes de entrenamiento para esta semana.
-                </p>
-                <div class="btn-group">
-                    <a href="/entrenador/rutinas/nueva" class="btn-action">
-                        <i class="fas fa-dumbbell"></i> Asignar Rutina
-                    </a>
-                    <a href="/entrenador/clientes" class="btn-action" style="background: transparent; border: 1px solid var(--border-color);">
-                        <i class="fas fa-user-friends"></i> Ver Clientes
+        <section class="glass-card p-4 mb-4" style="border-left: 5px solid var(--accent);">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="fw-bold">¡Hola, Coach <span sec:authentication="principal.username" class="text-success">Atleta</span>! 🏋️‍♂️</h3>
+                    <p class="text-muted small">Tienes solicitudes pendientes. Revisa el progreso de tus clientes y ajusta sus planes.</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="/entrenador/rutinas/nueva" class="btn btn-success fw-bold py-2 px-4 rounded-3 shadow-sm">
+                        <i class="fas fa-plus me-2"></i> Nueva Rutina
                     </a>
                 </div>
             </div>
-            <div style="font-size: 8rem; color: var(--primary); opacity: 0.1; transform: rotate(-10deg);">
-                <i class="fas fa-running"></i>
-            </div>
         </section>
 
-        <section class="stats-grid">
-            <div class="card shadow" style="background: rgba(30, 41, 59, 0.9) !important; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 15px;">
-                <div class="card-body text-center" style="padding: 30px;">
-                    <div class="display-4 mb-3">
-                        <i class="fas fa-envelope-open-text" style="color: #10b981;"></i>
-                    </div>
-                    <h5 class="card-title" style="color: white; font-weight: bold; font-size: 1.5rem;">
-                        Bandeja de Mensajes
-                    </h5>
-                    <p class="card-text" style="color: #94a3b8; margin-bottom: 25px;">
-                        Revisa las consultas técnicas de tus alumnos asignados y responde en tiempo real.
-                    </p>
+        <div class="row g-4 mb-5">
+            <div class="col-6 col-md-3">
+                <div class="glass-card p-3 text-center">
+                    <i class="fas fa-users fs-3 text-info mb-2"></i>
+                    <div class="h3 fw-bold">15</div>
+                    <div class="text-muted small">Atletas</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="glass-card p-3 text-center">
+                    <i class="fas fa-clipboard-check fs-3 text-success mb-2"></i>
+                    <div class="h3 fw-bold">8</div>
+                    <div class="text-muted small">Revisiones</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="glass-card p-3 text-center">
+                    <i class="fas fa-star fs-3 text-warning mb-2"></i>
+                    <div class="h3 fw-bold">4.9</div>
+                    <div class="text-muted small">Rating</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="glass-card p-3 text-center">
+                    <i class="fas fa-wallet fs-3 text-primary mb-2"></i>
+                    <div class="h3 fw-bold">Active</div>
+                    <div class="text-muted small">Suscripción</div>
+                </div>
+            </div>
+        </div>
+
+        <section class="glass-card p-4">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-8">
+                    <h4 class="fw-bold"><i class="fas fa-envelope-open-text text-success me-2"></i>Bandeja de Consultas</h4>
+                    <p class="text-muted">Responde a las dudas técnicas de tus atletas para asegurar su progreso óptimo.</p>
+                </div>
+                <div class="col-lg-4">
                     <a th:href="@{/api/chat/bandeja}" class="btn-chat-entrenador">
-                        <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Abrir WhatsApp FitExpert
+                        <i class="fab fa-whatsapp fs-5"></i> ABRIR CHAT TÉCNICO
                     </a>
                 </div>
             </div>
-
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--accent);">
-                    <i class="fas fa-clipboard-list"></i>
-                </div>
-                <div class="stat-value">15</div>
-                <div class="stat-label">Rutinas Creadas</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="stat-value">4</div>
-                <div class="stat-label">Sesiones Hoy</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #a78bfa;">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div class="stat-value">4.8</div>
-                <div class="stat-label">Valoración Media</div>
-            </div>
         </section>
-
 
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+   // --- MOTOR DE NOTIFICACIONES ENTRENADOR ---
+    function verificarNotificaciones() {
+        fetch('/api/notificaciones/unread-count')
+            .then(res => res.json())
+            .then(count => {
+                const badge = document.getElementById('global-badge');
+                if (badge) {
+                    badge.innerText = count;
+                    badge.style.display = count > 0 ? 'block' : 'none';
+                }
+            });
+    }
+
+    function cargarListaNotificaciones() {
+        fetch('/api/notificaciones/list')
+            .then(res => res.json())
+            .then(notis => {
+                const container = document.getElementById('notif-items-container');
+                if (notis.length === 0) {
+                    container.innerHTML = '<div class="p-4 text-center text-muted small">Todo al día, Coach.</div>';
+                    return;
+                }
+                container.innerHTML = notis.map(n => `
+                    <a class="notification-item text-decoration-none" href="#" onclick="marcarComoLeida(${n.id})" style="display: block; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <p class="mb-1 small" style="color: white;">${n.mensaje}</p>
+                        <small class="text-muted" style="font-size: 0.6rem;">Recibida hace poco</small>
+                    </a>
+                `).join('');
+            });
+    }
+
+    // NUEVA: Para limpiar la campana del Coach
+    function marcarTodasComoLeidas() {
+        fetch('/api/notificaciones/mark-all-read', { method: 'POST' })
+            .then(res => {
+                if (res.ok) {
+                    verificarNotificaciones();
+                    cargarListaNotificaciones();
+                }
+            })
+            .catch(err => console.error("Error:", err));
+    }
+
+    // Arranque automático para Entrenador
+    setInterval(verificarNotificaciones, 5000);
+    document.addEventListener("DOMContentLoaded", verificarNotificaciones);
+
+    // --- FUNCIÓN PARA MARCAR UNA SOLA NOTI COMO LEÍDA (Al hacer clic) ---
+    function marcarComoLeida(id) {
+        fetch(`/api/notificaciones/${id}/marcar-leida`, { 
+            method: 'POST' 
+        })
+        .then(res => {
+            if (res.ok) {
+                // Si el servidor confirma, recargamos el badge y la lista al instante
+                verificarNotificaciones();
+                cargarListaNotificaciones();
+            }
+        })
+        .catch(err => console.error("Error al marcar la notificación como leída:", err));
+    }
+    </script>
 </body>
 </html>

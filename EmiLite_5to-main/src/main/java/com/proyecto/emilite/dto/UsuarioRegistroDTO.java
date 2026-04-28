@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 
+import org.springframework.web.multipart.MultipartFile;
+
 @Data 
 public class UsuarioRegistroDTO {
 
@@ -41,8 +43,14 @@ public class UsuarioRegistroDTO {
     private String descripcion;
 
     @NotNull(message = "El rol es obligatorio")
-    private Long rolId; 
+    private Long rolId;
+    
+    
     
     public Long getRolId() { return rolId; }
     public void setRolId(Long rolId) { this.rolId = rolId; }
+
+    private MultipartFile fileHojaVida;
+
+    private String Edad;
 }
