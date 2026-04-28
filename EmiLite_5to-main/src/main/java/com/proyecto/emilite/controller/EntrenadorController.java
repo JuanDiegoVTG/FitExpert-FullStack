@@ -1,5 +1,6 @@
 package com.proyecto.emilite.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.proyecto.emilite.dto.RutinaFormDTO;
+import com.proyecto.emilite.model.Notificacion;
 import com.proyecto.emilite.model.Rutina;
 import com.proyecto.emilite.model.Usuario;
+import com.proyecto.emilite.repository.NotificacionRepository;
 import com.proyecto.emilite.service.RutinaService;
 import com.proyecto.emilite.service.UsuarioService;
 
@@ -30,6 +33,8 @@ public class EntrenadorController {
     @Autowired
     private RutinaService rutinaService;
 
+    @Autowired
+    private NotificacionRepository notificacionRepository; // <-- Importante añadir este
     /**
      * Muestra la lista de clientes vinculados al entrenador actual.
      * Sincronizado con: mis_clientes.html usando ${usuarios}
@@ -97,6 +102,14 @@ public class EntrenadorController {
             usuarioService.save(cliente);
 
             rutinaService.crearRutinaDesdeDTO(rutinaForm);
+
+            Notificacion noti = new Notificacion();
+            noti.setUsuario(cliente); // El dueño de la rutina
+            noti.setMensaje("🏋️‍♂️ ¡Nueva rutina asignada!: " + rutinaForm.getNombre());
+            noti.setLeida(false);
+            noti.setFechaCreacion(LocalDateTime.now());
+            notificacionRepository.save(noti);
+
             return "redirect:/entrenador/rutinas";
             
         } catch (Exception e) {
@@ -156,6 +169,13 @@ public class EntrenadorController {
         
         rutinaExistente.setCliente(cliente);
         rutinaService.save(rutinaExistente);
+        
+        Notificacion noti = new Notificacion();
+        noti.setUsuario(cliente);
+        noti.setMensaje("📝 Tu rutina '" + rutinaForm.getNombre() + "' ha sido actualizada.");
+        noti.setLeida(false);
+        noti.setFechaCreacion(LocalDateTime.now());
+        notificacionRepository.save(noti);
         
         return "redirect:/entrenador/rutinas";
     }

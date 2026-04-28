@@ -1,6 +1,7 @@
 package com.proyecto.emilite.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,9 @@ import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.preference.Preference;
+import com.proyecto.emilite.model.Notificacion;
 import com.proyecto.emilite.model.Usuario;
+import com.proyecto.emilite.repository.NotificacionRepository;
 import com.proyecto.emilite.service.UsuarioService;
 import com.proyecto.emilite.util.Constantes;
 
@@ -36,6 +39,9 @@ public class CatalogoController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private NotificacionRepository notificacionRepository;
 
     /**
      * 1. Muestra la vista del catálogo
@@ -200,7 +206,17 @@ public class CatalogoController {
                     }
                     
                     usuarioService.save(cliente); 
-                    // Opcional: usuarioService.save(entrenador); si el cascade no está actuando
+
+                    // --- 🚀 NOTIFICACIÓN ÉLITE PARA EL ENTRENADOR ---
+                    Notificacion noti = new Notificacion();
+                    noti.setUsuario(entrenador); // El coach recibe el aviso
+                    noti.setMensaje("🔥 ¡Nuevo Atleta! " + cliente.getNombres() + " te ha contratado.");
+                    noti.setLeida(false);
+                    noti.setFechaCreacion(LocalDateTime.now());
+                    
+                    notificacionRepository.save(noti);
+                    
+                    System.out.println("¡ÉXITO! Cliente " + cliente.getNombres() + " asignado al entrenador " + entrenador.getNombres());
                 }
                 
                 System.out.println("¡ÉXITO! Cliente " + cliente.getNombres() + " asignado al entrenador " + entrenador.getNombres());

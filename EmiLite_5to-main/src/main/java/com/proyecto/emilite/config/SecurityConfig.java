@@ -38,7 +38,8 @@ public class SecurityConfig {
                 "/catalogo/crear-preferencia",
                 "/catalogo/pago-exitoso/**",
                 "/api/chat/enviar",
-                "/api/generar-diagnostico"
+                "/api/generar-diagnostico",
+                "/api/notificaciones/**"
             )
         )
         .authorizeHttpRequests(authorize -> authorize
@@ -59,6 +60,9 @@ public class SecurityConfig {
                 "/pagos/webhook"
             ).permitAll()
 
+            // RUTAS DE CHAT Y NOTIFICACIONES (Para que ambos roles entren)
+            .requestMatchers("/api/chat/**", "/api/notificaciones/**").authenticated()
+            
             // 3. EXCEPCIÓN DE PASARELA 
             // Permitimos que el CLIENTE entre a estas rutas de "admin" específicas para pagar.
             .requestMatchers("/admin/pagos/crear-preferencia/**").hasAnyRole("ADMIN", "CLIENTE")
