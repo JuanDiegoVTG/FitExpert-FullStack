@@ -203,71 +203,83 @@ public class PythonController {
             Model model) {
 
         try {
-            // 1. Obtener el usuario que está frente a la pantalla
+            // 1. Buscamos al usuario
             Usuario usuarioActual = usuarioRepository.findByUserName(auth.getName())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            // 2. Preparar datos y llamar a la IA (Python)
+            // 2. Manejo del Perfil (Nuevo o Existente)
+            Perfil perfil = usuarioActual.getPerfil();
+            if (perfil == null) {
+                perfil = new Perfil();
+                perfil.setUsuario(usuarioActual);
+                // Si es nuevo, podrías inicializar el nombre completo aquí si lo deseas
+                perfil.setNombreCompleto(usuarioActual.getNombres() + " " + usuarioActual.getApellidos());
+            }
+
+            // 3. Preparar datos para la IA
             Map<String, Object> datos = new HashMap<>();
             datos.put("peso", peso);
             datos.put("altura", altura);
             datos.put("cuello", cuello);
             datos.put("cintura", cintura);
             datos.put("cadera", cadera != null ? cadera : 0.0);
-            datos.put("sexo", usuarioActual.getPerfil().getSexo()); 
-            datos.put("edad", usuarioActual.getPerfil().getEdad());
             datos.put("nivel_actividad", nivelActividad);
+            
+            // CORRECCIÓN: Ahora lo sacamos de perfil correctamente
+            datos.put("sexo", perfil.getSexo()); 
+            
+            // Calculamos la edad usando la fecha de nacimiento del Usuario
+            int edadCalculada = 0;
+            if (usuarioActual.getFechaNacimiento() != null) {
+                edadCalculada = java.time.Period.between(usuarioActual.getFechaNacimiento(), java.time.LocalDate.now()).getYears();
+            }
+            datos.put("edad", edadCalculada);
 
+            // 4. Llamada al servicio de Python
             Map<String, Object> diagnosticoIA = pythonService.obtenerDiagnosticoDesdePython(datos);
 
-            Double grasaCalculada = Double.parseDouble(diagnosticoIA.get("grasa_corporal").toString());
-            Double imcCalculado = Double.parseDouble(diagnosticoIA.get("imc").toString());
-
-            // 3. GUARDAR HISTORIAL (Punto A a Punto B)
-            Progreso nuevoProgreso = new Progreso();
-            nuevoProgreso.setUsuario(usuarioActual);
-            nuevoProgreso.setPeso(peso);
-            nuevoProgreso.setGrasa(grasaCalculada);
-            nuevoProgreso.setImc(imcCalculado);
-            progresoRepository.save(nuevoProgreso);
-
-            // 4. ACTUALIZAR PERFIL ACTUAL
-            Perfil perfil = usuarioActual.getPerfil();
+            // 5. ACTUALIZAR Y GUARDAR (Aquí usamos el perfilRepository)
             perfil.setPeso(peso);
             perfil.setAltura(altura);
             perfil.setCintura(cintura);
             perfil.setCuello(cuello);
             perfil.setCadera(cadera);
+            perfil.setNivelActividad(nivelActividad);
+            perfil.setEdad(edadCalculada); // También actualizamos la edad en el perfil
+
+            // Esto quita la advertencia "is not used" y guarda los datos en la DB
             perfilRepository.save(perfil);
 
-            // --- 🤖 AQUÍ EL TIMBRAZO PARA EL COACH ---
-            // Si el cliente tiene entrenador, le avisamos de una vez
-            if (usuarioActual.getEntrenador() != null) {
-                Notificacion noti = new Notificacion();
-                noti.setUsuario(usuarioActual.getEntrenador()); // El receptor es el Coach
-                noti.setMensaje("📊 " + usuarioActual.getNombres() + " ha completado una valoración IA.");
-                noti.setLeida(false);
-                noti.setFechaCreacion(LocalDateTime.now());
-                
-                notificacionRepository.save(noti); // ¡AQUÍ se activa la campana del entrenador!
-            }
-            // ------------------------------------------
+            // 6. Guardar en historial de progreso
+            Progreso nuevoProgreso = new Progreso();
+            nuevoProgreso.setUsuario(usuarioActual);
+            nuevoProgreso.setPeso(peso);
+            nuevoProgreso.setGrasa(Double.parseDouble(diagnosticoIA.get("grasa_corporal").toString()));
+            nuevoProgreso.setImc(Double.parseDouble(diagnosticoIA.get("imc").toString()));
+            progresoRepository.save(nuevoProgreso);
 
             model.addAttribute("diagnostico", diagnosticoIA);
             return "cliente/resultado_diagnostico";
 
         } catch (Exception e) {
+            e.printStackTrace(); // Para que veas el error real en la consola
             return "redirect:/api/valoracion?error=true";
         }
-}
+    }
+    
     @GetMapping("/valoracion")
     public String mostrarValoracion(Authentication auth, Model model) {
         Usuario usuario = usuarioRepository.findByUserName(auth.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
-        // Le pasamos el perfil actual por si ya tiene datos guardados
-        model.addAttribute("perfil", usuario.getPerfil());
-        return "cliente/valoracion_inicial"; // Nombre de tu HTML del formulario
+        // Obtenemos el perfil. Si es nulo (usuario nuevo), creamos uno vacío.
+        Perfil perfil = usuario.getPerfil();
+        if (perfil == null) {
+            perfil = new Perfil();
+        }
+        
+        model.addAttribute("perfil", perfil);
+        return "cliente/valoracion_inicial";
     }
 
     //CONTROL ENTRENADOR

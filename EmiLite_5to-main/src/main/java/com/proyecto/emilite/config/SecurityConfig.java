@@ -57,6 +57,7 @@ public class SecurityConfig {
                 "/catalogo/**",
                 "/catalogo/pago-exitoso/**",
                 "/pagos/respuesta", 
+                "/api/generar-diagnostico",
                 "/pagos/webhook"
             ).permitAll()
 
