@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIT EXPERT | Plataforma Exclusiva Emi-Lite</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3169B2;       /* Azul Emi-Lite */
+            --primary-dark: #1e3a6d;
+            --secondary: #0B1F3A;     /* Fondo Profundo */
+            --accent: #00D4FF;        /* Cyan Eléctrico */
+            --dark-bg: #060e1a;       /* Negro casi puro */
+            --light-bg: #f1f5f9;      /* Gris Premium suave */
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --card-bg: #ffffff;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--dark-bg); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 25px; }
+
+        /* --- Navbar Estilo Spinning con LOGO --- */
+        header {
+            background: rgba(6, 14, 26, 0.9);
+            backdrop-filter: blur(15px);
+            padding: 10px 0; /* Un poco más estrecho para el logo */
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .navbar { display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Estilo Chevere para el Logo */
+        .logo { display: flex; align-items: center; text-decoration: none; }
+        .logo img { 
+            height: 65px; /* Altura ideal */
+            border-radius: 12px; 
+            border: 2px solid rgba(49, 105, 178, 0.3); /* Borde azul sutil */
+            transition: var(--transition);
+        }
+        .logo img:hover { 
+            border-color: var(--accent); /* Brillo cyan al hover */
+            transform: scale(1.05) rotate(-2deg); /* Pequeño movimiento cool */
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.3s; opacity: 0.8; }
+        .nav-links a:hover { opacity: 1; color: var(--accent); }
+
+        /* --- Botones --- */
+        .btn { padding: 14px 30px; border-radius: 50px; font-weight: 700; text-decoration: none; transition: var(--transition); display: inline-block; cursor: pointer; border: none; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(49, 105, 178, 0.3); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(49, 105, 178, 0.5); }
+        .btn-outline { border: 1px solid rgba(255,255,255,0.2); color: white; }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: var(--accent); color: var(--accent); }
+
+        /* --- Hero Section Impactante --- */
+        .hero {
+            height: 95vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(rgba(6, 14, 26, 0.8), rgba(6, 14, 26, 0.6)), 
+                        url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop') center/cover;
+            text-align: left;
+            position: relative;
+        }
+        .hero::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 150px;
+            background: linear-gradient(to top, var(--dark-bg), transparent);
+        }
+        .hero-content { max-width: 800px; position: relative; z-index: 10; }
+        .hero h1 { font-size: 5rem; font-weight: 800; line-height: 0.95; margin-bottom: 25px; letter-spacing: -3px; }
+        .hero h1 span { color: var(--accent); }
+        .hero p { font-size: 1.25rem; margin-bottom: 40px; color: var(--text-main); opacity: 0.9; max-width: 600px; }
+
+        /* --- Sección Características Premium (Sin saltos fuertes) --- */
+        .features { 
+            padding: 120px 0; 
+            background: var(--light-bg); 
+            color: var(--text-dark); 
+            border-radius: 60px 60px 0 0;
+            margin-top: -60px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-header { text-align: center; margin-bottom: 80px; max-width: 700px; margin-left: auto; margin-right: auto;}
+        .section-header h2 { font-size: 3.2rem; font-weight: 800; color: var(--secondary); margin-bottom: 15px; letter-spacing: -1px;}
+        .section-header p { color: #64748b; font-size: 1.15rem; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; }
+        
+        .feature-item {
+            background: var(--card-bg);
+            padding: 50px 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            transition: var(--transition);
+            border: 1px solid #e2e8f0;
+            display: flex; flex-direction: column;
+        }
+        .feature-item:hover { transform: translateY(-15px) scale(1.02); box-shadow: 0 30px 60px rgba(49, 105, 178, 0.1); border-color: rgba(49, 105, 178, 0.2); }
+        
+        .icon-box { 
+            width: 70px; height: 70px; background: rgba(49, 105, 178, 0.1); 
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            margin-bottom: 30px; color: var(--primary); font-size: 2rem;
+            border: 1px solid rgba(49, 105, 178, 0.15);
+        }
+
+        .feature-item h3 { font-size: 1.6rem; margin-bottom: 15px; color: var(--secondary); font-weight: 700; }
+        .feature-item p { color: #64748b; font-size: 1rem; line-height: 1.7; flex-grow: 1; }
+
+        /* --- Sección Mixta Estilo Spinning --- */
+        .split-section { padding: 120px 0; display: flex; align-items: center; gap: 80px; flex-wrap: wrap; }
+        .split-image { flex: 1; min-width: 350px; border-radius: 40px; overflow: hidden; height: 550px; box-shadow: var(--shadow); border: 5px solid white;}
+        .split-image img { width: 100%; height: 100%; object-fit: cover; }
+        .split-text { flex: 1; min-width: 350px; }
+        .split-text h2 { font-size: 3.5rem; color: var(--secondary); margin-bottom: 25px; font-weight: 800; line-height: 1; letter-spacing: -2px;}
+        .split-text p { color: #64748b; font-size: 1.1rem; margin-bottom: 30px;}
+
+        /* --- FOOTER ROBUSTO (EL VISAGE) --- */
+        footer {
+            padding: 100px 0 40px;
+            background: #040a14; /* Más oscuro que el dark-bg */
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 50px;
+            margin-bottom: 70px;
+        }
+
+        .footer-col h4 {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .footer-col h4::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 40px; height: 2px; background: var(--accent);
+        }
+
+        .footer-col p { margin-bottom: 20px; line-height: 1.7; }
+        
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { text-decoration: none; color: var(--text-muted); transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; }
+        .footer-links a:hover { color: var(--accent); transform: translateX(5px); }
+
+        /* Iconos de Redes Sociales Pesados */
+        .social-big { display: flex; gap: 15px; margin-top: 30px; }
+        .social-big a {
+            width: 45px; height: 45px; 
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); font-size: 1.2rem; text-decoration: none;
+            transition: var(--transition);
+        }
+        .social-big a:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: #475569;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 3.5rem; }
+            .split-section { gap: 40px; }
+        }
+        @media (max-width: 768px) {
+            .hero { text-align: center; padding-top: 150px; }
+            .hero h1 { font-size: 2.8rem; }
+            .hero p { margin-left: auto; margin-right: auto; }
+            .hero-buttons { justify-content: center; }
+            .navbar .nav-links { display: none; }
+            .split-image { height: 350px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container navbar">
+            <a th:href="@{/}" class="logo">
+                <img th:src="@{/images/logofitexpert.jpeg}" alt="Fit Expert Logo">
+            </a>
+            
+            <nav class="nav-links">
+                <a href="#ia">Inteligencia Artificial</a>
+                <a href="#pagos">Pagos Integrados</a>
+                <a th:href="@{/login}" class="btn-outline" style="padding: 10px 25px; border-radius: 50px;">Ingresar</a>
+                <a th:href="@{/usuarios/registro-publico}" class="btn btn-primary" style="padding: 10px 25px;">Únete a Fit Expert</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <div style="background: rgba(0,212,255,0.1); color: var(--accent); padding: 8px 20px; border-radius: 50px; display: inline-block; margin-bottom: 25px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(0, 212, 255, 0.2);">
+                🔥 PLATAFORMA EXCLUSIVA FIT EXPERT
+            </div>
+            <h1>TU CUERPO,<br><span>TU OBRA MAESTRA.</span></h1>
+            <p>Bienvenido a FitExpert. La tecnología de vanguardia y el entrenamiento de élite se fusionan para maximizar tus resultados en FIT EXPERT.</p>
+            <div class="hero-buttons" style="display: flex; gap: 20px;">
+                <a th:href="@{/usuarios/registro-publico}" class="btn btn-primary">INICIAR MI CAMBIO</a>
+                <a href="#caracteristicas" class="btn btn-outline">EXPLORAR FUNCIONES</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="caracteristicas">
+        <div class="container">
+            <div class="section-header">
+                <h2>ENTRENAMIENTO INTELIGENTE</h2>
+                <p>FitExpert es tu central de mando digital. Diseñada para que el atleta Emi-Lite tenga control absoluto de su progreso y gestión.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-item" id="ia">
+                    <div class="icon-box"><i class="fas fa-brain"></i></div>
+                    <h3>Algoritmos de IA Real</h3>
+                    <p>Olvídate de las rutinas de papel. Nuestra IA analiza tu biometría y objetivos para generar microciclos de entrenamiento personalizados que evolucionan contigo.</p>
+                </div>
+
+                <div class="feature-item" id="pagos">
+                    <div class="icon-box"><i class="fas fa-wallet"></i></div>
+                    <h3>Mensualidad Digital</h3>
+                    <p>Paga tus mensualidades de Emi-Lite de forma segura y rápida. Integración directa con Mercado Pago para que nunca pierdas un día de entreno.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="icon-box"><i class="fas fa-user-check"></i></div>
+                    <h3>Perfil del Atleta</h3>
+                    <p>Tu historial deportivo, pagos realizados, servicios activos y progreso físico, todo centralizado en un dashboard intuitivo y privado.</p>
+                </div>
+            </div>
+
+            <div class="split-section">
+                <div class="split-image">
+                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop" alt="Entrenamiento Intenso Emi-Lite">
+                </div>
+                <div class="split-text">
+                    <h2>MÁS QUE UN SOFTWARE, UNA VENTAJA COMPETITIVA.</h2>
+                    <p>En Emi-Lite creemos en la excelencia. FitExpert es la herramienta que te permitirá entrenar de forma más inteligente, no más dura. Conecta con entrenadores certificados y lleva tu rendimiento al límite.</p>
+                    <a th:href="@{/usuarios/registro-publico}" class="btn btn-primary" style="background: var(--secondary); border: none;">UNIRME AHORA</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <a th:href="@{/}" class="logo" style="margin-bottom: 20px; display: inline-block;">
+                    <img th:src="@{/images/logofitexpert.jpeg}" alt="Fit Expert Logo" style="height: 50px;">
+                </a>
+                <p>La plataforma tecnológica exclusiva para los atletas y entrenadores de la familia Emi-Lite. Llevando el fitness al siguiente nivel.</p>
+                <div class="social-big">
+                    <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Mapa del Sitio</h4>
+                <ul class="footer-links">
+                    <li><a href="#ia"><i class="fas fa-chevron-right"></i> Rutinas Inteligentes</a></li>
+                    <li><a href="#pagos"><i class="fas fa-chevron-right"></i> Gestión de Pagos</a></li>
+                    <li><a th:href="@{/login}"><i class="fas fa-chevron-right"></i> Área de Miembros</a></li>
+                    <li><a th:href="@{/usuarios/registro-publico}"><i class="fas fa-chevron-right"></i> Registro de Atletas</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Soporte Técnico</h4>
+                <ul class="footer-links">
+                    <li><a href="mailto:soporte@emi-lite.co"><i class="fas fa-envelope"></i> soporte.tecnico@fitexpert.co</a></li>
+                    <li><a href="#"><i class="fas fa-ticket-alt"></i> Generar Ticket de Soporte</a></li>
+                    <li><a href="#"><i class="fas fa-map-marker-alt"></i> Sede Principal, Bogotá</a></li>
+                    <li><a href="#"><i class="fas fa-clock"></i> Monitoreo del Sistema 24/7</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 FitExpert |SENA  <br> Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

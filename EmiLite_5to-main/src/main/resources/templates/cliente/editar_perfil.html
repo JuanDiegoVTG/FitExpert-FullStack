@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<body>
+<div th:fragment="content">
+    <style>
+        .profile-container {
+            max-width: 850px;
+            margin: 30px auto;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 28px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        .section-title {
+            color: #00ff88;
+            text-transform: uppercase;
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            margin: 30px 0 20px 0;
+            display: flex;
+            align-items: center;
+        }
+        .section-title::after {
+            content: ""; flex: 1; height: 1px;
+            background: linear-gradient(90deg, rgba(0, 255, 136, 0.4), transparent);
+            margin-left: 15px;
+        }
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            border-radius: 12px;
+            padding: 12px;
+        }
+        .label-neon {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .btn-update {
+            background: linear-gradient(45deg, #00d2ff, #00ff88);
+            border: none; color: #0f172a;
+            font-weight: 900; padding: 18px;
+            border-radius: 15px; text-transform: uppercase;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .btn-update:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 255, 136, 0.3); }
+    </style>
+
+    <div class="profile-container">
+        <div class="text-center mb-5">
+            <h2 class="text-white fw-black" style="font-size: 2rem; letter-spacing: -1px;">EDICIÓN DE <span style="color: #00d2ff;">PERFIL</span></h2>
+            <p class="text-muted">Optimiza tus datos para el motor de Inteligencia Artificial.</p>
+        </div>
+
+        <form th:action="@{/cliente/perfil/editar}" th:object="${perfil}" method="post">
+            
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger bg-dark text-danger border-danger mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> Por favor, corrige los errores en los campos obligatorios.
+            </div>
+
+            <input type="hidden" th:field="*{id}">
+
+            <h5 class="section-title">01. Identidad</h5>
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <label for="nombreCompleto" class="label-neon">Nombre Completo</label>
+                    <input type="text" id="nombreCompleto" th:field="*{nombreCompleto}" 
+                           class="form-control" autocomplete="name" placeholder="Ej: Juan Diego">
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label for="edad" class="label-neon">Edad</label>
+                    <input type="number" id="edad" th:field="*{edad}" 
+                           class="form-control" autocomplete="bday-year" required>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label for="sexo" class="label-neon">Sexo Biológico</label>
+                    <select id="sexo" th:field="*{sexo}" class="form-select" autocomplete="sex">
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                    </select>
+                </div>
+            </div>
+
+            <h5 class="section-title">00. Datos de Contacto</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label for="email" class="label-neon">Correo Electrónico</label>
+                        <input type="email" 
+                            id="email" 
+                            th:field="*{email}" 
+                            class="form-control" 
+                            autocomplete="email" 
+                            placeholder="ejemplo@correo.com"
+                            required>
+                        <div th:if="${#fields.hasErrors('email')}" class="text-danger small mt-1">
+                            <i class="fas fa-exclamation-circle"></i> <span th:errors="*{email}"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label for="telefono" class="label-neon">Teléfono</label>
+                        <input type="text" 
+                            id="telefono" 
+                            th:field="*{telefono}" 
+                            class="form-control" 
+                            autocomplete="tel" 
+                            placeholder="Mínimo 7 dígitos"
+                            required>
+                        <div th:if="${#fields.hasErrors('telefono')}" class="text-danger small mt-1">
+                            <i class="fas fa-exclamation-circle"></i> <span th:errors="*{telefono}"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+            <h5 class="section-title">03. Métricas Físicas</h5>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label for="peso" class="label-neon">Peso (kg)</label>
+                    <input type="number" id="peso" step="0.1" th:field="*{peso}" class="form-control" autocomplete="off">
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label for="altura" class="label-neon">Altura (cm)</label>
+                    <input type="number" id="altura" step="0.1" th:field="*{altura}" class="form-control" autocomplete="off">
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label for="nivelActividad" class="label-neon">Nivel de Actividad</label>
+                    <select id="nivelActividad" th:field="*{nivelActividad}" class="form-select" autocomplete="off">
+                        <option value="sedentario">Sedentario</option>
+                        <option value="ligero">Ligero</option>
+                        <option value="moderado">Moderado</option>
+                        <option value="intenso">Atleta</option>
+                    </select>
+                </div>
+            </div>
+
+            <h5 class="section-title">04. Antropometría IA</h5>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label for="cuello" class="label-neon">Cuello (cm)</label>
+                    <input type="number" id="cuello" step="0.1" th:field="*{cuello}" class="form-control" autocomplete="off">
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label for="cintura" class="label-neon">Cintura (cm)</label>
+                    <input type="number" id="cintura" step="0.1" th:field="*{cintura}" class="form-control" autocomplete="off">
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label for="cadera" class="label-neon">Cadera (cm)</label>
+                    <input type="number" id="cadera" step="0.1" th:field="*{cadera}" class="form-control" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="objetivo" class="label-neon">Objetivo Principal</label>
+                <textarea id="objetivo" th:field="*{objetivo}" class="form-control" rows="3" autocomplete="off"></textarea>
+            </div>
+
+            <button type="submit" class="btn-update w-100 mt-3">
+                Guardar y Volver al Panel <i class="fas fa-rocket ms-2"></i>
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

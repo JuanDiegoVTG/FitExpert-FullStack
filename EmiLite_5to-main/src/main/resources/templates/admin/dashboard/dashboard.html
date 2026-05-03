@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Control Central - Fit Expert Admin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* COLORES CUERPO (CLARO) */
+            --bg-body: #f1f5f9; 
+            --text-main: #0f172a; /* Azul casi negro, máxima visibilidad */
+            --text-muted: #64748b;
+            --card-bg: #3169B2;
+            --border-color: #e2e8f0;
+
+            /* COLORES SIDEBAR (AZUL ORIGINAL) */
+            --bg-sidebar: #0b1f3a; 
+            --text-sidebar: #ffffff;
+            --text-sidebar-muted: #afc6e9;
+
+            /* ACENTOS */
+            --primary: #3169B2;
+            --accent: #10b981;
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+                /* --- ESTILO DEL LOGO BRAND --- */
+        .logo-container { width: 50px; height: 50px; border-radius: 12px; /* Bordes redondeados modernos */ overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent-neon); box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); /* Brillo neón alrededor del logo */ background: white; /* Por si el JPEG tiene fondo blanco, que se vea uniforme */ transition: var(--transition); }
+
+        .brand-img { width: 100%; height: 100%; object-fit: cover; }
+
+        .brand-text { font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; color: white !important; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+        /* Efecto al pasar el mouse por la marca */
+        .brand:hover .logo-container { transform: scale(1.1) rotate(-5deg); box-shadow: 0 0 25px var(--accent-neon); }
+        .brand:hover .brand-text { filter: brightness(1.2); }
+
+        /* --- SIDEBAR AZUL PROFUNDO --- */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            padding: 2.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 3.5rem;
+            text-decoration: none;
+            letter-spacing: -1px;
+        }
+
+        .brand i { color: #00D4FF; font-size: 2rem; }
+
+        .nav-group label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-sidebar-muted);
+            margin-bottom: 1rem;
+            display: block;
+            font-weight: 800;
+            opacity: 0.7;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.9rem 1.2rem;
+            color: var(--text-sidebar-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+        }
+
+        /* --- CONTENIDO PRINCIPAL (CLARO) --- */
+        .main-content { margin-left: 280px; flex: 1; padding: 3rem; }
+
+        .header-title h2 { font-size: 1.8rem; font-weight: 800; color: #1e293b; }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 8px 18px 8px 8px;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .avatar {
+            width: 40px; height: 40px;
+            background: var(--primary);
+            color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800;
+        }
+
+        /* --- CARDS Y PANELES --- */
+        .admin-hero {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+
+        .hero-text h1 { font-size: 2.4rem; color: #0f172a; margin-bottom: 1rem; }
+        .hero-text p { color: var(--text-muted); font-size: 1.1rem; max-width: 550px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: #3169B2;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            border-radius: 20px;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-value { font-size: 2.2rem; font-weight: 800; color: #1e293b; margin-top: 10px; }
+        .stat-label { color:#dcfce7; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+
+        .stat-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; background: #f1f5f9; color: var(--primary);
+        }
+
+        /* BOTONES */
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-flex; align-items: center; gap: 8px;
+            margin-top: 20px;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ff8080;
+            border: 1px solid rgba(255, 128, 128, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+        .logout-btn:hover { background: #ef4444; color: white; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <a href="/dashboard" class="brand d-flex align-items-center gap-3 mb-5 text-decoration-none">
+            <div class="logo-container">
+                <img th:src="@{/images/logofitexpert.jpeg}" alt="Fit Expert Logo" class="brand-img">
+            </div>
+            <span class="brand-text">FIT <span style="color: var(--accent-neon);">EXPERT</span></span>
+        </a>
+
+        <div class="nav-group">
+            <label>Administración</label>
+            <a th:href="@{/dashboard}" class="nav-link active">
+                <i class="fas fa-home"></i>
+                <span>Panel Central</span>
+            </a>
+            <a th:href="@{/admin/usuarios}" class="nav-link">
+                <i class="fas fa-users-gear"></i>
+                <span>Gestión Usuarios</span>
+            </a>
+            <a th:href="@{/admin/servicios}" class="nav-link">
+                <i class="fas fa-dumbbell"></i>
+                <span>Servicios Gym</span>
+            </a>
+        </div>
+
+        <div class="nav-group">
+            <label>Finanzas</label>
+            <a th:href="@{/admin/pagos}" class="nav-link">
+                <i class="fas fa-wallet"></i>
+                <span>Control Pagos</span>
+            </a>
+        </div>
+
+        <form th:action="@{/logout}" method="post" style="margin-top: auto;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="logout-btn" style="width: 100%;">
+                <i class="fas fa-power-off"></i> CERRAR SESIÓN
+            </button>
+        </form>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="top-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+            <div class="header-title">
+                <h2>Control de Mando</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Bienvenido al núcleo de la plataforma.</p>
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar">
+                    <span th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">A</span>
+                </div>
+                <div style="text-align: left;">
+                    <div style="font-weight: 800; font-size: 0.85rem; color: #1e293b;" sec:authentication="principal.username">Admin</div>
+                    <div style="color: var(--accent); font-size: 0.6rem; font-weight: 800;">ADMINISTRADOR</div>
+                </div>
+            </div>
+        </header>
+
+        <section class="admin-hero">
+            <div class="hero-text">
+                <span style="background: #dcfce7; color: #15803d; padding: 5px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">SISTEMA ACTIVO</span>
+                <h1 style="margin-top: 15px;">Gestión <span style="color: var(--primary);">Fit Expert</span></h1>
+                <p>Audita los movimientos de los usuarios y supervisa las rutinas generadas por la IA en tiempo real.</p>
+                
+                <div style="display: flex; gap: 10px;">
+                    <a th:href="@{/admin/usuarios}" class="btn-action">
+                        <i class="fas fa-search"></i> AUDITAR USUARIOS
+                    </a>
+                </div>
+            </div>
+            <div style="font-size: 8rem; color: var(--primary); opacity: 0.05;">
+                <i class="fas fa-shield-check"></i>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-value">1,240</div>
+                <div class="stat-label">Usuarios</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #f59e0b;"><i class="fas fa-robot"></i></div>
+                <div class="stat-value">856</div>
+                <div class="stat-label">Rutinas IA</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #10b981;"><i class="fas fa-dollar-sign"></i></div>
+                <div class="stat-value">$12.4M</div>
+                <div class="stat-label">Ventas</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #7c3aed;"><i class="fas fa-server"></i></div>
+                <div class="stat-value">99%</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>

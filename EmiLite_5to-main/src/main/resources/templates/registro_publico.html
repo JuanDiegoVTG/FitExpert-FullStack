@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registro Pro - FIT EXPERT</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --primary-glow: rgba(0, 210, 255, 0.5);
+            --neon-green: #00ff88;
+            --error-neon: #ff0055;
+            --secondary: #0f172a;
+            --secondary-light: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            padding: 40px;
+            border-radius: 28px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 20px var(--primary-glow);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stepper { display: flex; justify-content: space-between; margin-bottom: 35px; position: relative; }
+        .stepper::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--border); z-index: 1; }
+        
+        .step-circle {
+            width: 40px; height: 40px;
+            background: var(--secondary-light);
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; z-index: 2; transition: var(--transition);
+        }
+        .step-circle.active { 
+            background: var(--primary); 
+            border-color: var(--primary); 
+            color: var(--secondary);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .form-step { display: none; animation: fadeIn 0.4s ease; }
+        .form-step.active { display: block; }
+
+        .form-group { margin-bottom: 22px; text-align: left; }
+        label { display: block; font-size: 0.7rem; color: var(--primary); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+        input, select {
+            width: 100%; padding: 14px 14px 14px 45px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border); border-radius: 14px;
+            color: white; font-size: 1rem;
+        }
+
+        select option {
+            background-color: var(--secondary-light);
+            color: white;
+        }
+
+        .btn-nav { padding: 16px 25px; border-radius: 14px; font-weight: 800; cursor: pointer; border: none; }
+        .btn-next { background: var(--primary); color: var(--secondary); width: 100%; }
+        .btn-prev { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+        .btn-submit { background: var(--neon-green); color: var(--secondary); width: 100%; }
+
+        .login-link { margin-top: 25px; display: block; color: var(--text-muted); }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header style="margin-bottom: 30px;">
+<h2>FIT EXPERT</h2>
+<p>Crea tu perfil de alto rendimiento</p>
+</header>
+
+<form th:action="@{/usuarios/crear-publico}" method="post" th:object="${usuarioForm}" enctype="multipart/form-data">
+
+<div class="stepper">
+<div class="step-circle active" id="s1">1</div>
+<div class="step-circle" id="s2">2</div>
+<div class="step-circle" id="s3">3</div>
+</div>
+
+<!-- PASO 1 -->
+<div class="form-step active" id="step1">
+
+<div class="form-group">
+<label>Usuario</label>
+<div class="input-wrapper">
+<i class="fas fa-at"></i>
+<input type="text" th:field="*{userName}" required>
+</div>
+</div>
+
+<div class="form-group">
+<label>Email Profesional</label>
+<div class="input-wrapper">
+<i class="fas fa-envelope"></i>
+<input type="email" th:field="*{email}" required>
+</div>
+</div>
+
+<div class="form-group">
+<label>Contraseña</label>
+<div class="input-wrapper">
+<i class="fas fa-key"></i>
+<input type="password" th:field="*{password}" required>
+</div>
+</div>
+
+<button type="button" class="btn-nav btn-next" onclick="move(1,2)">Siguiente</button>
+
+</div>
+
+<!-- PASO 2 -->
+<div class="form-step" id="step2">
+
+<div class="form-group">
+<label>Nombres</label>
+<input type="text" th:field="*{nombres}" required style="padding-left:15px;">
+</div>
+
+<div class="form-group">
+<label>Apellidos</label>
+<input type="text" th:field="*{apellidos}" required style="padding-left:15px;">
+</div>
+
+<div class="form-group">
+<label>Fecha Nacimiento</label>
+<input type="date" th:field="*{fechaNacimiento}" required>
+</div>
+
+<div class="form-group">
+<label>Sexo</label>
+<select th:field="*{sexo}" required>
+<option value="" disabled selected>Elegir...</option>
+<option value="M">Masc.</option>
+<option value="F">Fem.</option>
+</select>
+</div>
+
+<button type="button" class="btn-nav btn-prev" onclick="move(2,1)">Atrás</button>
+<button type="button" class="btn-nav btn-next" onclick="move(2,3)">Siguiente</button>
+
+</div>
+
+<!-- PASO 3 -->
+<div class="form-step" id="step3">
+
+<div class="form-group">
+<label>Rol</label>
+<select th:field="*{rolId}" id="rolSelect" required onchange="checkTrainer()">
+<option value="" disabled selected>Selecciona</option>
+<option value="3">Atleta</option>
+<option value="2">Entrenador</option>
+</select>
+</div>
+
+<div id="trainerUpload" style="display:none;">
+<input type="file" id="archivoCv" name="archivoCv" accept="application/pdf">
+</div>
+
+<button type="button" class="btn-nav btn-prev" onclick="move(3,2)">Atrás</button>
+<button type="submit" class="btn-nav btn-submit">Registrar</button>
+
+</div>
+
+</form>
+
+</div>
+
+<script>
+function validarPaso(paso) {
+    let campos = document.querySelectorAll("#step" + paso + " input, #step" + paso + " select");
+    for (let campo of campos) {
+        if (!campo.checkValidity()) {
+            campo.reportValidity();
+            return false;
+        }
+    }
+    return true;
+}
+
+function move(from, to) {
+    if (to > from) {
+        if (!validarPaso(from)) return;
+    }
+    document.getElementById('step' + from).classList.remove('active');
+    document.getElementById('step' + to).classList.add('active');
+
+    if (to > from) {
+        document.getElementById('s' + to).classList.add('active');
+    } else {
+        document.getElementById('s' + from).classList.remove('active');
+    }
+}
+
+function checkTrainer() {
+    let rol = document.getElementById("rolSelect").value;
+    let cv = document.getElementById("archivoCv");
+    let box = document.getElementById("trainerUpload");
+
+    if (rol == "2") {
+        box.style.display = "block";
+        cv.required = true;
+    } else {
+        box.style.display = "none";
+        cv.required = false;
+        cv.value = "";
+    }
+}
+
+document.querySelector("form").addEventListener("submit", function(e) {
+    if (!validarPaso(1) || !validarPaso(2) || !validarPaso(3)) {
+        e.preventDefault();
+        alert("⚠️ Completa todos los campos antes de registrar");
+    }
+});
+</script>
+
+</body>
+</html>
+```

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Panel de Rutinas - Fit Expert</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+    <style>
+        body {
+            background: #0b1f3a; /* Tu color oscuro */
+            color: white;
+            padding: 40px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .container-pro {
+            background: rgba(30, 41, 59, 0.95);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .header-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .btn-new {
+            background: #00D4FF;
+            color: #0b1f3a;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 800;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th {
+            background: #1e3a6d; /* Tu primary-dark */
+            color: #00D4FF;
+            padding: 15px;
+            text-align: left;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .btn-back { color: #afc6e9; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container-pro">
+        <div class="header-panel">
+            <div>
+                <h1><i class="fas fa-user-tie"></i> Panel de Rutinas</h1>
+                <p style="color: #94a3b8;">Gestiona los entrenamientos de tus atletas.</p>
+            </div>
+            <a th:href="@{/entrenador/rutinas/nueva}" class="btn-new">
+                <i class="fas fa-plus"></i> Nueva Rutina
+            </a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Nombre Rutina</th>
+                    <th>Tipo</th>
+                    <th>Nivel</th>
+                    <th>Días</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="rutina : ${rutinas}">
+                    <td th:text="${rutina.id}"></td>
+                    <td th:text="${rutina.cliente.userName}" style="font-weight: 700;"></td>
+                    <td th:text="${rutina.nombre}" style="color: #00D4FF;"></td>
+                    <td th:text="${rutina.tipo}"></td>
+                    <td th:text="${rutina.nivelDificultad}"></td>
+                    <td th:text="${rutina.duracionSemanas}"></td>
+                    <td>
+                        <a th:href="@{/entrenador/rutinas/{id}/editar(id=${rutina.id})}" style="color: #fbbf24; margin-right: 10px;"><i class="fas fa-edit"></i></a>
+                        <form th:action="@{/entrenador/rutinas/{id}/eliminar(id=${rutina.id})}" method="post" style="display:inline;">
+                             <button type="submit" style="background:none; border:none; color:#ef4444; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${#lists.isEmpty(rutinas)}" style="text-align: center; padding: 40px; color: #94a3b8;">
+            <p>No hay rutinas asignadas a tus clientes aún.</p>
+        </div>
+
+        <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+            <a th:href="@{/dashboard}" class="btn-back"><i class="fas fa-chevron-left"></i> Volver</a>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" style="background:none; border:none; color:#ef4444; cursor:pointer; font-weight:600;">Cerrar Sesión</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

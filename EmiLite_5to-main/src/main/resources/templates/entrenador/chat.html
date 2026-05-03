@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Mensajería - Entrenador</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background: url("/images/klipartz2.png"), #0b1f3a; 
+            background-size: cover;
+            background-attachment: fixed;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Estructura Principal */
+        .messenger-container {
+            display: flex;
+            height: 85vh;
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px;
+            background-color: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* Barra Lateral (Lista de Clientes) */
+        .sidebar {
+            width: 30%;
+            background: rgba(17, 26, 48, 0.9);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header { 
+            padding: 20px; 
+            background: rgba(26, 38, 64, 0.8); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn-back {
+            align-self: flex-start;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back:hover { color: #10b981; }
+
+        .sidebar-header h3 { color: #10b981; margin: 0; text-align: center; font-size: 1.2rem;}
+
+        .contacts-list { flex: 1; overflow-y: auto; }
+        
+        .contact-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .contact-item:hover { background: rgba(255, 255, 255, 0.05); }
+        .contact-item.active { 
+            background: rgba(16, 185, 129, 0.1); 
+            border-left: 4px solid #10b981; 
+        }
+
+        .contact-item strong { color: white; margin-bottom: 5px; }
+
+        /* Área de Chat (Derecha) */
+        .chat-area { flex: 1; display: flex; flex-direction: column; background: transparent; }
+        
+        .chat-header { 
+            padding: 20px 25px; 
+            background: rgba(26, 38, 64, 0.8); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-header h4 { color: white; margin: 0; }
+
+        #chat-box { 
+            flex: 1; 
+            padding: 25px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background: rgba(15, 23, 42, 0.4); 
+        }
+        
+        /* Globos de texto */
+        .msg { 
+            padding: 12px 18px; 
+            border-radius: 15px; 
+            max-width: 70%; 
+            font-size: 0.95rem; 
+            line-height: 1.4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .entrenador { 
+            align-self: flex-end; 
+            background: linear-gradient(135deg, #10b981, #059669); 
+            color: white; 
+            border-bottom-right-radius: 2px;
+        }
+        
+        .cliente { 
+            align-self: flex-start; 
+            background: #2c3e50; 
+            color: white; 
+            border: 1px solid #34495e;
+            border-bottom-left-radius: 2px;
+        }
+
+        .input-bar { 
+            padding: 20px; 
+            background: rgba(26, 38, 64, 0.8); 
+            display: flex; 
+            gap: 12px; 
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .input-bar input { 
+            flex: 1; 
+            padding: 12px 20px; 
+            border-radius: 25px; 
+            border: 1px solid #34495e; 
+            background: #0f172a; 
+            color: white; 
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-bar input:focus { border-color: #10b981; }
+
+        .btn-send { 
+            background: linear-gradient(135deg, #10b981, #059669); 
+            color: white; 
+            border: none; 
+            padding: 10px 25px; 
+            border-radius: 25px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="messenger-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a th:href="@{/dashboard}" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                </a>
+                <h3><i class="fab fa-whatsapp"></i> Mensajes FitExpert</h3>
+            </div>
+            <div class="contacts-list">
+                <div th:each="alunmo : ${clientes}" 
+                     th:classappend="${alunmo.id == chatId} ? 'contact-item active' : 'contact-item'"
+                     th:onclick="|window.location.href='/api/chat/' + ${alunmo.id}|">
+                    <strong th:text="${alunmo.nombres}">Nombre</strong>
+                    <p style="margin: 0; font-size: 0.8rem; color: #94a3b8;" th:text="${alunmo.perfil.objetivo}">Objetivo</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-area">
+            <div class="chat-header">
+                <i class="fas fa-user-circle" style="color: #10b981; font-size: 1.8rem;"></i>
+                <h4 th:text="'Conversación con: ' + ${nombreCliente}">Cargando...</h4>
+            </div>
+            <div id="chat-box"></div>
+            <div class="input-bar">
+                <input type="text" id="messageInput" 
+                       placeholder="Escribe tu respuesta..." 
+                       onkeypress="if(event.key === 'Enter') sendMessage()"/>
+                <button onclick="sendMessage()" class="btn-send">
+                    <i class="fas fa-paper-plane"></i> Enviar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const chatId = /*[[${chatId}]]*/ 1;
+        const myId = /*[[${usuarioId}]]*/ 2;
+
+        async function loadMessages() {
+        try {
+            const res = await fetch(`/api/chat/mensajes/${chatId}`);
+            if (!res.ok) throw new Error("Error en la respuesta");
+            
+            const data = await res.json();
+            const chatBox = document.getElementById("chat-box");
+            
+            chatBox.innerHTML = data.map(m => {
+                // Sacamos el ID asegurándonos de leer el objeto sender
+                let emisorId = m.sender ? m.sender.id : m.sender_id;
+                
+                // Forzamos a que ambos sean texto para que la comparación nunca falle
+                const esMio = String(emisorId) === String(myId);
+                
+                // Imprimimos en consola para ver la magia
+                console.log(`Mensaje: "${m.content}" | Emisor: ${emisorId} | Mi ID: ${myId} | ¿Es mío?: ${esMio}`);
+
+                const claseCSS = esMio ? 'entrenador' : 'cliente';
+                
+                return `
+                    <div class="msg ${claseCSS}">
+                        ${m.content}
+                    </div>
+                `;
+            }).join("");
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (error) {
+            console.error("Error al cargar mensajes:", error);
+        }
+    }
+
+        async function sendMessage() {
+            const input = document.getElementById("messageInput");
+            if(!input.value.trim()) return;
+            
+            await fetch("/api/chat/enviar", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    chat_id: chatId, 
+                    sender_id: myId, 
+                    content: input.value.trim()
+                })
+            });
+            
+            input.value = "";
+            loadMessages();
+        }
+        
+        setInterval(loadMessages, 4000);
+        loadMessages();
+    </script>
+</body>
+</html>

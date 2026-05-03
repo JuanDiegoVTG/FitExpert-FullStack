@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login | FIT EXPERT</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary: #3169B2;
+            --primary-dark: #093E82;
+            --secondary: #0B1F3A;
+            --secondary-light: #122B52;
+            --accent: #0D52AB;
+            --accent-dark: #093E82;
+            --text: #EAF2FB;
+            --text-light: #AFC6E9;
+            --card-bg: rgba(18, 43, 82, 0.9);
+            --border: #1E3A6D;
+            --success: #28A745;
+            --error: #FF4757;
+            --shadow: 0 8px 25px rgba(9, 62, 130, 0.35);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, #5382BE 0%, #0D52AB 100%);
+            --gradient-dark: linear-gradient(135deg, #0B1F3A 0%, #122B52 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: url('https://source.unsplash.com/1600x900/?workspace,light') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-wrapper {
+            display: flex;
+            width: 90%;
+            max-width: 1000px;
+            height: 600px;
+            box-shadow: var(--shadow);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .login-form {
+            flex: 1;
+            background: linear-gradient(135deg,rgba(30, 47, 95, 0.905),rgba(49, 76, 158, 0.79));
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: var(--secondary-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .error-message {
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--error);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .success-message {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-wrapper">
+
+<div class="login-form">
+<h2>Iniciar Sesion</h2>
+
+<form id="loginForm" th:action="@{/login}" method="post">
+
+<div class="form-group">
+<label for="username">Usuario</label>
+<input type="text" id="username" name="username" class="form-control"
+placeholder="Ingresa tu usuario" required minlength="4">
+</div>
+
+<div class="form-group">
+<label for="password">Contraseña</label>
+<input type="password" id="password" name="password" class="form-control"
+placeholder="Ingresa tu contraseña" required minlength="4">
+</div>
+
+<div class="options">
+<label><input type="checkbox"> Recordarme</label>
+<a href="#">¿Olvidaste tu contraseña?</a>
+</div>
+
+<button type="submit" class="btn-login">LOGIN</button>
+
+</form>
+
+<div th:if="${param.error}" class="error-message">Usuario o contraseña incorrectos.</div>
+<div th:if="${param.logout}" class="success-message">Sesión cerrada exitosamente.</div>
+
+</div>
+
+</div>
+
+<script>
+//  VALIDACIÓN CON ALERTA
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+
+    let user = document.getElementById("username");
+    let pass = document.getElementById("password");
+
+    if (!user.checkValidity() || user.value.trim() === "") {
+        e.preventDefault();
+        alert(" Debes ingresar un usuario válido");
+        user.focus();
+        return;
+    }
+
+    if (!pass.checkValidity() || pass.value.trim() === "") {
+        e.preventDefault();
+        alert(" Debes ingresar tu contraseña");
+        pass.focus();
+        return;
+    }
+});
+</script>
+
+</body>
+</html>
+

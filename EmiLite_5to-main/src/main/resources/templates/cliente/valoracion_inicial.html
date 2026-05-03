@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<body>
+<div th:fragment="content">
+    <style>
+        .assessment-wrapper {
+            padding: 3rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.8) !important;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 210, 255, 0.3) !important;
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 650px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            color: white;
+        }
+
+        .title-neon {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-tag {
+            color: #00ff88;
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 1.5rem 0;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+            padding-bottom: 8px;
+        }
+
+        .input-group-custom { margin-bottom: 1.5rem; }
+
+        .label-custom {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .input-box { position: relative; }
+
+        .input-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00d2ff;
+            z-index: 10;
+        }
+
+        .form-control-fit {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 15px !important;
+            padding: 14px 15px 14px 50px !important;
+            color: white !important;
+            font-weight: 600;
+        }
+
+        .btn-sync {
+            background: linear-gradient(45deg, #00d2ff, #00ff88);
+            border: none;
+            color: #0f172a;
+            font-weight: 900;
+            text-transform: uppercase;
+            padding: 1.2rem;
+            border-radius: 18px;
+            width: 100%;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-sync:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 255, 136, 0.4);
+        }
+    </style>
+
+    <div class="assessment-wrapper">
+        <div class="glass-card">
+            <div class="text-center">
+                <h1 class="title-neon">ANÁLISIS <span style="color: #00d2ff;">CORPORAL</span></h1>
+                <p style="color: #94a3b8; margin-bottom: 2rem;">Algoritmo de Bio-impedancia FitExpert IA</p>
+            </div>
+
+            <form th:action="@{/api/generar-diagnostico}" method="post">
+                <div class="section-tag"><i class="fas fa-sliders-h"></i> Parámetros Vitales</div>
+                <div class="row mb-3">
+                    <div class="col-md-6 input-group-custom">
+                        <label class="label-custom">Peso (KG)</label>
+                        <div class="input-box">
+                            <i class="fas fa-weight"></i>
+                            <input type="number" step="any" name="peso" th:value="${perfil.peso}" class="form-control-fit" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6 input-group-custom">
+                        <label class="label-custom">Estatura (CM)</label>
+                        <div class="input-box">
+                            <i class="fas fa-ruler-vertical"></i>
+                            <input type="number" step="any" name="altura" th:value="${perfil.altura}" class="form-control-fit" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-tag"><i class="fas fa-tape"></i> Perímetros</div>
+                <div class="row mb-3">
+                    <div class="col-md-4 input-group-custom">
+                        <label class="label-custom">Cuello</label>
+                        <div class="input-box">
+                            <i class="fas fa-user-tie"></i>
+                            <input type="number" step="any" name="cuello" th:value="${perfil.cuello}" class="form-control-fit" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4 input-group-custom">
+                        <label class="label-custom">Cintura</label>
+                        <div class="input-box">
+                            <i class="fas fa-arrows-alt-h"></i>
+                            <input type="number" step="any" name="cintura" th:value="${perfil.cintura}" class="form-control-fit" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4 input-group-custom">
+                        <label class="label-custom">Cadera</label>
+                        <div class="input-box">
+                            <i class="fas fa-circle-notch"></i>
+                            <input type="number" step="any" name="cadera" th:value="${perfil.cadera}" class="form-control-fit">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-tag"><i class="fas fa-fire"></i> Actividad</div>
+                <div class="input-group-custom mb-4">
+                    <div class="input-box">
+                        <i class="fas fa-bolt"></i>
+                        <select name="nivelActividad" class="form-control-fit" style="padding-left: 50px !important;" required>
+                            <option value="1.2" th:selected="${perfil.nivelActividad == '1.2'}">Sedentario</option>
+                            <option value="1.375" th:selected="${perfil.nivelActividad == '1.375'}">Ligero</option>
+                            <option value="1.55" th:selected="${perfil.nivelActividad == '1.55'}">Moderado</option>
+                            <option value="1.725" th:selected="${perfil.nivelActividad == '1.725'}">Intenso</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-sync">
+                    CALCULAR AHORA <i class="fas fa-chevron-right ms-2"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

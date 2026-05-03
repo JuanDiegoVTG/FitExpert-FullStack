@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Mis Clientes - Fit Expert</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+    <style>
+        /* MANTENEMOS TU ESTRUCTURA OSCURA */
+        body {
+            background: url("/images/klipartz2.png"), #0b1f3a; 
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(30, 41, 59, 0.95); /* Contenedor oscuro */
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 1200px; /* Un poco más ancho para la nueva columna */
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            margin-bottom: 35px;
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: #3169B2; /* Azul original */
+            color: white;
+            padding: 18px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        td {
+            padding: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #ffffff; /* Texto blanco para máxima visibilidad */
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ESTILOS DEL NUEVO BOTÓN DE CHAT */
+        .btn-chat {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #00D4FF, #3169B2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-chat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+            color: #ffffff;
+            /* Invertimos el gradiente al pasar el mouse */
+            background: linear-gradient(135deg, #3169B2, #00D4FF);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            background: #3169B2;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: 0.3s;
+            margin-top: 25px;
+        }
+
+        .back-link:hover {
+            background: #25528d;
+        }
+
+        .logout-link {
+            background: transparent;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ff4d4d;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-left: 15px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .logout-link:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2><i class="fas fa-users-rays" style="color: #00D4FF;"></i> Mis Clientes Asignados</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Nombre Completo</th>
+                    <th>Email</th>
+                    <th>Estado</th>
+                    <th style="text-align: center;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cliente : ${usuarios}">
+                    <td th:text="${cliente.userName}" style="font-weight: 700; color: #00D4FF;"></td>
+                    <td th:text="${cliente.nombres + ' ' + cliente.apellidos}"></td>
+                    <td th:text="${cliente.email}"></td>
+                    <td>
+                        <span th:text="${cliente.activo ? '● Activo' : '○ Inactivo'}"
+                            th:style="${cliente.activo ? 'color: #10b981; font-weight: 800;' : 'color: #ef4444; font-weight: 800;'}">
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a th:href="@{/api/chat/{id}(id=${cliente.id})}" 
+                            class="btn-chat" 
+                            style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 5px 12px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                <i class="fab fa-whatsapp"></i> Chatear
+                            </a>
+
+                            <a th:href="@{/api/entrenador/cliente/{id}(id=${cliente.id})}" 
+                            class="btn-ficha" 
+                            style="background: #6366f1; color: white; padding: 5px 12px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700;">
+                                <i class="fas fa-eye"></i> Ver Ficha IA
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${#lists.isEmpty(usuarios)}" style="padding: 30px; color: #94a3b8;">
+            <i class="fas fa-user-slash" style="font-size: 2rem; margin-bottom: 10px;"></i>
+            <p>Todavía no tienes clientes asignados.</p>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <a th:href="@{/dashboard}" class="back-link">
+                <i class="fas fa-chevron-left"></i> Volver al Panel
+            </a>
+
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="logout-link">Cerrar Sesión</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

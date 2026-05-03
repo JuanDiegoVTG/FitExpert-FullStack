@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Dashboard Atleta - Fit Expert</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    
+    <style>
+        :root {
+            --bg-body: #0f172a;
+            --bg-sidebar: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1;
+            --accent-neon: #00d2ff;
+            --success-neon: #00ff88;
+            --text-main: #ffffff !important; /* FORZADO BLANCO */
+            --text-muted: #cbd5e1;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15), transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 210, 255, 0.1), transparent 50%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR RESPONSIVE --- */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1050;
+            transition: all 0.3s ease;
+        }
+
+                /* --- ESTILO DEL LOGO BRAND --- */
+        .logo-container { width: 50px; height: 50px; border-radius: 12px; /* Bordes redondeados modernos */ overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent-neon); box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); /* Brillo neón alrededor del logo */ background: white; /* Por si el JPEG tiene fondo blanco, que se vea uniforme */ transition: var(--transition); }
+
+        .brand-img { width: 100%; height: 100%; object-fit: cover; }
+
+        .brand-text { font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; color: white !important; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+        /* Efecto al pasar el mouse por la marca */
+        .brand:hover .logo-container { transform: scale(1.1) rotate(-5deg); box-shadow: 0 0 25px var(--accent-neon); }
+        .brand:hover .brand-text { filter: brightness(1.2); }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Header móvil */
+        .mobile-header {
+            display: none;
+            background: var(--bg-sidebar);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1100;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 1.5rem; }
+            .mobile-header { display: flex; justify-content: space-between; align-items: center; }
+        }
+
+        /* --- TEXTOS VISIBLES --- */
+        h1, h2, h3, h4, h5, h6, p, span, label { color: white !important; }
+        .text-muted { color: var(--text-muted) !important; }
+
+        /* --- BOTONES NEÓN MELOS --- */
+        .btn-neon-action {
+            background: linear-gradient(45deg, var(--accent-neon), var(--success-neon));
+            color: #0f172a !important;
+            font-weight: 800;
+            padding: 12px 25px;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-neon-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Botones del gráfico */
+        .fit-btn-group {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 5px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-toggle-fit {
+            background: transparent;
+            border: none;
+            color: #94a3b8 !important;
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+
+        .btn-toggle-fit.active {
+            background: linear-gradient(45deg, var(--accent-neon), var(--success-neon));
+            color: #0f172a !important;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+        }
+
+        /* --- CAMPANA DROPDOWN --- */
+
+        /* 1. El Badge (El circulito rojo) */
+        #global-badge {
+            width: 18px;
+            height: 18px;
+            padding: 0 !important;
+            display: flex !important; /* Centra el número dentro del círculo */
+            justify-content: center;
+            align-items: center;
+            border-radius: 50% !important; /* ¡Esto lo hace círculo perfecto! */
+            font-size: 0.65rem !important;
+            line-height: 1;
+            z-index: 100;
+        }
+
+        /* 2. El Dropdown (El menú) */
+        .dropdown-menu-dark {
+            background: #1e293b !important;
+            border: 1px solid var(--border-color, #334155) !important;
+            border-radius: 15px !important;
+            width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 0;
+            overflow: hidden; /* Esto mantiene los bordes redondos */
+        }
+
+        /* 3. El ítem individual (Para que se vea igual en Cliente y Coach) */
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color, #334155);
+            color: white !important;
+            display: block;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .notification-item:hover { 
+            background: rgba(255,255,255,0.05); 
+            cursor: pointer;
+        }
+
+        /* --- ENLACES LATERALES EVOLUCIONADOS --- */
+.nav-link { display: flex; align-items: center; gap: 15px; padding: 14px 20px;  color: #cbd5e1 !important;text-decoration: none; border-radius: 15px; margin-bottom: 8px; font-size: 1.05rem; font-weight: 600; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid transparent;  position: relative; overflow: hidden; }
+
+/* Efecto HOVER (Al pasar el mouse) */
+.nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+    transform: translateX(10px); /* Se desplaza a la derecha */
+    border-left: 4px solid var(--accent-neon); /* Aparece la barra neón */
+    box-shadow: 10px 0 20px rgba(0, 210, 255, 0.05);
+}
+
+/* Estado ACTIVO (Donde estás parado) */
+.nav-link.active { background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), transparent) !important; color: #ffffff !important; border-left: 4px solid var(--accent-neon); font-weight: 700; }
+
+/* Efecto en los ICONOS */
+.nav-link i { font-size: 1.2rem; color: var(--text-muted); transition: all 0.3s ease; }
+
+.nav-link:hover i, .nav-link.active i { color: var(--accent-neon); transform: scale(1.2) rotate(-5deg); text-shadow: 0 0 10px var(--accent-neon); }
+
+/* Un brillo sutil que recorre el botón al pasar el mouse */
+.nav-link::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); transition: 0.5s;}
+
+.nav-link:hover::after { left: 100%;}
+
+
+    </style>
+</head>
+<body>
+
+    <div class="mobile-header">
+        <span class="fw-bold"><i class="fas fa-bolt text-info me-2"></i>FIT EXPERT</span>
+        <button class="btn text-white" onclick="document.querySelector('.sidebar').classList.toggle('active')">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <nav class="sidebar">
+        <a href="/dashboard" class="brand d-flex align-items-center gap-3 mb-5 text-decoration-none">
+            <div class="logo-container">
+                <img th:src="@{/images/logofitexpert.jpeg}" alt="Fit Expert Logo" class="brand-img">
+            </div>
+            <span class="brand-text">FIT <span style="color: var(--accent-neon);">EXPERT</span></span>
+        </a>
+
+        <div class="nav-group mb-4">
+            <label class="small text-uppercase mb-3 d-block" style="color: var(--accent-neon) !important;">Menú</label>
+            <a href="/dashboard" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="/cliente/rutinas" class="nav-link"><i class="fas fa-dumbbell"></i> Mis Rutinas</a>
+            <a href="/catalogo" class="nav-link"><i class="fas fa-user-tie"></i> Entrenadores</a>
+        </div>
+
+        <div class="nav-group mb-4">
+            <label class="small text-uppercase mb-3 d-block" style="color: var(--accent-neon) !important;">Cuenta</label>
+            <a href="/cliente/perfil/editar" class="nav-link"><i class="fas fa-user-circle"></i> Mi Perfil</a>
+            <a href="/cliente/pagos" class="nav-link"><i class="fas fa-wallet"></i> Pagos</a>
+        </div>
+
+        <form th:action="@{/logout}" method="post" class="mt-auto">
+            <button type="submit" class="btn btn-outline-danger w-100 fw-bold border-2"><i class="fas fa-power-off"></i> Salir</button>
+        </form>
+    </nav>
+
+    <main class="main-content">
+        <header class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold">Panel de Control</h2>
+                <p class="text-muted">Estado actual de tu rendimiento</p>
+            </div>
+
+            <div class="d-flex align-items-center gap-4">
+                <div class="dropdown">
+                    <a class="nav-link position-relative p-0" href="#" id="notifBtn" data-bs-toggle="dropdown" aria-expanded="false" onclick="cargarListaNotificaciones()">
+                        <i class="fas fa-bell fs-4"></i>
+                        <span id="global-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none; font-size: 0.6rem;">0</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg" aria-labelledby="notifBtn">
+                        <li class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 fw-bold">Notificaciones</h6>
+                            <button onclick="marcarTodasComoLeidas()" class="btn btn-sm text-info p-0 small">Limpiar</button>
+                        </li>
+                        <div id="notif-items-container" style="max-height: 300px; overflow-y: auto;">
+                            <li class="p-4 text-center text-muted small">Cargando...</li>
+                        </div>
+                    </ul>
+                </div>
+
+                <div class="user-profile d-flex align-items-center gap-2 bg-dark bg-opacity-25 p-2 rounded-pill border border-secondary">
+                    <div class="avatar bg-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px; background: linear-gradient(45deg, var(--primary), var(--accent-neon));">
+                        <span th:text="${#strings.substring(#authentication.principal.username, 0, 1).toUpperCase()}">U</span>
+                    </div>
+                    <div class="d-none d-sm-block">
+                        <div class="small fw-bold" sec:authentication="principal.username">Usuario</div>
+                        <div class="text-success fw-bold" style="font-size: 0.6rem;">• MIEMBRO ELITE</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="glass-card p-4 mb-4" style="background: rgba(30, 41, 59, 0.4); border: 1px solid var(--accent-neon); border-radius: 20px;">
+            <div class="row align-items-center g-3">
+                <div class="col-md-8">
+                    <h4 class="fw-bold"><i class="fas fa-robot text-info me-2"></i>Estado Físico IA</h4>
+                    <p class="text-muted small mb-0">Obtén tu análisis biomecánico y metabólico para tu plan personalizado.</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a th:href="@{/api/valoracion}" class="btn-neon-action">NUEVA VALORACIÓN <i class="fas fa-rocket"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <div class="row g-4 mb-5">
+    
+            <div class="col-6 col-md-3">
+                <div class="glass-card text-center p-3 h-100" style="border-radius: 20px;">
+                    <i class="fas fa-dumbbell fs-3 text-info mb-2"></i>
+                    <div class="h3 fw-bold m-0" style="color: var(--success-neon) !important;">2</div>
+                    <div class="text-muted small">Rutinas</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="glass-card text-center p-3 h-100" style="border-radius: 20px;">
+                    <i class="fas fa-fire fs-3 text-warning mb-2"></i>
+                    <div class="h3 fw-bold m-0" style="color: var(--success-neon) !important;">12</div>
+                    <div class="text-muted small">Racha</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="glass-card text-center p-3 h-100" style="border-radius: 20px;">
+                    <i class="fas fa-gem fs-3 text-primary mb-2"></i>
+                    <div class="h3 fw-bold m-0" style="color: var(--success-neon) !important;">Elite</div>
+                    <div class="text-muted small">Nivel</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <a th:href="@{/api/chat/bandeja}" class="text-decoration-none">
+                    <div class="glass-card text-center p-3 h-100" 
+                        style="border-radius: 20px; transition: all 0.3s ease; border: 1px solid rgba(0, 210, 255, 0.3);"
+                        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 20px rgba(0, 210, 255, 0.2)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        
+                        <i class="fas fa-comments fs-3 mb-2" style="color: var(--accent-neon);"></i>
+                        <div class="h3 fw-bold m-0" style="color: #ffffff !important;">Chat</div>
+                        <div class="text-muted small">Asesoría</div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+        <section class="glass-card p-4" style="background: var(--card-bg); border-radius: 25px;">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <h4 class="fw-bold m-0"><i class="fas fa-chart-line text-info me-2"></i>Mi Evolución</h4>
+                <div class="fit-btn-group d-flex">
+                    <button class="btn-toggle-fit active" id="btn-semanal" onclick="toggleView('semanal')">SEMANAL</button>
+                    <button class="btn-toggle-fit" id="btn-mensual" onclick="toggleView('mensual')">MENSUAL</button>
+                </div>
+            </div>
+            <div style="height: 300px;">
+                <canvas id="progressChart"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script th:inline="javascript">
+        // Lógica de la gráfica
+    // 1. Declaramos la variable de la gráfica ARRIBA para que updateChart la vea
+    let progressChart;
+
+    // 2. Función de actualización (La definimos antes para evitar el ReferenceError)
+    function updateChart(tipo) {
+        if (!progressChart) return; // Si la gráfica no se ha creado, no hacemos nada
+
+        // Datos reales procesados
+        /*[[${historial}]]*/ 
+        const historialRaw = /*[[${historial}]]*/ [];
+        const historial = historialRaw || [];
+
+        if (tipo === 'mensual') {
+            progressChart.data.labels = ['Ene', 'Feb', 'Mar', 'Abr']; // O lógica de meses
+            progressChart.data.datasets[0].data = [85, 82, 80, 75]; 
+        } else {
+            // Volver a semanal (datos reales)
+            progressChart.data.labels = historial.length > 0 
+                ? historial.map(p => new Date(p.fechaRegistro).toLocaleDateString('es-ES', {day:'2-digit', month:'short'}))
+                : ['Semana 1'];
+            progressChart.data.datasets[0].data = historial.length > 0 
+                ? historial.map(p => p.peso) 
+                : [0];
+        }
+        progressChart.update();
+    }
+
+    // 3. Inicialización cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        const canvas = document.getElementById('progressChart');
+        if (!canvas) return; // Seguridad por si no encuentra el elemento
+
+        const ctx = canvas.getContext('2d');
+        
+        // Recuperar datos de Thymeleaf de forma segura
+        const historialData = /*[[${historial}]]*/ [];
+        const safeHistorial = historialData || [];
+
+        // Mapeo seguro: si no hay datos, usamos valores por defecto
+        const labels = safeHistorial.length > 0 
+            ? safeHistorial.map(p => new Date(p.fechaRegistro).toLocaleDateString('es-ES', {day:'2-digit', month:'short'}))
+            : ['Inicio'];
+
+        const pesos = safeHistorial.length > 0 
+            ? safeHistorial.map(p => p.peso) 
+            : [0];
+
+        // Crear la gráfica
+        progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Peso Corporal (Kg)',
+                    data: pesos,
+                    borderColor: '#00d2ff',
+                    backgroundColor: 'rgba(0, 210, 255, 0.1)',
+                    borderWidth: 4,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#00ff88',
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+    });
+
+    function toggleView(tipo) {
+        // 1. Quitamos la clase 'active' de todos los botones del grupo
+        document.querySelectorAll('.btn-toggle-fit').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // 2. Se la ponemos al que acabamos de clickear
+        if (tipo === 'semanal') {
+            document.getElementById('btn-semanal').classList.add('active');
+        } else {
+            document.getElementById('btn-mensual').classList.add('active');
+        }
+
+        // 3. Llamamos a tu función de actualización del gráfico que ya sirve
+        updateChart(tipo);
+    }
+
+        // --- Lógica de Notificaciones CLIENTE ---
+function verificarNotificaciones() {
+    fetch('/api/notificaciones/unread-count')
+        .then(res => res.json())
+        .then(count => {
+            const badge = document.getElementById('global-badge');
+            if (badge) {
+                badge.innerText = count;
+                badge.style.display = count > 0 ? 'block' : 'none';
+            }
+        });
+}
+
+function cargarListaNotificaciones() {
+    fetch('/api/notificaciones/list')
+        .then(res => res.json())
+        .then(notis => {
+            const container = document.getElementById('notif-items-container');
+            if (notis.length === 0) {
+                container.innerHTML = '<li class="p-4 text-center text-muted small">Todo al día</li>';
+                return;
+            }
+            // En el JS del CLIENTE:
+            container.innerHTML = notis.map(n => `
+                <a class="notification-item" href="#" onclick="marcarComoLeida(${n.id})">
+                    <p class="mb-1 small">${n.mensaje}</p>
+                    <small class="text-muted" style="font-size: 0.6rem;">Recibida hace poco</small>
+                </a>
+            `).join('');
+        });
+}
+
+// NUEVA: Para limpiar la campana del cliente
+function marcarTodasComoLeidas() {
+    fetch('/api/notificaciones/mark-all-read', { method: 'POST' })
+        .then(res => {
+            if (res.ok) {
+                verificarNotificaciones();
+                cargarListaNotificaciones();
+            }
+        })
+        .catch(err => console.error("Error:", err));
+}
+
+// Arranque automático para Cliente
+setInterval(verificarNotificaciones, 5000);
+document.addEventListener("DOMContentLoaded", verificarNotificaciones);
+
+// --- FUNCIÓN PARA MARCAR UNA SOLA NOTI COMO LEÍDA (Al hacer clic) ---
+function marcarComoLeida(id) {
+    fetch(`/api/notificaciones/${id}/marcar-leida`, { 
+        method: 'POST' 
+    })
+    .then(res => {
+        if (res.ok) {
+            // Si el servidor confirma, recargamos el badge y la lista al instante
+            verificarNotificaciones();
+            cargarListaNotificaciones();
+        }
+    })
+    .catch(err => console.error("Error al marcar la notificación como leída:", err));
+}
+    </script>
+</body>
+</html>

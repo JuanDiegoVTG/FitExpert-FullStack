@@ -1,0 +1,318 @@
+/* =========================
+   PALETA DE COLORES (AZUL)
+========================= */
+:root {
+
+    /* Colores principales */
+    --primary: #3169B2;
+    --primary-dark: #093E82;
+    --primary-light: #8CA0DC;
+    --secondary: #0B1F3A;
+    --secondary-light: #122B52;
+    --accent: #0D52AB;
+    --accent-dark: #093E82;
+
+    --text: #EAF2FB;
+    --text-light: #AFC6E9;
+
+    --card-bg: #122B52;
+    --border: #1E3A6D;
+
+    --success: #28A745;
+    --error: #a21321;
+    --error-dark: #a71e2a;
+
+    --shadow: 0 8px 25px rgba(9, 62, 130, 0.35);
+    --transition: all 0.3s ease;
+
+    --gradient-primary: linear-gradient(135deg, #5382BE 0%, #0D52AB 100%);
+    --gradient-dark: linear-gradient(135deg, #0B1F3A 0%, #122B52 100%);
+}
+
+/* =========================
+   RESET
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =========================
+   BODY
+========================= */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--primary-light);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* 1. LIBERAMOS EL BODY (El cambio más importante) */
+body.page-rutinas {
+    display: block !important; /* Rompe el centrado forzado del estilo.css */
+    background: #060e1a !important; /* Fondo oscuro nivel Spinning Center */
+    padding-top: 60px;
+}
+
+/* 2. ASEGURAMOS EL ANCHO DEL CONTENEDOR */
+.page-container {
+    max-width: 1250px !important; /* Le damos espacio para que quepan varias */
+    margin: 0 auto !important;
+    padding: 20px !important;
+    background: transparent !important; /* Quitamos el fondo blanco/gris si estorba */
+    border: none !important;
+}
+
+/* 3. EL GRID REFORZADO */
+.grid-rutinas {
+    display: grid !important;
+    /* Esto obliga a crear columnas de 320px mientras quepan en la pantalla */
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: 30px !important;
+    width: 100% !important;
+    margin-top: 40px !important;
+}
+
+/* 4. LA TARJETA (Ajuste de visaje) */
+.rutina-card {
+    background: linear-gradient(135deg, #122B52 0%, #0B1F3A 100%) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    min-height: 280px !important;
+    height: auto !important; /* Que no se estiren raro */
+}
+
+/* =========================
+   CONTENEDOR PRINCIPAL
+========================= */
+.container {
+    background:
+     linear-gradient(
+                135deg,rgb(33, 52, 106),rgb(60, 94, 198)
+            );;
+    padding: 40px 35px;
+    border-radius: 12px;
+    box-shadow: var(--secondary);
+    width: 100%;
+    max-width: 1000px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 1. FONDO GENERAL (Gris suave premium) */
+body.page-rutinas {
+    display: block !important;
+    background-color: #f1f5f9 !important; /* Gris claro tipo Spinning */
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. CABECERA OSCURA */
+.top-dark-section {
+    background: #0b1f3a; /* Tu azul profundo */
+    padding: 80px 0 100px 0;
+    text-align: center;
+}
+
+.header-section h1 { color: white !important; font-size: 2.5rem; }
+.header-section p { color: #AFC6E9 !important; }
+
+/* 3. SECCIÓN DE CONTENIDO CON CURVA (EL SECRETO) */
+.content-light-section {
+    background-color: #f1f5f9;
+    margin-top: -50px; /* Sube para solaparse con lo oscuro */
+    border-radius: 50px 50px 0 0; /* Curva pro hacia arriba */
+    padding: 40px 0;
+    position: relative;
+    z-index: 10;
+}
+
+/* 4. LAS TARJETAS (Ahora resaltan más) */
+.rutina-card {
+    background: linear-gradient(135deg, #1e3a6d 0%, #0b1f3a 100%) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+}
+
+.rutina-card h3 { color: white !important; }
+.rutina-card p { color: #AFC6E9 !important; }
+
+/* Aseguramos que el grid use el ancho completo */
+.grid-rutinas {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: 25px !important;
+    max-width: 1200px;
+    margin: 0 auto !important;
+}
+
+/* =========================
+   LOGO
+========================= */
+.logo {
+    margin-bottom: 30px;
+}
+
+.logo i {
+    font-size: 3.5rem;
+    color: white;
+}
+
+.logo-text {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 1px;
+    margin-top: 10px;
+    display: block;
+}
+
+/* =========================
+   TITULOS
+========================= */
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* =========================
+   TABLAS
+========================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 15px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    background-color: var(--border);
+    color: var(--text);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+}
+
+tbody tr {
+    transition: var(--transition);
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+
+
+/* =========================
+   BOTONES
+========================= */
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(9, 62, 130, 0.3);
+}
+
+/* Botón tipo volver */
+.back-link {
+    display: inline-block;
+    padding: 12px 25px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(9, 62, 130, 0.3);
+}
+
+.back-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(9, 62, 130, 0.4);
+}
+
+/* =========================
+   MENSAJES
+========================= */
+.no-data {
+    color: var(--text-light);
+    font-style: italic;
+    padding: 20px;
+}
+
+/* =========================
+   LOGOUT
+========================= */
+.logout-link {
+    color: var(--error);
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.logout-link:hover {
+    color: var(--error-dark);
+}
+
+button.logout-link {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0 10px;
+    font: inherit;
+    cursor: pointer;
+    color: var(--error);
+    text-decoration: underline;
+}
+
+button.logout-link:hover {
+    color: var(--error-dark);
+    text-decoration: none;
+}
+
+
+/*VISTA DE SERVICIOS*/
+
+body.vista-servicios {
+    background: url("/images/klipartz2.png"), var(--primary-light) no-repeat center center;
+    background-size: cover;
+
+}
+
+body.edición-perfil {
+    background: url("/images/klipartz1.png"), var(--primary-light) no-repeat center center;
+    background-size: cover;
+
+}
+
+body.mis-pagos {
+    background: url("/images/klipartz2.png"), var(--primary-light) no-repeat center center;
+    background-size: cover;
+
+}
+
+
