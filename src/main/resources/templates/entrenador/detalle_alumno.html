@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<body>
+<div th:fragment="content">
+    
+    <style>
+        .detail-container {
+            padding: 3rem 1rem;
+            display: flex;
+            justify-content: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-card-pro {
+            background: rgba(30, 41, 59, 0.8) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 35px;
+            padding: 3rem;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+            color: white;
+        }
+
+        .coach-tag {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 6px 15px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .student-name {
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right);
+            --webkit-background-clip: text;
+            -webkit-text-fill-color: #fff;
+        }
+
+        /* GRID DE MÉTRICAS */
+        .metrics-grid-coach {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .metric-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            transition: 0.3s ease;
+        }
+
+        .metric-item:hover {
+            border-color: #6366f1;
+            transform: translateY(-5px);
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .metric-val {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        /* OBJETIVO */
+        .goal-box {
+            background: rgba(99, 102, 241, 0.05);
+            border-left: 4px solid #6366f1;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+
+        /* BOTONERA */
+        .action-flex {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+            justify-content: center;
+        }
+
+        .btn-coach {
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-weight: 800;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-emerald-pro {
+            background: #10b981;
+            color: #0f172a;
+        }
+
+        .btn-emerald-pro:hover {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .btn-indigo-pro {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-indigo-pro:hover {
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+            transform: translateY(-3px);
+        }
+    </style>
+
+    <div class="detail-container">
+        <div class="glass-card-pro">
+            
+            <div class="text-center mb-4">
+                <span class="coach-tag">Ficha de Seguimiento Atleta</span>
+                <h1 class="student-name" th:text="${alumno.nombres + ' ' + alumno.apellidos}">Nombre del Alumno</h1>
+                <p style="color: #94a3b8;"><i class="fas fa-envelope me-2"></i><span th:text="${alumno.email}">correo@test.com</span></p>
+            </div>
+
+            <div class="metrics-grid-coach">
+                <div class="metric-item">
+                    <span class="metric-label">Peso Actual</span>
+                    <span class="metric-val" th:text="${perfil.peso != null ? perfil.peso + ' kg' : '--'}">--</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Estatura</span>
+                    <span class="metric-val" th:text="${perfil.altura != null ? perfil.altura + ' cm' : '--'}">--</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Cintura</span>
+                    <span class="metric-val" th:text="${perfil.cintura != null ? perfil.cintura + ' cm' : '--'}">--</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Cuello</span>
+                    <span class="metric-val" th:text="${perfil.cuello != null ? perfil.cuello + ' cm' : '--'}">--</span>
+                </div>
+            </div>
+
+            <div class="goal-box">
+                <h6 style="color: #6366f1; font-weight: 800; font-size: 0.8rem; text-transform: uppercase;">
+                    <i class="fas fa-bullseye me-2"></i> Meta del Usuario
+                </h6>
+                <p style="color: #f1f5f9; font-size: 1.1rem; margin-bottom: 0; font-style: italic;" 
+                   th:text="${perfil.objetivo != null ? perfil.objetivo : 'Sin objetivo definido todavía.'}">
+                    "Bajar de peso y ganar resistencia."
+                </p>
+            </div>
+            <div class="glass-card mt-5" style="background: rgba(15, 23, 42, 0.4); border-radius: 20px; padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.05);">
+                <h5 class="text-white fw-bold mb-4">
+                    <i class="fas fa-chart-area text-accent me-2"></i> Análisis de Progreso del Atleta
+                </h5>
+                <div style="height: 300px; min-height: 300px; position: relative;">
+                    <canvas id="chartEvolucionAlumno"></canvas>
+                </div>
+            </div>
+
+            <div class="action-flex">
+                <a th:href="@{/api/chat/{id}(id=${alumno.id})}" class="btn-coach btn-emerald-pro">
+                    <i class="fas fa-comment-dots"></i> INICIAR ASESORÍA
+                </a>
+                <a th:href="@{/entrenador/rutinas/nueva(alumnoId=${alumno.id})}" class="btn-coach btn-indigo-pro">
+                    <i class="fas fa-plus-circle"></i> ASIGNAR RUTINA
+                </a>
+                <a th:href="@{/dashboard}" style="color: #94a3b8; text-decoration: none; font-weight: 700; margin-top: 10px;">
+                    <i class="fas fa-arrow-left"></i> Volver al Panel
+                </a>
+            </div>
+
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('chartEvolucionAlumno').getContext('2d');
+        
+        // Recuperamos la data de forma ultra-segura
+        /*[[${historial}]]*/ 
+        const datosRaw = /*[[${historial}]]*/ [];
+        const historial = datosRaw || [];
+
+        // Filtramos solo registros que tengan peso y fecha para no romper el chart
+        const historialValido = historial.filter(p => p.peso != null && p.fechaRegistro != null);
+
+        const labels = historialValido.map(p => {
+            let d = new Date(p.fechaRegistro);
+            return d.getDate() + "/" + (d.getMonth() + 1);
+        });
+        
+        const pesos = historialValido.map(p => p.peso);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.length > 0 ? labels : ['Sin datos'],
+                datasets: [{
+                    label: 'Peso (kg)',
+                    data: pesos.length > 0 ? pesos : [0],
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderWidth: 4,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#10b981',
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { 
+                        beginAtZero: false,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' }, 
+                        ticks: { color: '#94a3b8' } 
+                    },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+    });
+</script>
+</div>
+</body>
+</html>

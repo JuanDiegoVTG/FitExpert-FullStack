@@ -6,35 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root {
-            --primary: #3169B2;
-            --primary-dark: #093E82;
-            --secondary: #0B1F3A;
-            --secondary-light: #122B52;
-            
-            --accent: #0D52AB;
-            --accent-dark: #093E82;
+            --bg-dark: #0b132b;
+            --bg-card: rgba(255,255,255,0.05);
 
-            --text: #EAF2FB;
-            --text-light: #AFC6E9;
+            --primary: #00d4a3;
+            --primary-light: #1abc9c;
 
-            --card-bg: rgba(18, 43, 82, 0.9);
-            --border: #1E3A6D;
+            --text: #e6ecff;
+            --text-light: #9fb3d9;
 
-            --success: #28A745;
-            --error: #FF4757;
+            --border: rgba(255,255,255,0.1);
 
-            --shadow: 0 8px 25px rgba(9, 62, 130, 0.35);
-            --transition: all 0.3s ease;
+            --error: #ff4d6d;
+            --success: #2ecc71;
 
-            --gradient-primary: linear-gradient(135deg, #5382BE 0%, #0D52AB 100%);
-            --gradient-dark: linear-gradient(135deg, #0B1F3A 0%, #122B52 100%);
+            --shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
-
+ 
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: url('https://source.unsplash.com/1600x900/?workspace,light') no-repeat center center fixed;
-            background-size: cover;
+            background: radial-gradient(circle at 20% 20%, #111a30, #050b1f);
             color: var(--text);
+            background-size: cover;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -44,21 +37,20 @@
 
         .login-wrapper {
             display: flex;
-            width: 90%;
-            max-width: 1000px;
-            height: 600px;
-            box-shadow: var(--shadow);
-            border-radius: 12px;
+            width: 95%;
+            max-width: 1100px;
+            height: 650px;
+            border-radius: 20px;
             overflow: hidden;
+            box-shadow: var(--shadow);
         }
 
-        /* Panel izquierdo: formulario */
+        /* Panel formulario */
         .login-form {
             flex: 1;
-            background:
-            linear-gradient(
-                        135deg,rgba(30, 47, 95, 0.905),rgba(49, 76, 158, 0.79)
-            ); /* Fondo de la tarjeta */
+            background: var(--bg-card); /* Fondo de la tarjeta */
+             backdrop-filter: blur(14px);
+             border-right: 1px solid var(--border);
             padding: 60px;
             display: flex;
             flex-direction: column;
@@ -187,7 +179,7 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: rgba(34, 79, 138, 0.6); /* overlay translúcido */
+        background: #94a3b8; /* overlay translúcido */
         backdrop-filter: blur(4px);        /* difuminado */
         }
 

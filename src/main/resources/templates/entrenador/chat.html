@@ -216,30 +216,56 @@
         const myId = /*[[${usuarioId}]]*/ 2;
 
         async function loadMessages() {
-            try {
-                const res = await fetch(`/api/chat/mensajes/${chatId}`);
-                const data = await res.json();
-                const box = document.getElementById("chat-box");
-                box.innerHTML = data.map(m => `
-                    <div class="msg ${m.sender_id == myId ? 'entrenador' : 'cliente'}">${m.content}</div>
-                `).join("");
-                box.scrollTop = box.scrollHeight;
-            } catch(e) {
-                console.error("Error cargando mensajes", e);
-            }
+        try {
+            const res = await fetch(`/api/chat/mensajes/${chatId}`);
+            if (!res.ok) throw new Error("Error en la respuesta");
+            
+            const data = await res.json();
+            const chatBox = document.getElementById("chat-box");
+            
+            chatBox.innerHTML = data.map(m => {
+                // Sacamos el ID asegurándonos de leer el objeto sender
+                let emisorId = m.sender ? m.sender.id : m.sender_id;
+                
+                // Forzamos a que ambos sean texto para que la comparación nunca falle
+                const esMio = String(emisorId) === String(myId);
+                
+                // Imprimimos en consola para ver la magia
+                console.log(`Mensaje: "${m.content}" | Emisor: ${emisorId} | Mi ID: ${myId} | ¿Es mío?: ${esMio}`);
+
+                const claseCSS = esMio ? 'entrenador' : 'cliente';
+                
+                return `
+                    <div class="msg ${claseCSS}">
+                        ${m.content}
+                    </div>
+                `;
+            }).join("");
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (error) {
+            console.error("Error al cargar mensajes:", error);
         }
+    }
 
         async function sendMessage() {
             const input = document.getElementById("messageInput");
-            if(!input.value) return;
+            if(!input.value.trim()) return;
+            
             await fetch("/api/chat/enviar", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({chat_id: chatId, sender_id: myId, content: input.value})
+                body: JSON.stringify({
+                    chat_id: chatId, 
+                    sender_id: myId, 
+                    content: input.value.trim()
+                })
             });
+            
             input.value = "";
             loadMessages();
         }
+        
         setInterval(loadMessages, 4000);
         loadMessages();
     </script>

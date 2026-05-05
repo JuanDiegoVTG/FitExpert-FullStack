@@ -1,225 +1,173 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <title>Editar Perfil - FIT EXPERT</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/estilo.css}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<body>
+<div th:fragment="content">
     <style>
-        /* Variables de tema oscuro y colores de Emi-Lite */
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .profile-container {
+            max-width: 850px;
+            margin: 30px auto;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 28px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
-
-
-        .container {
-            background-color: var(--card-bg);
-            padding: 40px 35px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 500px; /* Ancho un poco más grande para el formulario */
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .logo {
-            margin-bottom: 30px;
-        }
-
-        .logo i {
-            font-size: 3.5rem;
-            color: white;
-        }
-
-        .logo-text {
-            font-size: 2.2rem;
+        .section-title {
+            color: #00ff88;
+            text-transform: uppercase;
             font-weight: 800;
-            color: white;
-            letter-spacing: 1px;
-            margin-top: 10px;
-            display: block;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            margin: 30px 0 20px 0;
+            display: flex;
+            align-items: center;
         }
-
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            color: var(--text);
-            font-weight: 600;
+        .section-title::after {
+            content: ""; flex: 1; height: 1px;
+            background: linear-gradient(90deg, rgba(0, 255, 136, 0.4), transparent);
+            margin-left: 15px;
         }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-light);
-            font-size: 1rem;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"] {
-            width: 100%;
-            padding: 14px 16px;
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary); /* Borde morado al enfocar */
-            box-shadow: 0 0 0 3px rgba(62, 0, 123, 0.2); /* Sombra morada */
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 16px;
-            background: var(--gradient-primary); /* Botón con gradiente morado */
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-top: 10px;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(62, 0, 123, 0.4); /* Sombra más intensa */
-        }
-
-        .btn-submit:active {
-            transform: translateY(-1px);
-        }
-
-        .error {
-            color: var(--error); /* Color rojo para errores */
-            font-size: 0.9rem;
-            margin-top: 5px;
-            text-align: left;
-        }
-
-        .success-message {
-            background-color: rgba(40, 167, 69, 0.1);
-            color: var(--success);
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            border-radius: 12px;
             padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--success);
         }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 25px;
-            color: white; /* Color morado para el enlace */
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-            font-size: 0.95rem;
+        .label-neon {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: block;
         }
-
-        .back-link:hover {
-            text-decoration: underline;
-            color: var(--secondary); /* Morado más claro al hover */
-        }
-
-
-        button.logout-link {
-            background: none;
-            border: none;
-            padding: 0;
-            margin: 0 10px;
-            font: inherit;
+        .btn-update {
+            background: linear-gradient(45deg, #00d2ff, #00ff88);
+            border: none; color: #0f172a;
+            font-weight: 900; padding: 18px;
+            border-radius: 15px; text-transform: uppercase;
+            transition: all 0.3s ease;
             cursor: pointer;
-            color: #a21321;
-            text-decoration: underline;
         }
-
-        button.logout-link:hover {
-            color: #a71e2a;
-            text-decoration: none;
-        }
+        .btn-update:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 255, 136, 0.3); }
     </style>
-</head>
-<body class="edición-perfil">
-    <div class="container">
-        <div class="logo">
-            <img th:src="@{/images/logofitexpert.jpeg}" alt="Emi-Lite" style="height:110px; width:120px; display:inline-block; vertical-align:middle;" />
+
+    <div class="profile-container">
+        <div class="text-center mb-5">
+            <h2 class="text-white fw-black" style="font-size: 2rem; letter-spacing: -1px;">EDICIÓN DE <span style="color: #00d2ff;">PERFIL</span></h2>
+            <p class="text-muted">Optimiza tus datos para el motor de Inteligencia Artificial.</p>
         </div>
 
-        <h2>Editar Perfil</h2>
-
-        <!-- Mensaje de éxito -->
-        <div th:if="${param.success}" class="success-message">
-            <i class="fas fa-check-circle"></i> Perfil actualizado correctamente.
-        </div>
-
-        <form th:action="@{/cliente/perfil/editar}" th:object="${perfilForm}" method="post">
-            <div class="form-group">
-                <label for="nombres">Nombres:</label>
-                <input type="text" id="nombres" th:field="*{nombres}" placeholder="Tu(s) nombre(s)" required>
-                <div class="error" th:if="${#fields.hasErrors('nombres')}" th:errors="*{nombres}"></div>
+        <form th:action="@{/cliente/perfil/editar}" th:object="${perfil}" method="post">
+            
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger bg-dark text-danger border-danger mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> Por favor, corrige los errores en los campos obligatorios.
             </div>
 
-            <div class="form-group">
-                <label for="apellidos">Apellidos:</label>
-                <input type="text" id="apellidos" th:field="*{apellidos}" placeholder="Tu(s) apellido(s)" required>
-                <div class="error" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></div>
+            <input type="hidden" th:field="*{id}">
+
+            <h5 class="section-title">01. Identidad</h5>
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <label for="nombreCompleto" class="label-neon">Nombre Completo</label>
+                    <input type="text" id="nombreCompleto" th:field="*{nombreCompleto}" 
+                           class="form-control" autocomplete="name" placeholder="Ej: Juan Diego">
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label for="edad" class="label-neon">Edad</label>
+                    <input type="number" id="edad" th:field="*{edad}" 
+                           class="form-control" autocomplete="bday-year" required>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label for="sexo" class="label-neon">Sexo Biológico</label>
+                    <select id="sexo" th:field="*{sexo}" class="form-select" autocomplete="sex">
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" th:field="*{email}" placeholder="tu@email.com">
-                <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            <h5 class="section-title">00. Datos de Contacto</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label for="email" class="label-neon">Correo Electrónico</label>
+                        <input type="email" 
+                            id="email" 
+                            th:field="*{email}" 
+                            class="form-control" 
+                            autocomplete="email" 
+                            placeholder="ejemplo@correo.com"
+                            required>
+                        <div th:if="${#fields.hasErrors('email')}" class="text-danger small mt-1">
+                            <i class="fas fa-exclamation-circle"></i> <span th:errors="*{email}"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label for="telefono" class="label-neon">Teléfono</label>
+                        <input type="text" 
+                            id="telefono" 
+                            th:field="*{telefono}" 
+                            class="form-control" 
+                            autocomplete="tel" 
+                            placeholder="Mínimo 7 dígitos"
+                            required>
+                        <div th:if="${#fields.hasErrors('telefono')}" class="text-danger small mt-1">
+                            <i class="fas fa-exclamation-circle"></i> <span th:errors="*{telefono}"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+            <h5 class="section-title">03. Métricas Físicas</h5>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label for="peso" class="label-neon">Peso (kg)</label>
+                    <input type="number" id="peso" step="0.1" th:field="*{peso}" class="form-control" autocomplete="off">
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label for="altura" class="label-neon">Altura (cm)</label>
+                    <input type="number" id="altura" step="0.1" th:field="*{altura}" class="form-control" autocomplete="off">
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label for="nivelActividad" class="label-neon">Nivel de Actividad</label>
+                    <select id="nivelActividad" th:field="*{nivelActividad}" class="form-select" autocomplete="off">
+                        <option value="sedentario">Sedentario</option>
+                        <option value="ligero">Ligero</option>
+                        <option value="moderado">Moderado</option>
+                        <option value="intenso">Atleta</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="telefono">Teléfono:</label>
-                <input type="tel" id="telefono" th:field="*{telefono}" placeholder="+57 XXX XXX XXXX">
-                <div class="error" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
+            <h5 class="section-title">04. Antropometría IA</h5>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label for="cuello" class="label-neon">Cuello (cm)</label>
+                    <input type="number" id="cuello" step="0.1" th:field="*{cuello}" class="form-control" autocomplete="off">
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label for="cintura" class="label-neon">Cintura (cm)</label>
+                    <input type="number" id="cintura" step="0.1" th:field="*{cintura}" class="form-control" autocomplete="off">
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label for="cadera" class="label-neon">Cadera (cm)</label>
+                    <input type="number" id="cadera" step="0.1" th:field="*{cadera}" class="form-control" autocomplete="off">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="direccion">Dirección:</label>
-                <input type="text" id="direccion" th:field="*{direccion}" placeholder="Calle, ciudad, país">
+            <div class="mb-4">
+                <label for="objetivo" class="label-neon">Objetivo Principal</label>
+                <textarea id="objetivo" th:field="*{objetivo}" class="form-control" rows="3" autocomplete="off"></textarea>
             </div>
 
-            <button type="submit" class="btn-submit">Actualizar Perfil</button>
-        </form>
-
-        <span sec:authorize="hasRole('ADMIN')">
-            <a href="/dashboard" class="back-link">Volver al Panel</a>
-        </span>
-        <span sec:authorize="hasRole('ENTRENADOR')">
-            <a href="/entrenador/dashboard" class="back-link">Volver al Panel</a>
-        </span>
-        <span sec:authorize="hasRole('CLIENTE')">
-            <a href="/dashboard" class="back-link">Volver al Panel</a>
-        </span>
-        <span sec:authorize="isAnonymous() or !hasAnyRole('ADMIN','ENTRENADOR','CLIENTE')">
-            <a href="/dashboard" class="back-link">Volver al Panel</a>
-        </span>
-
-        <!-- Formulario para cerrar sesión -->
-        <form th:action="@{/logout}" method="post" style="display: inline;">
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <button type="submit" class="logout-link">Cerrar sesión</button>
+            <button type="submit" class="btn-update w-100 mt-3">
+                Guardar y Volver al Panel <i class="fas fa-rocket ms-2"></i>
+            </button>
         </form>
     </div>
+</div>
 </body>
 </html>

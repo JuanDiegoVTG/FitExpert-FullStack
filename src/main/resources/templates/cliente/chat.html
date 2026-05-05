@@ -231,53 +231,66 @@
     </div>
 
     <script th:inline="javascript">
-        const chatId = /*[[${chatId}]]*/ 1;
-        const myId = /*[[${usuarioId}]]*/ 1; 
+    const chatId = /*[[${chatId}]]*/ 1;
+    const myId = /*[[${usuarioId}]]*/ 1; 
 
-        async function loadMessages() {
-            try {
-                const res = await fetch(`/api/chat/mensajes/${chatId}`);
-                const data = await res.json();
+    async function loadMessages() {
+        try {
+            const res = await fetch(`/api/chat/mensajes/${chatId}`);
+            if (!res.ok) throw new Error("Error en la respuesta");
+            
+            const data = await res.json();
+            const chatBox = document.getElementById("chat-box");
+            
+            chatBox.innerHTML = data.map(m => {
+                // Sacamos el ID asegurándonos de leer el objeto sender
+                let emisorId = m.sender ? m.sender.id : m.sender_id;
                 
-                const chatBox = document.getElementById("chat-box");
-                chatBox.innerHTML = data.map(m => `
-                    <div class="msg ${m.sender_id == myId ? 'cliente' : 'entrenador'}">
+                // Forzamos a que ambos sean texto para que la comparación nunca falle
+                const esMio = String(emisorId) === String(myId);
+                
+                // Imprimimos en consola para ver la magia
+                console.log(`Mensaje: "${m.content}" | Emisor: ${emisorId} | Mi ID: ${myId} | ¿Es mío?: ${esMio}`);
+
+                const claseCSS = esMio ? 'cliente' : 'entrenador';
+                
+                return `
+                    <div class="msg ${claseCSS}">
                         ${m.content}
                     </div>
-                `).join("");
-                
-                chatBox.scrollTop = chatBox.scrollHeight;
-            } catch (error) {
-                console.error("Error al cargar mensajes:", error);
-            }
+                `;
+            }).join("");
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (error) {
+            console.error("Error al cargar mensajes:", error);
         }
+    }
+    
+    async function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const content = input.value.trim();
+        if (!content) return;
+        input.value = ""; 
 
-        async function sendMessage() {
-            const input = document.getElementById("messageInput");
-            const content = input.value.trim();
-            if (!content) return;
-
-            input.value = ""; 
-
-            try {
-                await fetch("/api/chat/enviar", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        sender_id: myId,
-                        content: content
-                    })
-                });
-                loadMessages();
-            } catch (error) {
-                console.error("Error al enviar:", error);
-                alert("No se pudo enviar el mensaje.");
-            }
+        try {
+            await fetch("/api/chat/enviar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: chatId, 
+                    sender_id: myId,
+                    content: content
+                })
+            });
+            loadMessages();
+        } catch (error) {
+            console.error("Error al enviar:", error);
         }
+    }
 
-        loadMessages();
-        setInterval(loadMessages, 4000);
+    loadMessages();
+    setInterval(loadMessages, 4000);
     </script>
 </body>
 </html>

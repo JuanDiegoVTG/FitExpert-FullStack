@@ -44,24 +44,22 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     List<Usuario> findByEntrenadorId(Long entrenadorId);
 
 
-    // --- 4. CATÁLOGO DINÁMICO (Buscador y Filtros) ---
+    // --- 4. CATÁLOGO DINÁMICO (Buscador y Filtros Universal) ---
 
     @Query("""
         SELECT u FROM Usuario u 
-        WHERE u.rol.nombre = 'ENTRENADOR'
-        AND u.activo = true
+        WHERE u.rol.nombre = :nombreRol 
+        AND u.activo = true 
         AND (
             LOWER(u.nombres) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
             LOWER(u.apellidos) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
             LOWER(u.descripcion) LIKE LOWER(CONCAT('%', :keyword, '%'))
         )
     """)
-    List<Usuario> buscarEntrenadores(@Param("keyword") String keyword);
+    List<Usuario> buscarPorRolYKeyword(@Param("nombreRol") String nombreRol, @Param("keyword") String keyword);
 
-    @Query("SELECT u FROM Usuario u WHERE u.rol.nombre = 'ENTRENADOR' AND u.activo = true")
-    List<Usuario> listarEntrenadoresActivos();
-
-    List<Usuario> findByNombresContainingIgnoreCaseOrDescripcionContainingIgnoreCase(String nombres, String descripcion);
+    @Query("SELECT u FROM Usuario u WHERE u.rol.nombre = :nombreRol AND u.activo = true")
+    List<Usuario> listarPorRolActivo(@Param("nombreRol") String nombreRol);
 
     
 }

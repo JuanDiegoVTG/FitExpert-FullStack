@@ -3,7 +3,7 @@ package com.proyecto.emilite.service;
 
 import org.springframework.stereotype.Service;
 
-import com.proyecto.emilite.model.dto.PagoDTO;
+import com.proyecto.emilite.dto.PagoDTO;
 
 @Service
 public class PasarelaService {

@@ -1,12 +1,14 @@
 package com.proyecto.emilite.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +24,15 @@ import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.preference.Preference;
+import com.proyecto.emilite.model.Notificacion;
 import com.proyecto.emilite.model.Usuario;
+import com.proyecto.emilite.repository.NotificacionRepository;
+import com.proyecto.emilite.repository.UsuarioRepository;
 import com.proyecto.emilite.service.UsuarioService;
+import com.proyecto.emilite.util.Constantes;
+
+import jakarta.transaction.Transactional;
+
 
 @Controller
 @RequestMapping("/catalogo")
@@ -31,6 +40,12 @@ public class CatalogoController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private NotificacionRepository notificacionRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     /**
      * 1. Muestra la vista del catálogo
@@ -44,9 +59,11 @@ public class CatalogoController {
         List<Usuario> entrenadores;
 
         if (keyword != null && !keyword.isEmpty()) {
-            entrenadores = usuarioService.buscarPorNombreOEspecialidad(keyword);
+        // Si estás en la vista de entrenadores, aquí debes usar el nuevo método dinámico
+        entrenadores = usuarioService.buscarPorRolYKeyword("ROLE_ENTRENADOR", keyword);
         } else {
-            entrenadores = usuarioService.findByRolNombre("ENTRENADOR");
+            // Aquí está el error, cámbialo a ROLE_ENTRENADOR
+            entrenadores = usuarioService.listarPorRolActivo(Constantes.ROL_ENTRENADOR);
         }
 
         model.addAttribute("entrenadores", entrenadores);
@@ -100,17 +117,19 @@ public class CatalogoController {
                     .currencyId("COP")
                     .build();
 
+            // 1. Armamos las URLs
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
                     .success("http://localhost:8082/catalogo/pago-exitoso")
                     .failure("http://localhost:8082/catalogo")
                     .pending("http://localhost:8082/catalogo")
                     .build();
 
+            // 2. Metemos al paquete
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()
-                    .items(List.of(itemRequest))
-                    .backUrls(backUrls)
-                    .externalReference(entrenadorId) 
+                    .items(List.of(itemRequest)) // (Asegúrate de que tu variable se llame itemRequest o items)
+                    .backUrls(backUrls) // <--- ¡MP se estaba quejando de que no encontraba esto!
                     //.autoReturn("approved")
+                    .externalReference(String.valueOf(entrenadorId)) 
                     .build();
 
             PreferenceClient client = new PreferenceClient();
@@ -119,7 +138,7 @@ public class CatalogoController {
             // 4. Respuesta Exitosa
             Map<String, String> response = new HashMap<>();
             response.put("init_point", preference.getInitPoint());
-            
+            response.put("id", preference.getId());
             return ResponseEntity.ok(response);
 
         } catch (com.mercadopago.exceptions.MPApiException apiEx) {
@@ -136,25 +155,78 @@ public class CatalogoController {
         }
     }
 
+    // --- 1. MUESTRA LA PANTALLA Y RECIBE LOS DATOS DE MP ---
     @GetMapping("/pago-exitoso")
-        public String pagoExitoso(
-                @RequestParam("payment_id") String paymentId,
-                @RequestParam("status") String status,
-                @RequestParam("external_reference") String entrenadorId, 
-                Model model) {
+    public String mostrarPantallaExito(
+            @RequestParam(name = "payment_id", required = false) String paymentId,
+            @RequestParam(name = "external_reference", required = false) String externalReference,
+            Model model) {
+        
+        System.out.println("Llegó a la pantalla de éxito. ID Profe: " + externalReference);
+        
+        // 1. Pasar el ID del entrenador al HTML para el botón
+        model.addAttribute("entrenadorId", externalReference);
+        
+        // 2. Pasar el ID del pago que nos da Mercado Pago (para que se vea bonito en el recibo)
+        model.addAttribute("paymentId", paymentId != null ? paymentId : "Pendiente/Prueba");
 
-            // 1. Buscamos al entrenador para mostrar sus datos en la confirmación
-            Long id = Long.parseLong(entrenadorId);
-            Usuario entrenador = usuarioService.findByIdOrThrow(id);
-
-            // 2. Lógica de negocio: Aquí Kevin marcaba al usuario como Premium 
-            // o creaba la relación en la base de datos.
-            // usuarioService.activarSuscripcion(entrenadorId); 
-
-            model.addAttribute("paymentId", paymentId);
-            model.addAttribute("entrenador", entrenador);
-            model.addAttribute("status", status);
-
-            return "cliente/pago-exitoso";
+        // 3. Buscar al entrenador en la BD para mostrar su nombre en el recibo
+        if (externalReference != null && !externalReference.isEmpty()) {
+            try {
+                Long id = Long.valueOf(externalReference);
+                Usuario entrenador = usuarioService.findById(id); 
+                
+                if (entrenador != null) {
+                    model.addAttribute("nombreEntrenador", entrenador.getNombres() + " " + entrenador.getApellidos());
+                } else {
+                    System.out.println("DEBUG: El entrenador con ID " + id + " no existe en BD.");
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("DEBUG: El external_reference no es un número válido: " + externalReference);
+            }
         }
+        return "cliente/pago-exitoso"; 
+        }
+
+    @PostMapping("/activar-entrenador")
+    @Transactional
+    public String activarEntrenador(
+            @RequestParam("entrenadorId") Long entrenadorId, 
+            Authentication auth) {
+
+        try {
+        // CAMBIO CLAVE: Usar findByUserName (o el método que use el principal de auth)
+        Usuario cliente = usuarioRepository.findByUserName(auth.getName())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con username: " + auth.getName())); 
+        
+        Usuario entrenador = usuarioService.findById(entrenadorId); 
+        
+        if (entrenador != null) {
+            // 1. Vinculación (Tu método setEntrenador ya es bidireccional)
+            cliente.setEntrenador(entrenador);
+            
+            // 2. Persistencia manual para forzar el cambio en la tabla
+            usuarioRepository.save(cliente); 
+            usuarioRepository.save(entrenador); 
+
+            // 3. Notificación (Ahora sí debería salir)
+            Notificacion noti = new Notificacion();
+            noti.setUsuario(entrenador);
+            noti.setMensaje("🔥 ¡Nuevo Atleta! " + cliente.getNombres() + " te ha contratado.");
+            noti.setLeida(false);
+            noti.setFechaCreacion(LocalDateTime.now());
+            notificacionRepository.save(noti);
+            
+            System.out.println("✅ CONEXIÓN EXITOSA: Fernando (ID " + cliente.getId() + ") -> Coach (ID " + entrenadorId + ")");
+        } else {
+            System.err.println("❌ ERROR: No se encontró al entrenador con ID: " + entrenadorId);
+        }
+    } catch (Exception e) {
+        System.err.println("❌ ERROR CRÍTICO AL ENLAZAR: " + e.getMessage());
+        e.printStackTrace();
+    }
+    
+    return "redirect:/api/chat/" + entrenadorId;
+
+    }
 }

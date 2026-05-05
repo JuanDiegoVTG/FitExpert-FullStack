@@ -4,7 +4,7 @@
     <title>Mis Rutinas - FIT EXPERT</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/estilo.css}">
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
 
     <style>
         /* 1. ARREGLO DEL FONDO Y BODY */
@@ -189,10 +189,6 @@
         </div>
     </div>
 
-    <div th:if="${rutinas.empty}" style="text-align: center; margin-top: 50px; color: #AFC6E9;">
-        <p>Aún no tienes rutinas guardadas. ¡Crea una ahora!</p>
-        <a href="/cliente/preparar-rutina" style="color: #00D4FF; text-decoration: none; font-weight: bold;">Generar Rutina →</a>
-    </div>
 
     <div class="actions">
         <a href="/dashboard" class="btn-volver">

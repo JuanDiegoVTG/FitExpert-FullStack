@@ -1,8 +1,8 @@
 package com.proyecto.emilite.service;
 
+import com.proyecto.emilite.dto.RutinaFormDTO;
 import com.proyecto.emilite.model.Rutina;
 import com.proyecto.emilite.model.Usuario;
-import com.proyecto.emilite.model.dto.RutinaFormDTO;
 import com.proyecto.emilite.repository.RutinaRepository;
 import com.proyecto.emilite.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;

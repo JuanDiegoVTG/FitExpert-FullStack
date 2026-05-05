@@ -1,0 +1,5 @@
+flask
+python-dotenv
+groq
+flask-cors
+PyPDF2
