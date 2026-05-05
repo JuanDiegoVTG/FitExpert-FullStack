@@ -311,6 +311,25 @@
                 btn.disabled = false; btn.innerText = "Contratar Ahora";
             });
         }
+
+        
+        const searchBar = document.getElementById("searchBar");
+        const cards = document.querySelectorAll(".rutina-card");
+
+        searchBar.addEventListener("keyup", function() {
+            const query = searchBar.value.toLowerCase().trim();
+
+            cards.forEach(card => {
+        const nombre = card.querySelector("h3").innerText.toLowerCase();
+        const descripcion = card.querySelector("p").innerText.toLowerCase();
+
+        if (nombre.includes(query) || descripcion.includes(query)) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+        }
+        });
+        });
     </script>
 </body>
 </html>
