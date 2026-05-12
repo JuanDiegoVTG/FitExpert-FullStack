@@ -66,6 +66,17 @@ public class CatalogoController {
             entrenadores = usuarioService.listarPorRolActivo(Constantes.ROL_ENTRENADOR);
         }
 
+        // DEBUG
+        System.out.println("===== ENTRENADORES =====");
+
+        for (Usuario e : entrenadores) {
+            System.out.println(
+                e.getId() + " | " +
+                e.getNombres() + " | " +
+                e.getDescripcion()
+            );
+        }
+
         model.addAttribute("entrenadores", entrenadores);
         model.addAttribute("keyword", keyword);
         return "cliente/catalogo";

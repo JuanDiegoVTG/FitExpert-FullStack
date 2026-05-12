@@ -19,8 +19,8 @@ public class UsuarioRegistroDTO {
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "El username no puede tener espacios ni caracteres especiales")
     private String userName;
 
-    @NotBlank(message = "La contraseña es obligatoria")
-    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
+    //@NotBlank(message = "La contraseña es obligatoria")
+    //@Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password; 
 
     @Email(message = "El email debe tener un formato válido")
@@ -32,7 +32,7 @@ public class UsuarioRegistroDTO {
     @NotBlank(message = "Los apellidos son obligatorios")
     private String apellidos; 
 
-    @NotBlank(message = "Debes seleccionar tu sexo biológico")
+    //@NotBlank(message = "Debes seleccionar tu sexo biológico")
     private String sexo;
 
     private String telefono; 
@@ -53,4 +53,6 @@ public class UsuarioRegistroDTO {
     private MultipartFile fileHojaVida;
 
     private String Edad;
+    
+
 }

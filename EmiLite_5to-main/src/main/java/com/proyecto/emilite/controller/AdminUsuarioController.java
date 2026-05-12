@@ -133,6 +133,20 @@ public class AdminUsuarioController {
                                    @Valid @ModelAttribute("usuarioForm") UsuarioRegistroDTO usuarioForm,
                                    BindingResult result,
                                    Model model) {
+                                            System.out.println(
+                                            "TIENE ERRORES: " +
+                                            result.hasErrors()
+                                            );
+
+                                            result.getAllErrors().forEach(error ->
+                                                    System.out.println(error)
+                                            );
+
+                                            System.out.println(
+                                                    "DESCRIPCION NUEVA: " +
+                                                    usuarioForm.getDescripcion()
+                                            );
+                                            
         if (result.hasErrors()) {
             model.addAttribute("usuarioId", id);
             model.addAttribute("roles", rolService.findAll());
@@ -145,6 +159,15 @@ public class AdminUsuarioController {
 
             // Actualizar la entidad con los datos del DTO
             usuarioExistente.setUserName(usuarioForm.getUserName());
+
+            //actualizacion contraseña solo si el admin la cambia
+            if (usuarioForm.getPassword() != null &&
+                !usuarioForm.getPassword().trim().isEmpty()) {
+
+                usuarioExistente.setPassword(
+                        usuarioForm.getPassword()
+                );
+            }
            
             usuarioExistente.setEmail(usuarioForm.getEmail());
             usuarioExistente.setNombres(usuarioForm.getNombres());

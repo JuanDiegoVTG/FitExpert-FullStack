@@ -11,7 +11,7 @@
     <style>
         :root {
             --bg-body: #060e1a;
-            --bg-sidebar: #111a30;
+            --bg-sidebar: #1e293b;
             --card-bg: rgba(30, 41, 59, 0.7);
             --primary: #3169B2;
             --accent: #00D4FF;
@@ -29,6 +29,7 @@
             display: flex;
             min-height: 100vh;
         }
+        
 
         /* BOTÓN MENÚ MÓVIL */
         .mobile-toggle {
@@ -46,6 +47,45 @@
             font-size: 1.2rem;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* ---------- LOGO SIDEBAR FIT EXPERT ---------- */
+
+        .logo-container {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.35);
+            background: white;
+            transition: var(--transition);
+        }
+
+        .brand-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .brand-text {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.25);
+        }
+
+        .brand:hover .logo-container {
+            transform: scale(1.08) rotate(-5deg);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.5);
+        }
+
+        .brand:hover .brand-text {
+            filter: brightness(1.15);
         }
 
         /* SIDEBAR RESPONSIVE */
@@ -77,21 +117,75 @@
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 0.85rem 1rem;
-            color: var(--text-muted);
+            gap: 15px;
+            padding: 14px 20px;
+            color: #cbd5e1 !important;
             text-decoration: none;
-            border-radius: 12px;
-            margin-bottom: 0.5rem;
-            transition: var(--transition);
+            border-radius: 15px;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
             font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-left: 4px solid transparent;
+            position: relative;
+            overflow: hidden;
         }
 
-        .nav-link:hover, .nav-link.active {
-            background: rgba(49, 105, 178, 0.15);
+        /* Hover premium */
+        .nav-link:hover {
+            color: #ffffff !important;
+            background: rgba(49, 105, 178, 0.12);
+            transform: translateX(10px);
+            border-left: 4px solid var(--accent);
+            box-shadow: 10px 0 20px rgba(0, 212, 255, 0.08);
+        }
+
+        /* Página activa */
+        .nav-link.active {
+            background: linear-gradient(
+                90deg,
+                rgba(49, 105, 178, 0.2),
+                transparent
+            );
+            color: #ffffff !important;
+            border-left: 4px solid var(--accent);
+            font-weight: 700;
+        }
+        /* Íconos */
+        .nav-link i {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        /* Animación del ícono */
+        .nav-link:hover i,
+        .nav-link.active i {
             color: var(--accent);
+            transform: scale(1.2) rotate(-5deg);
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
         }
 
+        /* Brillo que recorre el botón */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255,255,255,0.05),
+                transparent
+            );
+            transition: 0.5s;
+        }
+        
+        .nav-link:hover::after {
+    left: 100%;
+}
         /* CONTENIDO PRINCIPAL */
         .main-content { 
             margin-left: 280px; 
@@ -99,7 +193,9 @@
             padding: 2.5rem; 
             width: 100%;
             transition: var(--transition);
+            
         }
+        
 
         .top-dark-section {
             background: linear-gradient(135deg, rgba(49, 105, 178, 0.2), rgba(0, 212, 255, 0.1));
@@ -107,6 +203,8 @@
             border-radius: 24px;
             margin-bottom: 2rem;
             border: 1px solid var(--border-color);
+           
+            
         }
 
         .grid-rutinas {
@@ -164,12 +262,24 @@
     </button>
 
     <nav class="sidebar" id="sidebar">
-        <a href="#" class="brand">
-            <i class="fas fa-bolt" style="color: var(--accent);"></i>
-            <span>FIT EXPERT</span>
+        <a href="/dashboard" class="brand d-flex align-items-center gap-3 mb-5 text-decoration-none">
+            <div class="logo-container">
+                <img th:src="@{/images/logofitexpert.jpeg}" 
+                    alt="Fit Expert Logo" 
+                    class="brand-img">
+            </div>
+
+            <span class="brand-text">
+                FIT <span style="color: var(--accent);">EXPERT</span>
+            </span>
         </a>
 
         <div class="nav-group">
+
+            <label class="small text-uppercase mb-3 d-block"
+                style="color: var(--accent) !important;">
+                Menú
+            </label>
             <a href="/dashboard" class="nav-link">
                 <i class="fas fa-th-large"></i> <span>Dashboard</span>
             </a>
@@ -181,17 +291,15 @@
             </a>
         </div>
 
-        <form th:action="@{/logout}" method="post" style="margin-top: auto;">
-            <button type="submit" class="logout-btn w-100" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 12px; border-radius: 12px; font-weight: 600;">
-                <i class="fas fa-power-off"></i> <span>Cerrar Sesión</span>
-            </button>
+        <form th:action="@{/logout}" method="post" class="mt-auto">
+            <button type="submit" class="btn btn-outline-danger w-100 fw-bold border-2"><i class="fas fa-power-off"></i> Salir</button>
         </form>
     </nav>
 
     <div class="main-content">
         <section class="top-dark-section text-center">
             <h1>Entrenadores Élite</h1>
-            <p class="text-muted">Lleva tu entrenamiento al siguiente nivel con profesionales certificados.</p>
+            <p style="color: white;">Lleva tu entrenamiento al siguiente nivel con profesionales certificados.</p>
         </section>
 
         <section class="mb-5">
@@ -263,11 +371,35 @@
         // (Pégala debajo de esta línea para que funcione)
         const mp = new MercadoPago('TEST-fec0febe-f2ed-497a-bace-576313d7d822', { locale: 'es-CO' });
         
-        // Búsqueda en tiempo real
-        document.getElementById("searchBar").addEventListener("keyup", function() {
-            const query = this.value.toLowerCase();
-            document.querySelectorAll(".rutina-card").forEach(card => {
-                card.style.display = card.innerText.toLowerCase().includes(query) ? "" : "none";
+        
+       // BUSCADOR INTELIGENTE POR NOMBRE + CUALQUIER TEXTO DE DESCRIPCIÓN
+        const searchBar = document.getElementById("searchBar");
+        const cards = document.querySelectorAll(".rutina-card");
+
+        searchBar.addEventListener("input", function () {
+            const query = this.value.toLowerCase().trim();
+
+            cards.forEach(card => {
+
+                // Nombre del entrenador
+                const nombre = card.querySelector("h3")?.innerText.toLowerCase() || "";
+
+                // Obtener TODOS los párrafos de la card
+                const textosDescripcion = Array.from(
+                    card.querySelectorAll("p")
+                )
+                .map(p => p.innerText.toLowerCase())
+                .join(" ");
+
+                // También busca en todo el texto visible de la tarjeta
+                const textoCompleto = card.innerText.toLowerCase();
+
+                const coincide =
+                    nombre.includes(query) ||
+                    textosDescripcion.includes(query) ||
+                    textoCompleto.includes(query);
+
+                card.style.display = coincide ? "" : "none";
             });
         });
 
@@ -278,9 +410,10 @@
             entrenadorIdActual = btn.getAttribute("data-id");
             nombreEntrenadorActual = btn.getAttribute("data-nombre");
             precioActual = btn.getAttribute("data-precio") || 50000;
+            descripcionActual = btn.getAttribute("data-descripcion");
             
             document.getElementById("modalNombre").innerText = nombreEntrenadorActual;
-            document.getElementById("modalDescripcion").innerText = btn.getAttribute("data-descripcion") || "Sin descripción.";
+            document.getElementById("modalDescripcion").innerText = descripcionActual || "Sin descripción";
             document.getElementById("modalPrecio").innerText = "$" + precioActual + " COP";
         });
 
@@ -313,23 +446,7 @@
         }
 
         
-        const searchBar = document.getElementById("searchBar");
-        const cards = document.querySelectorAll(".rutina-card");
-
-        searchBar.addEventListener("keyup", function() {
-            const query = searchBar.value.toLowerCase().trim();
-
-            cards.forEach(card => {
-        const nombre = card.querySelector("h3").innerText.toLowerCase();
-        const descripcion = card.querySelector("p").innerText.toLowerCase();
-
-        if (nombre.includes(query) || descripcion.includes(query)) {
-            card.style.display = "";
-        } else {
-            card.style.display = "none";
-        }
-        });
-        });
+        
     </script>
 </body>
 </html>

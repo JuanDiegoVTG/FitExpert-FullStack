@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import com.proyecto.emilite.dto.UsuarioRegistroDTO;
 import com.proyecto.emilite.model.Rol;
+import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.service.EmailService;
 import com.proyecto.emilite.service.PythonService;
 import com.proyecto.emilite.service.RolService;
@@ -127,5 +128,30 @@ public class UsuarioController {
             model.addAttribute("roles", rolService.findAll());
             return "registro_publico";
         }
+
+      
     }
+
+    //Actualizacion del perfil del usuario ROL ENTRENADOR
+    @PostMapping("/usuarios/actualizar")
+        public String actualizarUsuario(@ModelAttribute Usuario usuarioForm) {
+            // 1. Buscar al usuario en la BD por su ID
+            Usuario entrenador = usuarioService.findById(usuarioForm.getId());
+
+            // 2. Actualizar la descripción y otros campos
+            entrenador.setDescripcion(usuarioForm.getDescripcion());
+            entrenador.setNombres(usuarioForm.getNombres());
+            entrenador.setApellidos(usuarioForm.getApellidos());
+            entrenador.setEmail(usuarioForm.getEmail());
+
+            // 3. Guardar cambios
+            usuarioService.save(entrenador);
+
+            // 4. Redirigir al catálogo
+            return "redirect:/catalogo?exito=true";
+        }
+
+
+
+
 }
