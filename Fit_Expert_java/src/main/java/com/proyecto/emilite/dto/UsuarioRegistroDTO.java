@@ -21,6 +21,8 @@ public class UsuarioRegistroDTO {
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
+    //@NotBlank(message = "La contraseña es obligatoria")
+    //@Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password; 
 
     @Email(message = "El email debe tener un formato válido")
@@ -33,6 +35,7 @@ public class UsuarioRegistroDTO {
     private String apellidos; 
 
     @NotBlank(message = "Debes seleccionar tu sexo biológico")
+    //@NotBlank(message = "Debes seleccionar tu sexo biológico")
     private String sexo;
 
     private String telefono; 

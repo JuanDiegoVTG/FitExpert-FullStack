@@ -1,6 +1,14 @@
 package com.proyecto.emilite.controller;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,16 +18,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.UUID;
 
 import com.proyecto.emilite.dto.UsuarioRegistroDTO;
 import com.proyecto.emilite.model.Rol;
+import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.service.EmailService;
 import com.proyecto.emilite.service.PythonService;
 import com.proyecto.emilite.service.RolService;
@@ -128,4 +130,23 @@ public class UsuarioController {
             return "registro_publico";
         }
     }
+
+    //Actualizacion del perfil del usuario ROL ENTRENADOR
+    @PostMapping("/usuarios/actualizar")
+        public String actualizarUsuario(@ModelAttribute Usuario usuarioForm) {
+            // 1. Buscar al usuario en la BD por su ID
+            Usuario entrenador = usuarioService.findById(usuarioForm.getId());
+
+            // 2. Actualizar la descripción y otros campos
+            entrenador.setDescripcion(usuarioForm.getDescripcion());
+            entrenador.setNombres(usuarioForm.getNombres());
+            entrenador.setApellidos(usuarioForm.getApellidos());
+            entrenador.setEmail(usuarioForm.getEmail());
+
+            // 3. Guardar cambios
+            usuarioService.save(entrenador);
+
+            // 4. Redirigir al catálogo
+            return "redirect:/catalogo?exito=true";
+        }
 }

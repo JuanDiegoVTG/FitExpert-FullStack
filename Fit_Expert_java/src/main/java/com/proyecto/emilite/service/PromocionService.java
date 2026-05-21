@@ -10,9 +10,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-
-@Service
 @SuppressWarnings("null")
+@Service
 public class PromocionService {
 
     @Autowired

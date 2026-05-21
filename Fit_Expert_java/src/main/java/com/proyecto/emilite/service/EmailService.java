@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
+@SuppressWarnings("null")
 @Service
 public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
-    @SuppressWarnings("null")
     //Envio de correo
     public void enviarNotificacionRegistro(String destinatario, String nombre, Double score){
 
@@ -39,7 +39,7 @@ public class EmailService {
             System.err.println("Error al enviar correo de registro: " + e.getMessage());
         }
     }
-    @SuppressWarnings("null")
+    
     public void enviarCorreoAprobacion(String destinatario, String nombre) {
         try {
             MimeMessage message = mailSender.createMimeMessage();

@@ -4,35 +4,41 @@
     <title>Login | FIT EXPERT</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-dark: #0b132b;
-            --bg-card: rgba(255,255,255,0.05);
+            --bg-dark: #050b1f;
+            --bg-card: rgba(255,255,255,0.04);
 
-            --primary: #00d4a3;
-            --primary-light: #1abc9c;
+            --primary: #00d2ff;
+            --primary-2: #00e6a8;
 
             --text: #e6ecff;
             --text-light: #9fb3d9;
 
-            --border: rgba(255,255,255,0.1);
+            --border: rgba(255,255,255,0.08);
 
             --error: #ff4d6d;
             --success: #2ecc71;
 
-            --shadow: 0 10px 30px rgba(0,0,0,0.4);
+            --shadow: 0 20px 60px rgba(0,0,0,0.6);
         }
- 
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: radial-gradient(circle at 20% 20%, #111a30, #050b1f);
-            color: var(--text);
-            background-size: cover;
             margin: 0;
+            min-height: 100vh;
+
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+
+            background: radial-gradient(circle at 20% 20%, #0b1a3a, #020617);
+            color: var(--text);
         }
 
         .login-wrapper {
@@ -40,250 +46,333 @@
             width: 95%;
             max-width: 1100px;
             height: 650px;
+
             border-radius: 20px;
             overflow: hidden;
+
             box-shadow: var(--shadow);
+            animation: fadeIn 0.8s ease;
         }
 
-        /* Panel formulario */
+        /* LEFT PANEL */
         .login-form {
             flex: 1;
-            background: var(--bg-card); /* Fondo de la tarjeta */
-             backdrop-filter: blur(14px);
-             border-right: 1px solid var(--border);
             padding: 60px;
+
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border-right: 1px solid var(--border);
+
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
-        .login-form h2 {
-            margin-bottom: 10px;
-            color: var(--secondary);
+        .login-form h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
         }
 
-        .login-form p {
-            margin-bottom: 20px;
-            color: var(--secondary);
+        .login-form .subtitle {
+            color: var(--text-light);
+            margin-bottom: 30px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
+            font-size: 0.9rem;
+            margin-bottom: 6px;
             display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 0.85rem;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 15px;
-            padding-left: 15px; 
-            background: var(--secondary-light);
+            padding: 14px 14px 14px 40px;
+
+            border-radius: 14px;
             border: 1px solid var(--border);
-            border-radius: 8px;
+
+            background: rgba(255,255,255,0.05);
             color: var(--text);
-            font-size: 1rem;
+
+            transition: 0.25s;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,210,255,0.2);
         }
 
         .options {
             display: flex;
             justify-content: space-between;
-            font-size: 0.9em;
-            margin-bottom: 20px;
+            font-size: 0.85rem;
+            margin: 10px 0 25px;
         }
 
         .options a {
-            color: var(--secondary);
+            color: var(--primary);
             text-decoration: none;
         }
 
+        .options a:hover {
+            text-decoration: underline;
+        }
+
+        /* BUTTON */
         .btn-login {
             width: 100%;
             padding: 14px;
-            background: var(--primary);
-            color: white;
+
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 14px;
+
+            font-weight: bold;
             cursor: pointer;
-            transition: var(--transition);
-            margin-top: 10px;
+
+            background: linear-gradient(90deg, var(--primary), var(--primary-2));
+            color: #001f2b;
+
+            transition: 0.3s;
         }
 
         .btn-login:hover {
             transform: translateY(-2px);
-            background: var(--primary-dark);
-            box-shadow: 0 5px 15px rgba(49, 105, 178, 0.4);
+            box-shadow: 0 10px 25px rgba(0,210,255,0.3);
         }
 
+        /* DIVIDER */
         .or {
-            text-align: center;
-            margin: 20px 0;
-            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: var(--text-light);
+            font-size: 0.85rem;
         }
 
+        .or::before,
+        .or::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .or span {
+            margin: 0 10px;
+        }
+
+        /* SOCIAL */
         .social-login {
             display: flex;
-            justify-content: space-around;
+            gap: 10px;
         }
 
         .btn-social {
             flex: 1;
-            margin: 0 5px;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
+            padding: 12px;
+
+            border-radius: 10px;
+            border: 1px solid var(--border);
+
+            background: rgba(255,255,255,0.05);
+            color: white;
+
             cursor: pointer;
-            color: #fff;
+            transition: 0.25s;
         }
 
-        .facebook { background: #3b5998; }
-        .google { background: #db4437; }
-        .twitter { background: #1da1f2; }
-
-        /* Panel derecho: bienvenida */
-        .welcome-panel {
-            flex: 1;
-            position: relative;
-            background: url('/images/klipartz1.png') no-repeat center center;
-            background-size: cover;
-            color: var(--text);
-            padding: 50px;
-            display: flex;
-            justify-content: center;
+        .btn-social:hover {
+            background: rgba(255,255,255,0.12);
         }
 
-
-        .welcome-panel h2 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            color: var(--primary);
-        }
-
-        .welcome-panel p {
-            font-size: 1.1em;
-            max-width: 400px;
-            color: var(--text-light);
-        }
-
-        .welcome-panel::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: #94a3b8; /* overlay translúcido */
-        backdrop-filter: blur(4px);        /* difuminado */
-        }
-
-        .welcome-content {
-        position: relative;
-        z-index: 1; /* asegura que el texto quede encima */
-        text-align: center;
-        }
-
-        .error-message {
-            background: rgba(255, 71, 87, 0.1);
-            color: var(--error);
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 15px;
-            text-align: center;
-            border-left: 4px solid var(--error);
-        }
-
-        .success-message {
-            background: rgba(40, 167, 69, 0.1);
-            color: var(--success);
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 15px;
-            text-align: center;
-            border-left: 4px solid var(--success);
+        /* FOOTER */
+        .footer-links {
+            margin-top: 25px;
+            font-size: 0.9rem;
         }
 
         .footer-links a {
-            color: var(--text-light); /* azul claro */
+            color: var(--primary);
             text-decoration: none;
         }
-        
 
-        .back-link {
-            display: inline-block;
-            margin-top: 25px;
-            color: var(--text-light); /* Color morado para el enlace */
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-            font-size: 0.95rem;
-        }
-
-        .back-link:hover {
+        .footer-links a:hover {
             text-decoration: underline;
-            color: var(--); /* Morado más claro al hover */
         }
-        
 
+        /* RIGHT PANEL */
+        .welcome-panel {
+            flex: 1;
+            padding: 60px;
+
+            background: linear-gradient(135deg, #020617, #031633);
+            display: flex;
+            align-items: center;
+        }
+
+        .welcome-content {
+            max-width: 420px;
+        }
+
+        .welcome-content .brand {
+            color: var(--primary);
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-content h1 {
+            font-size: 2.5rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .highlight {
+            color: var(--primary);
+        }
+
+        .welcome-content p {
+            color: var(--text-light);
+        }
+
+        /* ALERTS */
+        .error-message, .success-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .error-message {
+            background: rgba(255, 77, 109, 0.1);
+            color: var(--error);
+            border-left: 3px solid var(--error);
+        }
+
+        .success-message {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--success);
+            border-left: 3px solid var(--success);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .welcome-panel {
+                display: none;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="login-wrapper">
-        <!-- Formulario -->
-        <div class="login-form">
-            <h2>Iniciar Sesion</h2>
 
-            <form th:action="@{/login}" method="post">
-                <div class="form-group">
-                    <label for="username">Usuario</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Ingresa tu usuario" required autofocus>
+<div class="login-wrapper">
+
+    <!-- FORM -->
+    <div class="login-form">
+
+        <h1>Bienvenido de vuelta</h1>
+        <p class="subtitle">Inicia sesión para continuar</p>
+
+        <form th:action="@{/login}" method="post">
+
+            <div class="form-group">
+                <label>Usuario</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="text" name="username" class="form-control"
+                           placeholder="Ingresa tu usuario" required autofocus>
                 </div>
-
-                <div class="form-group">
-                    <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Ingresa tu contraseña" required>
-                </div>
-
-                <div class="options">
-                    <label><input type="checkbox"> Recordarme</label>
-                    <a href="#">¿Olvidaste tu contraseña?</a>
-                </div>
-
-                <button type="submit" class="btn-login">LOGIN</button>
-            </form>
-
-            <!-- Mensajes -->
-            <div th:if="${param.error}" class="error-message">Usuario o contraseña incorrectos.</div>
-            <div th:if="${param.logout}" class="success-message">Sesión cerrada exitosamente.</div>
-
-            <p class="or">ingresa con: </p>
-            <div class="social-login">
-                <button class="btn-social facebook">Facebook</button>
-                <button class="btn-social google">Google</button>
-                <button class="btn-social twitter">Twitter</button>
-
             </div>
 
-            <div class="footer-links">
-                <p>¿No tienes cuenta? <a th:href="@{/usuarios/registro-publico}">Regístrate aquí </a>
-                <a href="/" class="back-link">Volver a la Página Principal</a></p>
-                
-            </div> 
+            <div class="form-group">
+                <label>Contraseña</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" class="form-control"
+                           placeholder="Ingresa tu contraseña" required>
+                </div>
+            </div>
+
+            <div class="options">
+                <label><input type="checkbox"> Recordarme</label>
+                <a href="#">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <button type="submit" class="btn-login">
+                Iniciar sesión
+            </button>
+        </form>
+
+        <div th:if="${param.error}" class="error-message">
+            Usuario o contraseña incorrectos.
         </div>
 
-        <!-- Panel de bienvenida -->
-        <div class="welcome-panel">
-            <div class="Welcome-content"></div>
-            
+        <div th:if="${param.logout}" class="success-message">
+            Sesión cerrada exitosamente.
         </div>
-        
+
+        <div class="or"><span>o ingresa con</span></div>
+
+        <div class="social-login">
+            <button class="btn-social"><i class="fab fa-facebook-f"></i></button>
+            <button class="btn-social"><i class="fab fa-google"></i></button>
+            <button class="btn-social"><i class="fab fa-twitter"></i></button>
+        </div>
+
+        <div class="footer-links">
+            ¿No tienes cuenta?
+            <a th:href="@{/usuarios/registro-publico}">Regístrate aquí</a><br>
+            <a href="/">Volver a la Página Principal</a>
+        </div>
+
     </div>
+
+    <!-- RIGHT -->
+    <div class="welcome-panel">
+        <div class="welcome-content">
+
+            <div class="brand">FIT EXPERT</div>
+
+            <h1>
+                ENTRENADORES <br>
+                <span class="highlight">QUE TRANSFORMAN VIDAS</span>
+            </h1>
+
+            
+
+        </div>
+    </div>
+
+</div>
 
 </body>
 </html>

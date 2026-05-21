@@ -66,6 +66,17 @@ public class CatalogoController {
             entrenadores = usuarioService.listarPorRolActivo(Constantes.ROL_ENTRENADOR);
         }
 
+        // DEBUG
+        System.out.println("===== ENTRENADORES =====");
+
+        for (Usuario e : entrenadores) {
+            System.out.println(
+                e.getId() + " | " +
+                e.getNombres() + " | " +
+                e.getDescripcion()
+            );
+        }
+
         model.addAttribute("entrenadores", entrenadores);
         model.addAttribute("keyword", keyword);
         return "cliente/catalogo";
@@ -195,37 +206,37 @@ public class CatalogoController {
             Authentication auth) {
 
         try {
-            // CAMBIO CLAVE: Usar findByUserName (o el método que use el principal de auth)
-            Usuario cliente = usuarioRepository.findByUserName(auth.getName())
-                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado con username: " + auth.getName())); 
-            
-            Usuario entrenador = usuarioService.findById(entrenadorId); 
-            
-            if (entrenador != null) {
-                // 1. Vinculación (Tu método setEntrenador ya es bidireccional)
-                cliente.setEntrenador(entrenador);
-                
-                // 2. Persistencia manual para forzar el cambio en la tabla
-                usuarioRepository.save(cliente); 
-                usuarioRepository.save(entrenador); 
-
-                // 3. Notificación (Ahora sí debería salir)
-                Notificacion noti = new Notificacion();
-                noti.setUsuario(entrenador);
-                noti.setMensaje("🔥 ¡Nuevo Atleta! " + cliente.getNombres() + " te ha contratado.");
-                noti.setLeida(false);
-                noti.setFechaCreacion(LocalDateTime.now());
-                notificacionRepository.save(noti);
-                
-                System.out.println("✅ CONEXIÓN EXITOSA: Fernando (ID " + cliente.getId() + ") -> Coach (ID " + entrenadorId + ")");
-            } else {
-                System.err.println("❌ ERROR: No se encontró al entrenador con ID: " + entrenadorId);
-            }
-        } catch (Exception e) {
-            System.err.println("❌ ERROR CRÍTICO AL ENLAZAR: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // CAMBIO CLAVE: Usar findByUserName (o el método que use el principal de auth)
+        Usuario cliente = usuarioRepository.findByUserName(auth.getName())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con username: " + auth.getName())); 
         
-        return "redirect:/api/chat/" + entrenadorId;
+        Usuario entrenador = usuarioService.findById(entrenadorId); 
+        
+        if (entrenador != null) {
+            // 1. Vinculación (Tu método setEntrenador ya es bidireccional)
+            cliente.setEntrenador(entrenador);
+            
+            // 2. Persistencia manual para forzar el cambio en la tabla
+            usuarioRepository.save(cliente); 
+            usuarioRepository.save(entrenador); 
+
+            // 3. Notificación (Ahora sí debería salir)
+            Notificacion noti = new Notificacion();
+            noti.setUsuario(entrenador);
+            noti.setMensaje("🔥 ¡Nuevo Atleta! " + cliente.getNombres() + " te ha contratado.");
+            noti.setLeida(false);
+            noti.setFechaCreacion(LocalDateTime.now());
+            notificacionRepository.save(noti);
+            
+            System.out.println("✅ CONEXIÓN EXITOSA: Fernando (ID " + cliente.getId() + ") -> Coach (ID " + entrenadorId + ")");
+        } else {
+            System.err.println("❌ ERROR: No se encontró al entrenador con ID: " + entrenadorId);
+        }
+    } catch (Exception e) {
+        System.err.println("❌ ERROR CRÍTICO AL ENLAZAR: " + e.getMessage());
+        e.printStackTrace();
+    }
+    
+    return "redirect:/api/chat/" + entrenadorId;
     }
 }

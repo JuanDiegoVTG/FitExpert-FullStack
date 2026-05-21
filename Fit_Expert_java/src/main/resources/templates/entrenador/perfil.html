@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Perfil - Entrenador</title>
+</head>
+<body th:fragment="content">
+<div style="width: 100%; max-width: 850px; margin: 40px auto; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-sizing: border-box;">
+    
+    <div style="display: flex; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px;">
+        <i class="fas fa-user-cog" style="font-size: 2rem; color: #00d4a3; margin-right: 15px;"></i>
+        <div>
+            <h2 style="margin: 0; font-weight: 700; color: #1e293b; font-size: 1.75rem;">Mi Perfil Profesional</h2>
+            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 0.95rem;">Actualiza tu información pública para destacar en el catálogo de entrenadores.</p>
+        </div>
+    </div>
+
+    <div th:if="${param.exito}" style="background-color: #f0fdf4; color: #166534; border-left: 4px solid #15803d; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; font-size: 0.95rem;">
+        <i class="fas fa-check-circle" style="margin-right: 8px;"></i> ¡Perfil actualizado correctamente!
+    </div>
+    <div th:if="${param.error}" style="background-color: #fef2f2; color: #991b1b; border-left: 4px solid #b91c1c; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; font-size: 0.95rem;">
+        <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i> Hubo un error al guardar los cambios. Inténtalo de nuevo.
+    </div>
+
+    <form th:action="@{/entrenador/perfil/guardar}" th:object="${entrenador}" method="post" class="needs-validation" novalidate>
+        <input type="hidden" th:field="*{id}">
+
+        <div style="background-color: #ffffff; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 30px; overflow: hidden;">
+            <div style="background-color: #1e293b; color: #ffffff; padding: 15px 24px; display: flex; align-items: center;">
+                <i class="fas fa-user-circle" style="color: #00d4a3; margin-right: 10px; font-size: 1.2rem;"></i>
+                <h5 style="margin: 0; font-size: 1.1rem; font-weight: 600;">Datos Básicos de la Cuenta</h5>
+            </div>
+            
+            <div style="padding: 25px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="nombre" style="font-weight: 600; color: #475569; margin-bottom: 8px; font-size: 0.9rem;"><i class="fas fa-font" style="color: #00d4a3; margin-right: 5px;"></i> Nombre Completo</label>
+                        <input type="text" id="nombre" th:field="*{nombres}" style="padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; color: #334155; outline: none;" required>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="userName" style="font-weight: 600; color: #475569; margin-bottom: 8px; font-size: 0.9rem;"><i class="fas fa-id-card" style="color: #00d4a3; margin-right: 5px;"></i> Nombre de Usuario</label>
+                        <input type="text" id="userName" th:field="*{userName}" style="padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; color: #334155; outline: none;" required>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="email" style="font-weight: 600; color: #475569; margin-bottom: 8px; font-size: 0.9rem;"><i class="fas fa-envelope" style="color: #00d4a3; margin-right: 5px;"></i> Correo Electrónico</label>
+                        <input type="email" id="email" th:field="*{email}" style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; color: #94a3b8; background-color: #f8fafc; cursor: not-allowed;" readonly>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="telefono" style="font-weight: 600; color: #475569; margin-bottom: 8px; font-size: 0.9rem;"><i class="fas fa-phone" style="color: #00d4a3; margin-right: 5px;"></i> Teléfono o Celular</label>
+                        <input type="text" id="telefono" th:field="*{telefono}" style="padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; color: #334155; outline: none;">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div style="background-color: #ffffff; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 40px; overflow: hidden;">
+            <div style="background-color: #1e293b; color: #ffffff; padding: 15px 24px; display: flex; align-items: center;">
+                <i class="fas fa-id-badge" style="color: #00d4a3; margin-right: 10px; font-size: 1.2rem;"></i>
+                <h5 style="margin: 0; font-size: 1.1rem; font-weight: 600;">Información Profesional de Entrenador</h5>
+            </div>
+            
+            <div style="padding: 25px; background-color: #f8fafc;">
+                <div style="display: flex; flex-direction: column; width: 100%;">
+                    
+                    <label for="descripcion" style="font-weight: 600; color: #475569; margin-bottom: 8px; font-size: 0.95rem;">
+                        <i class="fas fa-file-alt" style="color: #00d4a3; margin-right: 5px;"></i> Descripción o Biografía Profesional
+                    </label>
+                    
+                    <textarea id="descripcion" 
+                              th:field="*{descripcion}" 
+                              rows="6" 
+                              style="width: 100%; resize: none; border-radius: 10px; padding: 16px; font-size: 0.95rem; line-height: 1.6; color: #334155; border: 2px solid #cbd5e1; background-color: #ffffff; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); outline: none; box-sizing: border-box;"
+                              placeholder="Escribe una excelente presentación sobre tus metodologías, enfoque de entrenamiento y por qué los clientes deberían elegirte a ti..."></textarea>
+                    
+                    <p style="color: #64748b; font-size: 0.85rem; margin: 8px 0 0 0;">
+                        <i class="fas fa-info-circle" style="color: #00d4a3;"></i> Una descripción llamativa y bien redactada aumenta tus posibilidades de ser contratado por nuevos alumnos.
+                    </p>
+
+                    <div style="background-color: #ffffff; border-left: 4px solid #00d4a3; border-radius: 8px; padding: 16px; margin-top: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+                        <span style="color: #64748b; font-size: 0.85rem; line-height: 1.5; display: block;">
+                            <i class="fas fa-lightbulb" style="color: #fbbf24; margin-right: 5px;"></i> 
+                            <strong>Consejo Pro:</strong> Cuéntales sobre tus especializaciones (Hipertrofia, funcional, pérdida de peso). Los usuarios buscan perfiles claros y motivadores dentro del catálogo. ¡Haz que tu perfil destaque!
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 15px; margin-bottom: 5px;">
+            <a th:href="@{/dashboard}" style="text-decoration: none; padding: 12px 30px; border-radius: 50px; font-weight: 600; font-size: 0.95rem; color: #64748b; border: 2px solid #cbd5e1; background-color: #ffffff; transition: all 0.2s;">
+                <i style="margin-right: 5px;"></i> 🏠 Volver al Panel
+            </a>
+            <button type="submit" style="padding: 12px 40px; border-radius: 50px; font-weight: 600; font-size: 0.95rem; color: #ffffff; background-color: #111a30; border: none; box-shadow: 0 4px 10px rgba(17,26,48,0.2); cursor: pointer; transition: all 0.2s;">
+                <i class="fas fa-cloud-upload-alt" style="margin-right: 5px;"></i> Guardar Cambios
+                </button>
+        </div>
+
+    </form>
+</div>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package com.proyecto.emilite.controller;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.proyecto.emilite.dto.RutinaFormDTO;
 import com.proyecto.emilite.model.Notificacion;
@@ -135,7 +138,7 @@ public class EntrenadorController {
         model.addAttribute("rutinaForm", rutinaForm);
         model.addAttribute("rutinaId", id);
         
-        // 🚀 CORRECCIÓN: Cargar solo mis clientes
+        //Cargar solo mis clientes
         Usuario entrenador = usuarioService.findByUserName(auth.getName());
         model.addAttribute("clientes", usuarioService.findByEntrenadorId(entrenador.getId()));
         
@@ -178,5 +181,36 @@ public class EntrenadorController {
         notificacionRepository.save(noti);
         
         return "redirect:/entrenador/rutinas";
+    }
+
+    // 1. Mostrar la pantalla de perfil al Entrenador logueado
+    @GetMapping("/perfil")
+    public String mostrarPerfil(Model model, Principal principal) {
+        // Principal nos da el username del entrenador que inició sesión
+        String username = principal.getName();
+        Usuario entrenador = usuarioService.findByUserName(username); 
+        
+        model.addAttribute("entrenador", entrenador);
+        return "entrenador/perfil"; // Ruta de la vista HTML
+    }
+
+    // 2. Procesar el formulario cuando el entrenador guarda su descripción
+   @PostMapping("/perfil/guardar")
+    public String guardarDescripcion(@RequestParam("descripcion") String descripcion, 
+                                    Principal principal, 
+                                    RedirectAttributes redirectAttributes) {
+        String currentUsername = principal.getName();
+        
+        // CORRECCIÓN: Usar findByUserName (con N mayúscula)
+        Usuario entrenador = usuarioService.findByUserName(currentUsername);
+        
+        // Pasamos el texto al objeto
+        entrenador.setDescripcion(descripcion);
+        
+        // CORRECCIÓN: Usar save() en lugar de guardar()
+        usuarioService.save(entrenador); 
+        
+        redirectAttributes.addFlashAttribute("mensajeExito", "¡Tu descripción profesional se actualizó con éxito!");
+        return "redirect:/entrenador/perfil";
     }
 }

@@ -16,8 +16,8 @@ import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.repository.NotificacionRepository;
 import com.proyecto.emilite.repository.UsuarioRepository;
 
-@RestController
 @SuppressWarnings("null")
+@RestController
 @RequestMapping("/api/notificaciones")
 public class NotificacionController {
 
