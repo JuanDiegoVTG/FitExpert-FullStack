@@ -136,7 +136,32 @@
             align-items: center;
             gap: 8px;
         }
-        .logout-btn:hover { background: #ef4444; color: white; }
+    .logout-btn:hover { background: #ef4444; color: white; }
+
+    .btn-celestial {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #00d2ff, #0084ff);
+        color: #ffffff;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: 600;
+        font-size: 15px;
+        box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-celestial:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 210, 255, 0.5);
+        color: #ffffff;
+        filter: brightness(1.1);
+    }
+
     </style>
 </head>
 <body>
@@ -174,6 +199,12 @@
                 <button type="submit" class="btn-filter">
                     <i class="fas fa-search"></i> Aplicar Filtros
                 </button>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <a href="http://localhost:8080/fitexpert-api/upload_pdf.php" class="btn-celestial">
+                    ☁️ Abrir Gestor de Hojas de Vida (NoSQL)
+                </a>
             </div>
         </form>
 

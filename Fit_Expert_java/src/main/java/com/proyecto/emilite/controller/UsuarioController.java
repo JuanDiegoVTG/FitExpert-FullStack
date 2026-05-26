@@ -22,13 +22,16 @@ import org.springframework.web.multipart.MultipartFile;
 import com.proyecto.emilite.dto.UsuarioRegistroDTO;
 import com.proyecto.emilite.model.Rol;
 import com.proyecto.emilite.model.Usuario;
+import com.proyecto.emilite.repository.UsuarioRepository;
 import com.proyecto.emilite.service.EmailService;
+import com.proyecto.emilite.service.MicroservicioPdfService;
 import com.proyecto.emilite.service.PythonService;
 import com.proyecto.emilite.service.RolService;
 import com.proyecto.emilite.service.UsuarioService;
 
 import jakarta.validation.Valid;
 
+@SuppressWarnings("null")
 @Controller
 public class UsuarioController {
 
@@ -44,6 +47,12 @@ public class UsuarioController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private MicroservicioPdfService pdfService;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     @GetMapping("/usuarios/registro-publico")
     public String mostrarFormularioRegistroPublico(Model model) {
         List<Rol> rolesDisponibles = rolService.findAll(); 
@@ -54,7 +63,7 @@ public class UsuarioController {
         return "registro_publico"; 
     }
 
-   @PostMapping("/usuarios/crear-publico")
+    @PostMapping("/usuarios/crear-publico")
     public String crearUsuarioPublico(
             @Valid @ModelAttribute("usuarioForm") UsuarioRegistroDTO usuarioForm,
             BindingResult result,
@@ -64,7 +73,6 @@ public class UsuarioController {
         // 1. VALIDACIONES DE FORMULARIO (Edad y existencia)
         if (usuarioForm.getFechaNacimiento() != null) {
             LocalDate hoy = LocalDate.now();
-            // Calculamos el periodo entre la fecha de nacimiento y hoy
             int edadCalculada = Period.between(usuarioForm.getFechaNacimiento(), hoy).getYears();
 
             if (edadCalculada < 16) {
@@ -79,37 +87,29 @@ public class UsuarioController {
             return "registro_publico";
         }
 
-        // ... (tus validaciones de nombre de usuario y email siguen igual) ...
-
         // 2. PROCESO DE REGISTRO, IA Y GUARDADO DE PDF
         Double scoreObtenido = 0.0; 
         String nombreArchivoFinal = null;
 
         try {
-            // REGLA: 2 = Entrenador (Análisis de CV y Guardado Físico)
             if (usuarioForm.getRolId() == 2) { 
                 if (archivoCv != null && !archivoCv.isEmpty()) {
-                    // --- LÓGICA DE GUARDADO FÍSICO ---
-                    String rutaCarpeta = "/home/juand/uploads/cvs/"; // Ruta en tu WSL
+                    String rutaCarpeta = "/home/juand/uploads/cvs/"; 
                     File directorio = new File(rutaCarpeta);
                     if (!directorio.exists()) directorio.mkdirs();
 
-                    // Nombre único: uuid_nombre.pdf
                     nombreArchivoFinal = UUID.randomUUID().toString() + "_" + archivoCv.getOriginalFilename();
                     Path rutaCompleta = Paths.get(rutaCarpeta + nombreArchivoFinal);
                     Files.write(rutaCompleta, archivoCv.getBytes());
                     
-                    // --- LÓGICA DE PYTHON ---
                     scoreObtenido = pythonService.validarCvConPython(archivoCv, usuarioForm.getUserName());
                     System.out.println("🐍 CV guardado y analizado. Score: " + scoreObtenido);
                 }
             }
 
             // 3. REGISTRO EN BD
-            // Pasamos el nombre del archivo al servicio para que lo guarde en el campo 'rutaHojaVida'
             usuarioService.registrarConCv(usuarioForm, nombreArchivoFinal);
-            try{
-                // 4. NOTIFICACIÓN POR CORREO
+            try {
                 if (usuarioForm.getRolId() == 2) {
                     emailService.enviarNotificacionRegistro(
                         usuarioForm.getEmail(), 
@@ -117,8 +117,7 @@ public class UsuarioController {
                         scoreObtenido
                     );
                 }
-                } catch (Exception mailError) {
-                // Solo imprimimos el error en consola, pero dejamos que el usuario siga
+            } catch (Exception mailError) {
                 System.err.println("⚠️ No se pudo enviar el correo: " + mailError.getMessage());
             }
             
@@ -131,22 +130,38 @@ public class UsuarioController {
         }
     }
 
-    //Actualizacion del perfil del usuario ROL ENTRENADOR
     @PostMapping("/usuarios/actualizar")
-        public String actualizarUsuario(@ModelAttribute Usuario usuarioForm) {
-            // 1. Buscar al usuario en la BD por su ID
-            Usuario entrenador = usuarioService.findById(usuarioForm.getId());
+    public String actualizarUsuario(@ModelAttribute Usuario usuarioForm) {
+        Usuario entrenador = usuarioService.findById(usuarioForm.getId());
 
-            // 2. Actualizar la descripción y otros campos
-            entrenador.setDescripcion(usuarioForm.getDescripcion());
-            entrenador.setNombres(usuarioForm.getNombres());
-            entrenador.setApellidos(usuarioForm.getApellidos());
-            entrenador.setEmail(usuarioForm.getEmail());
+        entrenador.setDescripcion(usuarioForm.getDescripcion());
+        entrenador.setNombres(usuarioForm.getNombres());
+        entrenador.setApellidos(usuarioForm.getApellidos());
+        entrenador.setEmail(usuarioForm.getEmail());
 
-            // 3. Guardar cambios
-            usuarioService.save(entrenador);
+        usuarioService.save(entrenador);
+        return "redirect:/catalogo?exito=true";
+    }
 
-            // 4. Redirigir al catálogo
-            return "redirect:/catalogo?exito=true";
+    // 🛡️ MÉTODO CORREGIDO CON ID LONG PARA TU REPOSITORIO NATIVO
+    @PostMapping("/guardar-hoja-vida")
+    public String guardarHojaVidaEntrenador(@RequestParam("usuarioId") Long usuarioId, 
+                                            @RequestParam("archivoHojaVida") MultipartFile archivo) {
+        
+        // 1. Ahora que el ID es Long, el findById va a cuadrar perfectamente sin errores
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con el ID: " + usuarioId));
+        
+        // 2. Enviar el PDF a MongoDB a través del microservicio PHP
+        String mongoId = pdfService.subirPdfAMongo(archivo);
+        
+        // 3. Si la subida fue exitosa, le asociamos el ID NoSQL a su perfil de usuario
+        if (mongoId != null) {
+            usuario.setHojaVidaMongoId(mongoId);
+            usuarioRepository.save(usuario);
         }
+        
+        // Redirecciona al panel de tus usuarios
+        return "redirect:/admin/usuarios"; 
+    }
 }

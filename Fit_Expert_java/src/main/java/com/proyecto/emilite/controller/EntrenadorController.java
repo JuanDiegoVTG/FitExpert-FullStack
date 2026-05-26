@@ -3,6 +3,7 @@ package com.proyecto.emilite.controller;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -37,7 +38,8 @@ public class EntrenadorController {
     private RutinaService rutinaService;
 
     @Autowired
-    private NotificacionRepository notificacionRepository; // <-- Importante añadir este
+    private NotificacionRepository notificacionRepository; 
+
     /**
      * Muestra la lista de clientes vinculados al entrenador actual.
      * Sincronizado con: mis_clientes.html usando ${usuarios}
@@ -213,4 +215,5 @@ public class EntrenadorController {
         redirectAttributes.addFlashAttribute("mensajeExito", "¡Tu descripción profesional se actualizó con éxito!");
         return "redirect:/entrenador/perfil";
     }
+
 }

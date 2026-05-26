@@ -137,5 +137,8 @@ public class Usuario {
         }
     }
 
+    @Column(name = "hoja_vida_mongo_id", length = 50)
+    private String hojaVidaMongoId;
+
 
 }
