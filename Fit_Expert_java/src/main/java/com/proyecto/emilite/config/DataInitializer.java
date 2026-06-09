@@ -40,24 +40,23 @@ public class DataInitializer {
             }
 
             // 2. POBLADO DEL ADMINISTRADOR
-            if (usuarioRepository.findByEmail("admin@fitexpert.com").isEmpty()) {
+            // 2. POBLADO DEL ADMINISTRADOR (Validando por Username)
+            if (usuarioRepository.findByUserName("admin").isEmpty()) { // Usamos tu método findByUsername
                 Usuario admin = new Usuario();
                 
-                // 🔥 NOTA: Si te sigue saliendo error en setNombre, cámbialo por el atributo 
-                // real de tu clase (ej: admin.setNombres("...") o admin.setNombreUsuario("..."))
-                admin.setUserName("Admin Principal SENA");
+                admin.setNombres("Admin Principal SENA");
+                admin.setUserName("admin"); // Le metemos el username oficial para tu login
                 admin.setEmail("admin@fitexpert.com");
                 admin.setPassword("AdminSena2026*"); 
                 
-                // Buscamos el rol de la lista que devuelve tu repositorio
+                // Buscamos el rol de la lista
                 List<Rol> listaRoles = rolRepository.findByNombre("ADMIN");
                 if (!listaRoles.isEmpty()) {
-                    // Le asignamos el primer rol encontrado
                     admin.setRol(listaRoles.get(0)); 
                 }
                 
                 usuarioRepository.save(admin);
-                System.out.println("👑 Administrador por defecto creado: admin@fitexpert.com");
+                System.out.println("👑 Administrador por defecto creado con el username: admin");
             }
         };
     }
