@@ -182,12 +182,49 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-sync">
-                    CALCULAR AHORA <i class="fas fa-chevron-right ms-2"></i>
-                </button>
+                <form id="calcForm">
+                    <button type="button" class="btn-sync" onclick="calcular()">
+                        CALCULAR AHORA <i class="fas fa-chevron-right ms-2"></i>
+                    </button>
+                </form>
+
+                <div id="resultado" style="margin-top:20px; color:white;"></div>
             </form>
         </div>
     </div>
 </div>
+<script>
+function calcular() {
+    // 1. Recopilar datos del formulario
+    const formData = {
+        peso: document.querySelector('[name="peso"]').value,
+        altura: document.querySelector('[name="altura"]').value,
+        cintura: document.querySelector('[name="cintura"]').value,
+        cuello: document.querySelector('[name="cuello"]').value,
+        cadera: document.querySelector('[name="cadera"]').value,
+        sexo: document.querySelector('[name="sexo"]').value,
+        nivel_actividad: document.querySelector('[name="nivelActividad"]').value
+    };
+
+    // 2. Enviar a tu API de Python
+    fetch('/api/generar-diagnostico', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // 3. Mostrar resultado sin recargar
+        document.getElementById('resultado').innerHTML = `
+            <h3>Resultados:</h3>
+            <p>IMC: ${data.imc} - Estado: ${data.estado}</p>
+            <p>Grasa: ${data.grasa_corporal}%</p>
+            <p>Calorías mantenimiento: ${data.mantenimiento}</p>
+            <p>IA: ${data.recomendacion}</p>
+        `;
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
 </body>
 </html>
