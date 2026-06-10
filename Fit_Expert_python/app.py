@@ -18,20 +18,19 @@ messages_db = {}
 
 
 # --- RUTA PARA EL DIAGNÓSTICO DE IA (Lo que pide Java) ---
-@app.route("/api/diagnostico", methods=["POST"])
+@app.route("/api/generar-diagnostico", methods=["POST"])
 def route_generar_diagnostico():
-    try:
-        datos = request.get_json()
+    # 1. Obtener los datos asegurando que sea JSON
+    datos = request.get_json()
+    
+    # DEBUG: Esto te dirá exactamente qué está llegando en la consola
+    print(f"DEBUG: Datos recibidos en Flask: {datos}")
+    
+    if datos is None:
+        return jsonify({"error": "No se recibieron datos JSON"}), 400
         
-        # Aquí es donde llamas a tu lógica de IA que calcula IMC y Grasa
-        resultado = calcular_composicion_corporal(datos)
-        
-        # El JSON debe tener 'imc' y 'grasa_corporal' porque Java los busca así
-        return jsonify(resultado), 200
-        
-    except Exception as e:
-        print(f"Error en diagnóstico: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+    resultado = calcular_composicion_corporal(datos)
+    return jsonify(resultado), 200
     
 
 # --- RUTAS CV ---
