@@ -17,7 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Conexión al MongoDB local de tu Ubuntu 
         /** @var mixed $manager */
-        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $mongoUri = getenv('MONGODB_URI') ?: "mongodb://localhost:27017"; 
+        $manager = new \MongoDB\Driver\Manager($mongoUri);
         
         $file = $_FILES['pdf'];
         $fileName = $file['name'];
