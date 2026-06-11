@@ -3,6 +3,8 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, GET");
 header("Access-Control-Allow-Headers: Content-Type");
 
+$javaAppUrl = getenv('JAVA_APP_URL') ?: "http://localhost:8082";
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Content-Type: application/json; charset=UTF-8");
 
@@ -15,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         
         
+
         // Conexión al MongoDB local de tu Ubuntu 
         /** @var mixed $manager */
         $mongoUri = getenv('MONGODB_URI') ?: "mongodb://localhost:27017"; 
@@ -210,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <br>
 
-        <a href="http://localhost:8082/admin/usuarios" class="btn-back">← Volver a Gestión de Usuarios</a>
+        <a href="<?php echo $javaAppUrl; ?>/admin/usuarios" class="btn-back">← Volver a Gestión de Usuarios</a>
 
         <div id="responseBox" class="response-container">
             <div class="response-title">✓ Registro Almacenado</div>
