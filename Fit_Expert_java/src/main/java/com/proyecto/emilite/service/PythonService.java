@@ -3,6 +3,7 @@ package com.proyecto.emilite.service;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,12 +27,14 @@ public class PythonService {
     @Autowired
     private RestTemplate restTemplate; // Usaremos siempre este inyectado
 
-    private final String FLASK_URL = "http://localhost:5000";
+    @Value
+    ("${flask.api.url:http://localhost:5000}")
+    private String flaskUrl;
 
 
     public Double validarCvConPython(MultipartFile file, String username) {
         try {
-            String url = FLASK_URL + "/validar-cv";
+            String url = flaskUrl + "/validar-cv";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
@@ -51,12 +54,12 @@ public class PythonService {
 
     // --- MÉTODOS DE CHAT ---
     public String obtenerMensajes(Long chatId) {
-        String url = FLASK_URL + "/get_messages/" + chatId;
+        String url = flaskUrl + "/get_messages/" + chatId;
         return restTemplate.getForObject(url, String.class);
     }
 
     public String enviarMensajeChat(String jsonPayload) {
-        String url = FLASK_URL + "/send_message";
+        String url = flaskUrl + "/send_message";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(jsonPayload, headers);
@@ -64,17 +67,15 @@ public class PythonService {
     }
 
     public String generarDiagnostico(Map<String, Object> payload) {
-        String url = "http://localhost:5000/api/diagnostico";
+        // Usamos flaskUrl y la ruta EXACTA de Python
+        String url = flaskUrl + "/api/generar-diagnostico"; 
         
-        // 1. CREAR LOS HEADERS (Esto es lo que falta)
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON); // Aquí está el truco
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // 2. EMPAQUETAR EL PAYLOAD CON LOS HEADERS
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
         try {
-            // 3. ENVIAR EL POST
             return restTemplate.postForObject(url, request, String.class);
         } catch (Exception e) {
             throw new RuntimeException("Error al conectar con Python: " + e.getMessage());
@@ -85,24 +86,23 @@ public class PythonService {
      * Envía los datos antropométricos a Flask y recibe el diagnóstico de la IA.
      */
     public Map<String, Object> obtenerDiagnosticoDesdePython(Map<String, Object> datos) {
-        // La URL de tu servidor Flask (asegúrate que el puerto sea el correcto)
-        String url = "http://localhost:5000/api/diagnostico";
+        // Usamos flaskUrl y la ruta EXACTA de Python
+        String url = flaskUrl + "/api/generar-diagnostico";
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(datos, headers);
 
-            // USAMOS exchange en lugar de postForEntity para manejar los genéricos <String, Object>
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 request,
-                new ParameterizedTypeReference<Map<String, Object>>() {} // Esto le dice a Java: "Es un mapa de verdad"
+                new ParameterizedTypeReference<Map<String, Object>>() {} 
             );
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                return response.getBody(); // Ya no necesitas el (Map<String, Object>) porque ya viene tipado
+                return response.getBody(); 
             } else {
                 throw new RuntimeException("Error en Python: " + response.getStatusCode());
             }

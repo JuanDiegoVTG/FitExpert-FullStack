@@ -4,10 +4,10 @@ from services.ia_services import calcular_composicion_corporal
 from services.cv_services import analizar_cv_entrenador
 
 # IMPORTS ADICIONALES PARA SELENIUM
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-import time
+#from selenium import webdriver
+#from selenium.webdriver.chrome.options import Options
+#from selenium.webdriver.common.by import By
+#import time
 
 app = Flask(__name__)
 CORS(app)
@@ -74,8 +74,8 @@ def get_messages(chat_id):
 
 # NUEVA RUTA: ENDPOINT PARA LA PRUEBA FUNCIONAL DE SELENIUM
 #
-@app.route('/test/selenium', methods=['GET'])
-def ejecutar_prueba_selenium():
+#@app.route('/test/selenium', methods=['GET'])
+#def ejecutar_prueba_selenium():
     # Configuración headless obligatoria para que corra invisible en la terminal de WSL
     chrome_options = Options()
     chrome_options.add_argument("--headless")
