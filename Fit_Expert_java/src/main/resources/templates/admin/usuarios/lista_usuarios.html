@@ -201,8 +201,8 @@
                 </button>
             </div>
 
-            <div style="margin: 20px 0;">
-                <a href="http://localhost:8080/fitexpert-api/upload_pdf.php" class="btn-celestial">
+           <div style="margin: 20px 0;">
+                <a href="#" id="btnGestorPhp" class="btn-celestial">
                     ☁️ Abrir Gestor de Hojas de Vida (NoSQL)
                 </a>
             </div>
@@ -284,5 +284,18 @@
             </form>
         </div>
     </div>
+    <script>
+    // Detectamos en qué entorno estamos
+    const hostnameActual = window.location.hostname;
+    const botonPhp = document.getElementById('btnGestorPhp');
+
+    if (hostnameActual === 'localhost' || hostnameActual === '127.0.0.1') {
+        // Entorno de Desarrollo (Local)
+        botonPhp.href = "http://localhost:8080/fitexpert-api/upload_pdf.php";
+    } else {
+        // Entorno de Producción (La Nube en Render)
+        botonPhp.href = "https://fitexpert-fullstack-m8vv.onrender.com/upload_pdf.php";
+    }
+</script>
 </body>
 </html>
