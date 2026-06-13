@@ -17,8 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         
-        
-
         // Conexión al MongoDB local de tu Ubuntu 
         /** @var mixed $manager */
         $mongoUri = getenv('MONGODB_URI') ?: "mongodb://localhost:27017"; 
