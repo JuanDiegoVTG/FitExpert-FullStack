@@ -233,7 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             btn.innerText = 'Procesando...';
             btn.disabled = true;
 
-            fetch('', {
+            fetch('upload_pdf.php', { 
                 method: 'POST',
                 body: formData
             })
