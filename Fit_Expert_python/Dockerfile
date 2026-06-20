@@ -1,27 +1,27 @@
-# 1. Usar una imagen base oficial de Python
-FROM python:3.10-slim
+# 1. Usar imagen oficial fijada a 'bullseye' para garantizar compatibilidad exacta entre Chromium y su Driver
+FROM python:3.10-slim-bullseye
 
-# 🔥 NUEVO: Actualizar el sistema e instalar Chromium y sus dependencias de Linux
+# 2. Actualizar el sistema e instalar Chromium y dependencias nativas
 RUN apt-get update && apt-get install -y \
     chromium \
     chromium-driver \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Establecer el directorio de trabajo dentro del contenedor
+# 3. Establecer el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# 3. Copiar los archivos de requerimientos e instalarlos
+# 4. Copiar los archivos de requerimientos e instalarlos sin guardar caché para ahorrar espacio
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 🔥 NUEVO: Asegurarnos de tener gunicorn instalado para producción en Render
-RUN pip install gunicorn
+# 5. Instalar Gunicorn explícitamente para un servidor de producción robusto
+RUN pip install --no-cache-dir gunicorn
 
-# 4. Copiar todo el código del proyecto al contenedor
+# 6. Copiar todo el código del proyecto al contenedor
 COPY . .
 
-# 5. Exponer el puerto predeterminado en el que corre Flask
+# 7. Exponer el puerto predeterminado
 EXPOSE 5000
 
-# 6. Comando para arrancar la aplicación con Gunicorn (Recomendado para Render)
+# 8. Comando para arrancar la aplicación con Gunicorn escuchando en todas las interfaces
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]

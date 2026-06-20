@@ -4,10 +4,11 @@ from services.ia_services import calcular_composicion_corporal
 from services.cv_services import analizar_cv_entrenador
 
 # IMPORTS ADICIONALES PARA SELENIUM
-#from selenium import webdriver
-#from selenium.webdriver.chrome.options import Options
-#from selenium.webdriver.common.by import By
-#import time
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -74,22 +75,25 @@ def get_messages(chat_id):
 
 # NUEVA RUTA: ENDPOINT PARA LA PRUEBA FUNCIONAL DE SELENIUM
 #
-#@app.route('/test/selenium', methods=['GET'])
-#def ejecutar_prueba_selenium():
-    # Configuración headless obligatoria para que corra invisible en la terminal de WSL
+@app.route('/test/selenium', methods=['GET'])
+def ejecutar_prueba_selenium():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--remote-debugging-port=9222")
-    chrome_options.binary_location = "/usr/bin/chromium-browser"
+    
+    # 🔥 CAMBIO 1: En Debian (el Docker) se llama 'chromium', no 'chromium-browser'
+    chrome_options.binary_location = "/usr/bin/chromium"
     
     driver = None
     try:
-        # 1. Levantar el navegador virtual
-        driver = webdriver.Chrome(options=chrome_options)
+        # 🔥 CAMBIO 2: Le decimos explícitamente dónde está el motor (driver)
+        servicio = Service("/usr/bin/chromedriver")
+        
+        # 1. Levantar el navegador virtual inyectando el servicio y las opciones
+        driver = webdriver.Chrome(service=servicio, options=chrome_options)
         
         # 2. Navegar a la URL del taller
         driver.get("https://www.google.com")
@@ -101,7 +105,7 @@ def get_messages(chat_id):
         buscador.send_keys("Testing de software")
         time.sleep(1) # Pausa de control para asegurar que el buffer procese la cadena
         
-        # Cierramos el navegador de forma exitosa
+        # Cerramos el navegador de forma exitosa
         driver.quit()
         
         return jsonify({
@@ -123,5 +127,5 @@ def get_messages(chat_id):
 
 
 if __name__ == "__main__":
-    # Mantener corriendo en el puerto 5000 con autoreload activo
-    app.run(debug=True, port=5000)
+    
+    app.run(host="0.0.0.0", port=5000)
