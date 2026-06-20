@@ -25,9 +25,9 @@ RUN a2enmod rewrite
 # 6. Copiar todo el código de tu proyecto PHP a la carpeta de Apache
 COPY . /var/www/html/
 
-# 7. Ejecutar Composer para crear la carpeta vendor/ y descargar la librería de Mongo
+# 7. Ejecutar Composer ACTUALIZANDO dependencias para evitar el error de "wrong version"
 WORKDIR /var/www/html/
-RUN composer install --no-dev --optimize-autoloader
+RUN composer update --no-dev --optimize-autoloader
 
 # 8. Darle permisos correctos a Apache (después de crear la carpeta vendor)
 RUN chown -R www-data:www-data /var/www/html
