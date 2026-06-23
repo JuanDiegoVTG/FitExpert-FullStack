@@ -1,6 +1,7 @@
 package com.proyecto.emilite.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -10,11 +11,16 @@ import jakarta.mail.internet.MimeMessage;
 @SuppressWarnings("null")
 @Service
 public class EmailService {
+
     @Autowired
     private JavaMailSender mailSender;
-    //Envio de correo
-    public void enviarNotificacionRegistro(String destinatario, String nombre, Double score){
 
+    // 🔥 Inyectamos la URL base. Si no existe en la nube, usa localhost por defecto.
+    @Value("${app.base-url:http://localhost:8082}")
+    private String baseUrl;
+
+    // Envio de correo
+    public void enviarNotificacionRegistro(String destinatario, String nombre, Double score){
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -48,12 +54,13 @@ public class EmailService {
             helper.setTo(destinatario);
             helper.setSubject("¡Bienvenido al Equipo Oficial de FitExpert! 🚀");
 
+            // 🔥 Usamos la variable baseUrl para que el botón apunte al lugar correcto siempre
             String contenido = 
                 "<div style='font-family: Arial, sans-serif; color: #1e293b; padding: 20px; background: #fafafa; border-radius: 10px;'>" +
                 "<h1 style='color: #10b981;'>¡Felicidades, " + nombre + "!</h1>" +
                 "<p>Tu perfil ha sido <strong>aprobado oficialmente</strong>.</p>" +
                 "<p>Ya puedes ingresar a la plataforma con tus credenciales y comenzar a gestionar tus rutinas.</p>" +
-                "<a href='http://localhost:8082/login' style='background: #4f46e5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;'>Ir al Login</a>" +
+                "<a href='" + baseUrl + "/login' style='background: #4f46e5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;'>Ir al Login</a>" +
                 "</div>";
 
             helper.setText(contenido, true);

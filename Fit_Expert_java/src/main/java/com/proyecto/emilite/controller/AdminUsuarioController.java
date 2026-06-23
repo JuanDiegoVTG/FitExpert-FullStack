@@ -242,27 +242,29 @@ public class AdminUsuarioController {
         return "redirect:/admin/usuarios"; // Redirige a la lista para ver el cambio
     }
 
-    @GetMapping("/ver-cv/{nombreArchivo}")
+   @GetMapping("/ver-cv/{nombreArchivo:.+}") // EL :.+ ES VITAL PARA QUE NO CORTE EL .pdf
     @ResponseBody
-    public ResponseEntity<org.springframework.core.io.Resource> servirCv(@PathVariable String nombreArchivo) {
+    public ResponseEntity<org.springframework.core.io.Resource> servirCv(@PathVariable("nombreArchivo") String nombreArchivo) {
         try {
-            //  Obtener el directorio actual donde corre el JAR
-            String currentDir = System.getProperty("user.dir");
-            Path ruta = Paths.get(currentDir, "uploads", "cvs", nombreArchivo);
+            // Construimos la ruta absoluta apuntando a la carpeta uploads generada en vivo
+            Path ruta = Paths.get("uploads", "cvs", nombreArchivo).toAbsolutePath().normalize();
             
             org.springframework.core.io.Resource recurso = new org.springframework.core.io.UrlResource(ruta.toUri());
 
+            // Verificamos si el archivo que se acaba de subir en la demostración existe
             if (recurso.exists() && recurso.isReadable()) {
                 return ResponseEntity.ok()
-                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + nombreArchivo + "\"")
+                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + recurso.getFilename() + "\"")
                     .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
                     .body(recurso);
             } else {
-                System.out.println("DEBUG: Archivo no encontrado en -> " + ruta.toString());
+                System.out.println("❌ ERROR: El admin intentó abrir un PDF que no está en: " + ruta.toString());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("❌ ERROR INTERNO AL ABRIR PDF: " + e.getMessage());
         }
+        
+        // Si falla, devuelve un 404 limpio
         return ResponseEntity.notFound().build();
     }
 }

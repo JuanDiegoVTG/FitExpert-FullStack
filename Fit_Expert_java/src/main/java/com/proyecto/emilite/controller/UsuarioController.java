@@ -1,6 +1,5 @@
 package com.proyecto.emilite.controller;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -92,38 +91,45 @@ public class UsuarioController {
         String nombreArchivoFinal = null;
 
         try {
+            // Lógica exclusiva si es Entrenador (Rol == 2)
             if (usuarioForm.getRolId() == 2) { 
                 if (archivoCv != null && !archivoCv.isEmpty()) {
-                    String rutaCarpeta = "/home/juand/uploads/cvs/"; 
-                    File directorio = new File(rutaCarpeta);
-                    if (!directorio.exists()) directorio.mkdirs();
+                    
+                    //  Ruta dinámica absoluta (Funciona en Local y Nube)
+                    Path directorioUploads = Paths.get("uploads", "cvs").toAbsolutePath().normalize();
+                    
+                    // Asegurarnos de que la carpeta exista en el sistema
+                    Files.createDirectories(directorioUploads);
 
+                    // Generar el nombre y la ruta final
                     nombreArchivoFinal = UUID.randomUUID().toString() + "_" + archivoCv.getOriginalFilename();
-                    Path rutaCompleta = Paths.get(rutaCarpeta + nombreArchivoFinal);
+                    Path rutaCompleta = directorioUploads.resolve(nombreArchivoFinal);
+                    
+                    // Guardar el archivo físicamente en el disco
                     Files.write(rutaCompleta, archivoCv.getBytes());
                     
+                    // Llamada al servicio Python
                     scoreObtenido = pythonService.validarCvConPython(archivoCv, usuarioForm.getUserName());
-                    System.out.println("🐍 CV guardado y analizado. Score: " + scoreObtenido);
+                    System.out.println("🐍 CV guardado y analizado. Score: " + scoreObtenido + " | Ruta: " + rutaCompleta.toString());
                 }
             }
 
             // 3. REGISTRO EN BD
             usuarioService.registrarConCv(usuarioForm, nombreArchivoFinal);
+            
+            // 4. NOTIFICACIONES / CORREOS (En un try-catch separado para no romper el registro)
             try {
-                if (usuarioForm.getRolId() == 2) {
-                    emailService.enviarNotificacionRegistro(
-                        usuarioForm.getEmail(), 
-                        usuarioForm.getNombres(), 
-                        scoreObtenido
-                    );
-                }
+                //Usamos el nombre correcto del método y le pasamos el score de Python
+                emailService.enviarNotificacionRegistro(usuarioForm.getEmail(), usuarioForm.getNombres(), scoreObtenido);
             } catch (Exception mailError) {
-                System.err.println("⚠️ No se pudo enviar el correo: " + mailError.getMessage());
+                System.err.println("⚠️ Usuario registrado, pero no se pudo enviar el correo: " + mailError.getMessage());
             }
             
+            // Si todo salió bien, redirige al login con mensaje de éxito
             return "redirect:/login?exito=true";
 
         } catch (Exception e) {
+            // Si algo falla catastróficamente (ej: base de datos caída), muestra el error en la vista
             model.addAttribute("error", "Error en el proceso: " + e.getMessage());
             model.addAttribute("roles", rolService.findAll());
             return "registro_publico";
