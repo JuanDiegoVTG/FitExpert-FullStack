@@ -49,8 +49,8 @@ public class ServicioService {
     }
 
     // Método para encontrar servicios por estado activo/inactivo
-    public List<Servicio> findByActivo(Boolean activo) {
-        return servicioRepository.findByActivo(activo); // Asegúrate de que ServicioRepository tenga este método
+    public List<Servicio> findByActivo(Boolean activa) {
+        return servicioRepository.findByActiva(activa); // Asegúrate de que ServicioRepository tenga este método
     }
 
     // Método para crear un servicio desde un DTO

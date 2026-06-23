@@ -14,5 +14,5 @@ public interface ServicioRepository extends JpaRepository<Servicio, Long> {
     List<Servicio> findByNombre(String nombre);
 
      // Método para encontrar servicios por estado activo/inactivo
-   List<Servicio> findByActivo(Boolean activo);
+   List<Servicio> findByActiva(Boolean activa);
 }
