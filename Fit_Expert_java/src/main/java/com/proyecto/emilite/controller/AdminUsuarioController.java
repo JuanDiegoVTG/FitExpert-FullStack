@@ -246,17 +246,22 @@ public class AdminUsuarioController {
     @ResponseBody
     public ResponseEntity<org.springframework.core.io.Resource> servirCv(@PathVariable String nombreArchivo) {
         try {
-            Path ruta = Paths.get("/home/juand/uploads/cvs/").resolve(nombreArchivo);
+            // 🔥 SOLUCIÓN DEFINITIVA: Obtener el directorio actual donde corre el JAR
+            String currentDir = System.getProperty("user.dir");
+            Path ruta = Paths.get(currentDir, "uploads", "cvs", nombreArchivo);
+            
             org.springframework.core.io.Resource recurso = new org.springframework.core.io.UrlResource(ruta.toUri());
 
-            if (recurso.exists() || recurso.isReadable()) {
+            if (recurso.exists() && recurso.isReadable()) {
                 return ResponseEntity.ok()
                     .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + nombreArchivo + "\"")
                     .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
                     .body(recurso);
+            } else {
+                System.out.println("DEBUG: Archivo no encontrado en -> " + ruta.toString());
             }
         } catch (Exception e) {
-            // Manejar error
+            e.printStackTrace();
         }
         return ResponseEntity.notFound().build();
     }

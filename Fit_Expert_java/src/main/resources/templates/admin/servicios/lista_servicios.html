@@ -9,31 +9,52 @@
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
-            --card-bg: #1a1a2e;
-            --danger: #ef4444;
-            --border: #333;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
             --text-muted: #94a3b8;
-            --accent: #10b981;
+            --danger: #ef4444;
         }
 
-        body { font-family: 'Segoe UI', sans-serif; background: #0f0f12; color: white; padding: 15px; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--bg-dark); 
+            color: var(--text); 
+            margin: 0;
+            padding: 20px;
+        }
 
-        .container { max-width: 1000px; margin: auto; background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid var(--border); }
+        .container { 
+            max-width: 1000px; 
+            margin: auto; 
+            background: var(--card-bg); 
+            backdrop-filter: blur(12px);
+            padding: 30px; 
+            border-radius: 24px; 
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        }
 
-        /* Responsividad para celular */
-        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 20px; }
+        .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         
-        table { width: 100%; min-width: 600px; border-collapse: collapse; }
+        /* Ajuste para celular */
+        .table-wrapper { overflow-x: auto; border-radius: 16px; border: 1px solid var(--border); }
         
-        th, td { padding: 15px; border-bottom: 1px solid var(--border); text-align: left; }
-        
-        .status-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
-        .status-on { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: rgba(99, 102, 241, 0.1); padding: 16px; text-align: left; font-size: 0.8rem; text-transform: uppercase; color: var(--primary); }
+        td { padding: 16px; border-bottom: 1px solid var(--border); }
+
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .status-on { background: rgba(16, 185, 129, 0.15); color: #10b981; }
         .status-off { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); }
-        
+
+        .btn-action { background: transparent; border: none; cursor: pointer; color: var(--text-muted); padding: 8px; transition: 0.3s; }
+        .btn-action:hover { color: var(--text); transform: scale(1.1); }
+
         @media (max-width: 600px) {
             .container { padding: 15px; }
-            .header-section { flex-direction: column; gap: 15px; text-align: center; }
+            h2 { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -41,9 +62,13 @@
 
     <div class="container">
         <header class="header-section">
-            <h2>Catálogo de Servicios</h2>
-            <a href="/admin/servicios/nuevo" class="btn-create" sec:authorize="hasRole('ADMIN')">
-                <i class="fas fa-plus"></i> Nuevo
+            <div>
+                <h2>Catálogo de Servicios</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Gestión de planes FitExpert</p>
+            </div>
+            <a href="/admin/servicios/nuevo" class="btn-primary" sec:authorize="hasRole('ADMIN')" 
+               style="background: var(--primary); color: white; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 600;">
+                <i class="fas fa-plus"></i> Crear
             </a>
         </header>
 
@@ -51,7 +76,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Servicio</th>
+                        <th>Nombre</th>
                         <th>Precio</th>
                         <th>Estado</th>
                         <th>Acciones</th>
@@ -59,7 +84,7 @@
                 </thead>
                 <tbody>
                     <tr th:each="servicio : ${servicios}">
-                        <td th:text="${servicio.nombre}"></td>
+                        <td th:text="${servicio.nombre}" style="font-weight: 600;"></td>
                         <td th:text="'$' + ${#numbers.formatDecimal(servicio.precio, 1, 0)}"></td>
                         <td>
                             <span th:class="${servicio.activa ? 'status-badge status-on' : 'status-badge status-off'}"
@@ -67,11 +92,11 @@
                             </span>
                         </td>
                         <td>
-                            <div class="action-btns" sec:authorize="hasRole('ADMIN')">
-                                <a th:href="@{/admin/servicios/{id}/editar(id=${servicio.id})}" title="Editar"><i class="fas fa-edit"></i></a>
+                            <div sec:authorize="hasRole('ADMIN')">
+                                <a th:href="@{/admin/servicios/{id}/editar(id=${servicio.id})}" class="btn-action"><i class="fas fa-edit"></i></a>
                                 <form th:action="@{/admin/servicios/{id}/eliminar(id=${servicio.id})}" method="post" style="display:inline;">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                    <button type="submit" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn-action" onclick="return confirm('¿Seguro?')"><i class="fas fa-trash"></i></button>
                                 </form>
                             </div>
                         </td>
