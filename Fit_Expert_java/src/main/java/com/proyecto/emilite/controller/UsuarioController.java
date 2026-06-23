@@ -69,16 +69,15 @@ public class UsuarioController {
             @RequestParam(value = "archivoCv", required = false) MultipartFile archivoCv, 
             Model model) {
 
-        // 1. VALIDACIONES DE FORMULARIO (Edad y existencia)
+        // 1. VALIDACIONES DE FORMULARIO
         if (usuarioForm.getFechaNacimiento() != null) {
             LocalDate hoy = LocalDate.now();
             int edadCalculada = Period.between(usuarioForm.getFechaNacimiento(), hoy).getYears();
-
             if (edadCalculada < 16) {
-                result.rejectValue("fechaNacimiento", "error.usuarioForm", "Debes tener al menos 16 años para registrarte.");
+                result.rejectValue("fechaNacimiento", "error.usuarioForm", "Debes tener al menos 16 años.");
             }
         } else {
-            result.rejectValue("fechaNacimiento", "error.usuarioForm", "Por favor, selecciona tu fecha de nacimiento.");
+            result.rejectValue("fechaNacimiento", "error.usuarioForm", "Selecciona tu fecha de nacimiento.");
         }
 
         if (result.hasErrors()) {
@@ -86,51 +85,45 @@ public class UsuarioController {
             return "registro_publico";
         }
 
-        // 2. PROCESO DE REGISTRO, IA Y GUARDADO DE PDF
         Double scoreObtenido = 0.0; 
         String nombreArchivoFinal = null;
 
         try {
-            // Lógica exclusiva si es Entrenador (Rol == 2)
+            // 2. PROCESO DE PDF E IA
             if (usuarioForm.getRolId() == 2) { 
                 if (archivoCv != null && !archivoCv.isEmpty()) {
                     
-                    //  Ruta dinámica absoluta (Funciona en Local y Nube)
+                    // Ruta absoluta dinámica - ¡ESTO ES LO QUE FUNCIONA EN RENDER!
                     Path directorioUploads = Paths.get("uploads", "cvs").toAbsolutePath().normalize();
-                    
-                    // Asegurarnos de que la carpeta exista en el sistema
                     Files.createDirectories(directorioUploads);
 
-                    // Generar el nombre y la ruta final
-                    nombreArchivoFinal = UUID.randomUUID().toString() + "_" + archivoCv.getOriginalFilename();
-                    Path rutaCompleta = directorioUploads.resolve(nombreArchivoFinal);
+                    // Generar nombre seguro
+                    String originalFilename = archivoCv.getOriginalFilename() != null ? archivoCv.getOriginalFilename() : "cv.pdf";
+                    nombreArchivoFinal = UUID.randomUUID().toString() + "_" + originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_");
                     
-                    // Guardar el archivo físicamente en el disco
+                    Path rutaCompleta = directorioUploads.resolve(nombreArchivoFinal);
                     Files.write(rutaCompleta, archivoCv.getBytes());
                     
-                    // Llamada al servicio Python
+                    // Llamada al servicio Python (¡OJO! Aquí es donde podría tardar la IA)
                     scoreObtenido = pythonService.validarCvConPython(archivoCv, usuarioForm.getUserName());
-                    System.out.println("🐍 CV guardado y analizado. Score: " + scoreObtenido + " | Ruta: " + rutaCompleta.toString());
                 }
             }
 
             // 3. REGISTRO EN BD
             usuarioService.registrarConCv(usuarioForm, nombreArchivoFinal);
             
-            // 4. NOTIFICACIONES / CORREOS (En un try-catch separado para no romper el registro)
+            // 4. CORREO (Async)
             try {
-                //Usamos el nombre correcto del método y le pasamos el score de Python
                 emailService.enviarNotificacionRegistro(usuarioForm.getEmail(), usuarioForm.getNombres(), scoreObtenido);
             } catch (Exception mailError) {
-                System.err.println("⚠️ Usuario registrado, pero no se pudo enviar el correo: " + mailError.getMessage());
+                System.err.println("⚠️ Aviso: Correo no enviado: " + mailError.getMessage());
             }
             
-            // Si todo salió bien, redirige al login con mensaje de éxito
+            // ¡REDIRECT! Esto le dice al navegador que pare de esperar y cambie de página
             return "redirect:/login?exito=true";
 
         } catch (Exception e) {
-            // Si algo falla catastróficamente (ej: base de datos caída), muestra el error en la vista
-            model.addAttribute("error", "Error en el proceso: " + e.getMessage());
+            model.addAttribute("error", "Error crítico: " + e.getMessage());
             model.addAttribute("roles", rolService.findAll());
             return "registro_publico";
         }
