@@ -61,7 +61,7 @@ public class ServicioService {
         nuevoServicio.setDuracionMinutos(dto.getDuracionMinutos());
         nuevoServicio.setPrecio(dto.getPrecio());
         // Asegúrate de que el DTO tenga getActivo() y que el valor sea Boolean
-        nuevoServicio.setActiva(dto.getActivo()); // <-- Asumiendo que ServicioFormDTO tiene getActivo()
+        nuevoServicio.setActiva(dto.getActiva()); // <-- Asumiendo que ServicioFormDTO tiene getActivo()
 
         servicioRepository.save(nuevoServicio);
     }

@@ -21,5 +21,5 @@ public class ServicioFormDTO {
     @Positive(message = "El precio debe ser un número positivo")
     private Double precio; // Requiere getPrecio() y setPrecio()
 
-    private Boolean activo = true;
+    private Boolean activa = true;
 }
