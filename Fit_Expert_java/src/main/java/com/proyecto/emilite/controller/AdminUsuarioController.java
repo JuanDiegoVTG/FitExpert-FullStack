@@ -246,7 +246,7 @@ public class AdminUsuarioController {
     @ResponseBody
     public ResponseEntity<org.springframework.core.io.Resource> servirCv(@PathVariable String nombreArchivo) {
         try {
-            // 🔥 SOLUCIÓN DEFINITIVA: Obtener el directorio actual donde corre el JAR
+            //  Obtener el directorio actual donde corre el JAR
             String currentDir = System.getProperty("user.dir");
             Path ruta = Paths.get(currentDir, "uploads", "cvs", nombreArchivo);
             
