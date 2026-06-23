@@ -1,9 +1,9 @@
 package com.proyecto.emilite.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data; // Importa Lombok
-
-import java.math.BigDecimal;
 
 @Data // <-- Esta anotación de Lombok genera getter y setter para 'activo'
 public class ServicioFormDTO {
@@ -19,7 +19,7 @@ public class ServicioFormDTO {
 
     @NotNull(message = "El precio es obligatorio")
     @Positive(message = "El precio debe ser un número positivo")
-    private BigDecimal precio; // Requiere getPrecio() y setPrecio()
+    private Double precio; // Requiere getPrecio() y setPrecio()
 
     private Boolean activo = true;
 }
