@@ -107,8 +107,26 @@ public class Usuario {
 
     
     @Column(name = "validado")
-    private boolean validado = false; // El campo que usa la IA y el Admin
-    private boolean enabled = true;   // Para que Spring Security sepa que la cuenta está activa
+    private Boolean validado = false; // El campo que usa la IA y el Admin
+    private Boolean enabled = true;   // Para que Spring Security sepa que la cuenta está activa
+
+    public boolean isValidado() {
+    return this.validado != null && this.validado;
+    }
+
+    public boolean isEnabled() {
+        // Si enabled es null, devuelve false por seguridad
+        return this.enabled != null && this.enabled;
+    }
+
+    // Asegúrate de tener los setters también para evitar más errores
+    public void setValidado(Boolean validado) {
+        this.validado = validado;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 
     @Column(name = "ruta_hoja_vida")
     private String rutaHojaVida;

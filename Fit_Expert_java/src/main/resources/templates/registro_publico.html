@@ -267,7 +267,7 @@
 
             <div style="display: flex; gap: 10px;">
                 <button type="button" class="btn-nav btn-prev" onclick="move(3, 2)">Atrás</button>
-                <button type="submit" class="btn-nav btn-submit">Lanzar Perfil <i class="fas fa-rocket"></i></button>
+                <button onclick="this.disabled=true; this.form.submit();" class="btn-actions">Lanzar Perfil</button>
             </div>
         </div>
     </form>

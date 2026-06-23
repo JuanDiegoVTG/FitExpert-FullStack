@@ -249,9 +249,11 @@
                                 </a>
 
                                 <a th:if="${usuario.rutaHojaVida != null}" 
-                                   th:href="@{/admin/usuarios/ver-cv/{file}(file=${usuario.rutaHojaVida})}" 
-                                   target="_blank" class="btn-actions btn-pdf" title="Ver Hoja de Vida">
-                                    <i class="fas fa-file-pdf"></i>
+                                    th:href="@{/admin/usuarios/ver-cv/{file}(file=${usuario.rutaHojaVida})}" 
+                                    target="_blank" 
+                                    class="btn-actions btn-pdf" 
+                                    title="Ver Hoja de Vida">
+                                        <i class="fas fa-file-pdf"></i>
                                 </a>
 
                                 <div th:if="${usuario.rol != null}">
