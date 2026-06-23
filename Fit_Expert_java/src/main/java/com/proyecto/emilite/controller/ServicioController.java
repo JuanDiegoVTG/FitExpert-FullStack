@@ -47,7 +47,7 @@ public class ServicioController {
         if (result.hasErrors()) {
             return "admin/servicios/form_servicio";
         }
-        if (servicio.getId() == null) servicio.setActivo(true);
+        if (servicio.getId() == null) servicio.setActiva(true);
         servicioService.save(servicio);
         return "redirect:/admin/servicios";
     }
@@ -66,7 +66,7 @@ public class ServicioController {
         Servicio servicio = servicioService.findById(id);
         
         // En lugar de borrarlo, lo desactivamos
-        servicio.setActivo(false); 
+        servicio.setActiva(false); 
         servicioService.save(servicio);
         
         return "redirect:/admin/servicios";

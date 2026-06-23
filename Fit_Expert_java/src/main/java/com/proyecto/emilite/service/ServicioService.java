@@ -44,7 +44,7 @@ public class ServicioService {
     public List<Servicio> findActiveServices() {
         return servicioRepository.findAll()
                 .stream()
-                .filter(Servicio::getActivo) // <-- CORRECTO: Llama a getActivo() en cada objeto Servicio
+                .filter(Servicio::getActiva) // <-- CORRECTO: Llama a getActivo() en cada objeto Servicio
                 .toList();
     }
 
@@ -61,7 +61,7 @@ public class ServicioService {
         nuevoServicio.setDuracionMinutos(dto.getDuracionMinutos());
         nuevoServicio.setPrecio(dto.getPrecio());
         // Asegúrate de que el DTO tenga getActivo() y que el valor sea Boolean
-        nuevoServicio.setActivo(dto.getActivo()); // <-- Asumiendo que ServicioFormDTO tiene getActivo()
+        nuevoServicio.setActiva(dto.getActivo()); // <-- Asumiendo que ServicioFormDTO tiene getActivo()
 
         servicioRepository.save(nuevoServicio);
     }

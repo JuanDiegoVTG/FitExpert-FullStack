@@ -41,8 +41,6 @@ public class Servicio {
     @Positive(message = "El precio debe ser un número positivo")
     private Double precio; 
 
-    
-
-    @Column(name = "activo", nullable = false)
-    private Boolean activo = true;
+    @Column(name = "activa", nullable = false) 
+    private Boolean activa = true;
 }
