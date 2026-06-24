@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpMethod;
 
 @Service
@@ -27,30 +28,50 @@ public class PythonService {
     @Autowired
     private RestTemplate restTemplate; // Usaremos siempre este inyectado
 
-    @Value
-    ("${flask.api.url:http://localhost:5000}")
+    @Value("${flask.api.url:http://localhost:5000}")
     private String flaskUrl;
-
 
     public Double validarCvConPython(MultipartFile file, String username) {
         try {
             String url = flaskUrl + "/validar-cv";
+            System.out.println("🚀 Conectando con servicio IA en: " + url);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("file", file.getResource()); 
+            
+            // 🔥 SOLUCIÓN NUBE: Envoltura segura del archivo en bytes con su nombre original
+            String filename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "cv.pdf";
+            ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return filename;
+                }
+            };
+
+            body.add("file", fileResource); 
             body.add("username", username); 
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-            String respuesta = restTemplate.postForObject(url, requestEntity, String.class);
             
-            JsonNode root = new ObjectMapper().readTree(respuesta);
-            return root.path("score").asDouble();
+            // Petición al servicio de Flask
+            String respuesta = restTemplate.postForObject(url, requestEntity, String.class);
+            System.out.println("🐍 Respuesta cruda de Python: " + respuesta);
+            
+            if (respuesta != null) {
+                JsonNode root = new ObjectMapper().readTree(respuesta);
+                // Retorna el score si existe, de lo contrario da 0.0
+                return root.path("score").asDouble(0.0);
+            }
+            
         } catch (Exception e) {
-            return 0.0;
+            System.err.println("❌ ERROR AL VALIDAR CV CON PYTHON: " + e.getMessage());
+            e.printStackTrace();
         }
+        return 0.0;
     }
+
 
     // --- MÉTODOS DE CHAT ---
     public String obtenerMensajes(Long chatId) {

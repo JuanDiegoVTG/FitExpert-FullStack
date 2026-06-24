@@ -35,7 +35,7 @@
             padding: 40px;
             border-radius: 24px;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1300px;
             border: 1px solid var(--border-light);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
@@ -85,8 +85,8 @@
         }
         .btn-filter:hover { background: var(--accent); color: var(--bg-dark); transform: translateY(-2px); }
 
-        .table-responsive { border-radius: 16px; overflow: hidden; border: 1px solid var(--border-light); }
-        table { width: 100%; border-collapse: collapse; background: rgba(255, 255, 255, 0.02); }
+        .table-responsive { border-radius: 16px; overflow-x: auto; border: 1px solid var(--border-light); }
+        table { width: 100%; border-collapse: collapse; background: rgba(255, 255, 255, 0.02); min-width: 1000px; }
         th {
             background: rgba(49, 105, 178, 0.2);
             padding: 20px;
@@ -136,31 +136,45 @@
             align-items: center;
             gap: 8px;
         }
-    .logout-btn:hover { background: #ef4444; color: white; }
+        .logout-btn:hover { background: #ef4444; color: white; }
 
-    .btn-celestial {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: linear-gradient(135deg, #00d2ff, #0084ff);
-        color: #ffffff;
-        padding: 12px 24px;
-        border-radius: 10px;
-        text-decoration: none;
-        font-family: 'Segoe UI', sans-serif;
-        font-weight: 600;
-        font-size: 15px;
-        box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+        .btn-celestial {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #00d2ff, #0084ff);
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-celestial:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.5);
+            color: #ffffff;
+            filter: brightness(1.1);
+        }
 
-    .btn-celestial:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 210, 255, 0.5);
-        color: #ffffff;
-        filter: brightness(1.1);
-    }
+        /* --- Badges para el Score de la IA --- */
+        .badge-score {
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.5px;
+        }
+        .score-high { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .score-med { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .score-low { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .score-none { color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
 
     </style>
 </head>
@@ -171,7 +185,7 @@
                 <img th:src="@{/images/logofitexpert.jpeg}" alt="Fit Expert Logo">
                 <h2>Panel de Usuarios</h2>
             </div>
-            <a th:href="@{/dashboard}" class="btn-filter" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-light);">
+            <a th:href="@{/admin/dashboard}" class="btn-filter" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-light);">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
         </header>
@@ -216,6 +230,7 @@
                         <th>Nombre Completo</th>
                         <th>Correo Electrónico</th>
                         <th>Rol / Nivel</th>
+                        <th>Score IA <i class="fas fa-robot" style="color: #00D4FF;"></i></th>
                         <th>Estado</th>
                         <th style="text-align: center;">Acciones</th>
                     </tr>
@@ -234,6 +249,21 @@
                                       th:text="${roleName}"></span>
                             </div>
                             <span th:if="${usuario.roles == null or usuario.roles.isEmpty()}" class="badge">N/A</span>
+                        </td>
+
+                        <td>
+                            <div th:if="${usuario.cvScore != null}">
+                                <span th:if="${usuario.cvScore >= 80}" class="badge-score score-high">
+                                    <i class="fas fa-check-circle"></i> [[${usuario.cvScore}]]%
+                                </span>
+                                <span th:if="${usuario.cvScore >= 50 and usuario.cvScore < 80}" class="badge-score score-med">
+                                    <i class="fas fa-exclamation-triangle"></i> [[${usuario.cvScore}]]%
+                                </span>
+                                <span th:if="${usuario.cvScore < 50}" class="badge-score score-low">
+                                    <i class="fas fa-times-circle"></i> [[${usuario.cvScore}]]%
+                                </span>
+                            </div>
+                            <div th:if="${usuario.cvScore == null}" class="score-none">N/A</div>
                         </td>
 
                         <td>
@@ -266,7 +296,7 @@
 
                                 <form th:action="@{/admin/usuarios/{id}/eliminar(id=${usuario.id})}" method="post" onsubmit="return confirm('¿Eliminar usuario definitivamente?');" style="display:inline;">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                    <button type="submit" class="btn-actions btn-delete">
+                                    <button type="submit" class="btn-actions btn-delete" title="Eliminar">
                                         <i class="fas fa-user-minus"></i>
                                     </button>
                                 </form>
@@ -286,18 +316,16 @@
             </form>
         </div>
     </div>
+    
     <script>
-    // Detectamos en qué entorno estamos
     const hostnameActual = window.location.hostname;
     const botonPhp = document.getElementById('btnGestorPhp');
 
     if (hostnameActual === 'localhost' || hostnameActual === '127.0.0.1') {
-        // Entorno de Desarrollo (Local)
         botonPhp.href = "http://localhost:8080/fitexpert-api/upload_pdf.php";
     } else {
-        // Entorno de Producción (La Nube en Render)
         botonPhp.href = "https://fitexpert-fullstack-m8vv.onrender.com/upload_pdf.php";
     }
-</script>
+    </script>
 </body>
 </html>

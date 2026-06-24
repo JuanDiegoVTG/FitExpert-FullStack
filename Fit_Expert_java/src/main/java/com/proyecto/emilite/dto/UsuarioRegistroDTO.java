@@ -48,7 +48,7 @@ public class UsuarioRegistroDTO {
     @NotNull(message = "El rol es obligatorio")
     private Long rolId;
     
-    
+    private Double cvScore;
     
     public Long getRolId() { return rolId; }
     public void setRolId(Long rolId) { this.rolId = rolId; }
