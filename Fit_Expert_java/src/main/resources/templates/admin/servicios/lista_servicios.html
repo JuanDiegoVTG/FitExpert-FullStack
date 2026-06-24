@@ -50,27 +50,21 @@
     gap: 12px;
 }
 
-/* --- Botón Volver al Dashboard --- */
-.btn-dashboard {
-    background: rgba(255, 255, 255, 0.05);
-    color: #94a3b8; /* Tono gris/azulado sutil */
-    padding: 12px 20px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    font-weight: 700;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-}
-
-.btn-dashboard:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
+.btn-filter {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-filter:hover { background: var(--accent); color: var(--bg-dark); transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -86,8 +80,8 @@
             
             <div class="header-actions">
                 
-                <a href="/admin/dashboard" class="btn-dashboard">
-                    <i class="fas fa-chart-pie"></i> Panel Admin
+                <a th:href="@{/admin/dashboard}" class="btn-filter" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-light);">
+                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
                 </a>
 
                 <a href="/admin/servicios/nuevo" class="btn-create" sec:authorize="hasRole('ADMIN')">
