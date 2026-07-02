@@ -134,16 +134,6 @@ public class Usuario {
 
     private Boolean esPremuim;
 
-    /**
-     * 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "usuarios_roles",
-        joinColumns = @JoinColumn(name = "usuario_id"),
-        inverseJoinColumns = @JoinColumn(name = "rol_id")
-    )
-     */
-    private List<Rol> roles = new ArrayList<>();
     
     public void setEntrenador(Usuario entrenador) {
         // Si el usuario ya tenía un entrenador, lo sacamos de la lista del anterior
