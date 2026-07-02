@@ -150,10 +150,12 @@
                                 <i class="fas fa-pen-nib"></i>
                                 </a>
                                 
+                                <td th:text="${usuario.hojaVidaMongoId}">DEBUG</td>
+
                                 <a th:if="${usuario.hojaVidaMongoId != null}" 
                                 th:href="@{/admin/usuarios/ver-cv-mongo/{id}(id=${usuario.hojaVidaMongoId})}" 
                                 target="_blank" class="btn-actions btn-pdf" title="Ver CV">
-                                    <i class="fas fa-file-pdf"></i>
+                                <i class="fas fa-file-pdf"></i>
                                 </a>
 
                                 <div th:if="${usuario.rol != null and usuario.rol.nombre == 'ROLE_ENTRENADOR' and !usuario.validado}">
