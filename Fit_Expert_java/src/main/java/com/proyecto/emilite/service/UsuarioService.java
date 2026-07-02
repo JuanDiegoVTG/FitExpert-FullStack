@@ -14,6 +14,7 @@ import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.repository.RolRepository;
 import com.proyecto.emilite.repository.UsuarioRepository;
 
+
 @Service
 @SuppressWarnings("null")
 public class UsuarioService {
@@ -227,11 +228,12 @@ public class UsuarioService {
     /**
      * Registra un nuevo usuario asociando el ID de MongoDB y asignando el rol correctamente.
      */
+    @Transactional
     public void registrarConCv(UsuarioRegistroDTO dto, String mongoId) {
         // 1. Instancia del modelo
         Usuario usuario = new Usuario();
 
-        // 2. Mapeo de campos desde el DTO
+        // 2. Mapeo básico
         usuario.setNombres(dto.getNombres());
         usuario.setApellidos(dto.getApellidos());
         usuario.setUserName(dto.getUserName());
@@ -239,34 +241,32 @@ public class UsuarioService {
         usuario.setFechaNacimiento(dto.getFechaNacimiento());
         usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
         
-        // 3. Asignación del identificador de MongoDB
+        // 3. Persistencia del ID de MongoDB (Esto es lo que hace que sea permanente)
         usuario.setHojaVidaMongoId(mongoId);
 
-        // 4. Lógica robusta de asignación de roles (Declaramos 'rol' una sola vez)
+        // 4. Asignación robusta de Rol (Soluciona el N/A)
         Rol rol = null;
-        
-        // A. Intentar buscar por ID si viene del formulario
         if (dto.getRolId() != null) {
             rol = rolRepository.findById(dto.getRolId()).orElse(null);
         }
         
-        // B. Si no se encontró el rol, forzamos ROLE_CLIENTE por seguridad
+        // Si no se encuentra el rol, asignamos Cliente por defecto
         if (rol == null) {
             rol = rolRepository.findByNombre("ROLE_CLIENTE").stream().findFirst().orElse(null);
         }
         
-        // 5. Asignar rol y configurar estados (Validado/Activo)
         usuario.setRol(rol);
         
+        // 5. Lógica de validación de Entrenador
         if (rol != null && "ROLE_ENTRENADOR".equals(rol.getNombre())) {
-            usuario.setValidado(false); // Entrenador requiere aprobación
+            usuario.setValidado(false); // Requiere aprobación
             usuario.setActivo(false); 
         } else {
             usuario.setValidado(true);
             usuario.setActivo(true);
         }
 
-        // 6. Guardado único (Solo se guarda una vez para mantener la integridad)
+        // 6. GUARDADO ÚNICO
         usuarioRepository.save(usuario);
     }
 }

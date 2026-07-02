@@ -64,7 +64,7 @@ public class UsuarioController {
             @RequestParam(value = "archivoCv", required = false) MultipartFile archivoCv, 
             Model model) {
 
-        // 1. Validaciones iniciales
+        // 1. Validaciones de fecha de nacimiento
         if (usuarioForm.getFechaNacimiento() != null) {
             int edadCalculada = Period.between(usuarioForm.getFechaNacimiento(), LocalDate.now()).getYears();
             if (edadCalculada < 16) {
@@ -74,41 +74,38 @@ public class UsuarioController {
             result.rejectValue("fechaNacimiento", "error.usuarioForm", "Selecciona tu fecha de nacimiento.");
         }
 
+        // Si hay errores (validaciones de anotaciones o edad), recargamos los roles y volvemos
         if (result.hasErrors()) {
             model.addAttribute("roles", rolService.findAll());
             return "registro_publico";
         }
 
-        // 2. DECLARACIÓN DE VARIABLES (Aquí está la clave: scope correcto)
+        // 2. Variables de control
         String mongoId = null;
         Double scoreObtenido = 0.0;
 
-        /**
-         * Todo dentro del try-catch
-         */
-    
         try {
-            // A. Subida a Mongo y validación IA
+            // A. Procesamiento de archivo solo si existe
             if (archivoCv != null && !archivoCv.isEmpty()) {
                 mongoId = pdfService.subirPdfAMongo(archivoCv);
                 scoreObtenido = pythonService.validarCvConPython(archivoCv, usuarioForm.getUserName());
             }
 
-            // B. Registro en Base de Datos (Ya tienes el mongoId listo aquí)
+            // B. Registro del usuario (El Service manejará la asignación de rol internamente)
             usuarioService.registrarConCv(usuarioForm, mongoId);
             
-            // C. Correo (Opcional, no rompe el flujo)
+            // C. Notificación (Independiente del éxito del flujo principal)
             try {
                 emailService.enviarNotificacionRegistro(usuarioForm.getEmail(), usuarioForm.getNombres(), scoreObtenido);
             } catch (Exception mailError) {
-                System.err.println("Aviso: Correo no enviado: " + mailError.getMessage());
+                System.err.println("Aviso: Correo no enviado, pero registro exitoso: " + mailError.getMessage());
             }
             
             return "redirect:/login?exito=true";
 
         } catch (Exception e) {
-            // Captura cualquier error de subida, base de datos o lógica
-            model.addAttribute("error", "Error crítico al registrar: " + e.getMessage());
+            // D. Gestión de errores críticos (BD, Conexión Mongo, Python)
+            model.addAttribute("error", "Error inesperado al procesar el registro: " + e.getMessage());
             model.addAttribute("roles", rolService.findAll());
             return "registro_publico";
         }

@@ -144,24 +144,32 @@
                         
                         <td style="text-align: center;">
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                <a th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" class="btn-actions btn-edit" title="Editar"><i class="fas fa-pen-nib"></i></a>
+                                
+                                <a th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" 
+                                class="btn-actions btn-edit" title="Editar Perfil">
+                                <i class="fas fa-pen-nib"></i>
+                                </a>
                                 
                                 <a th:if="${usuario.hojaVidaMongoId != null}" 
-                                   th:href="@{/admin/usuarios/ver-cv-mongo/{id}(id=${usuario.hojaVidaMongoId})}" 
-                                   target="_blank" class="btn-actions btn-pdf" title="Ver CV">
+                                th:href="@{/admin/usuarios/ver-cv-mongo/{id}(id=${usuario.hojaVidaMongoId})}" 
+                                target="_blank" class="btn-actions btn-pdf" title="Ver CV">
                                     <i class="fas fa-file-pdf"></i>
                                 </a>
 
                                 <div th:if="${usuario.rol != null and usuario.rol.nombre == 'ROLE_ENTRENADOR' and !usuario.validado}">
                                     <a th:href="@{/admin/usuarios/aprobar/{id}(id=${usuario.id})}" 
-                                       class="btn-actions btn-approve" title="Verificar Entrenador">
-                                       <i class="fas fa-user-check"></i>
+                                    class="btn-actions btn-approve" title="Verificar Entrenador">
+                                    <i class="fas fa-user-check"></i>
                                     </a>
                                 </div>
 
-                                <form th:action="@{/admin/usuarios/{id}/eliminar(id=${usuario.id})}" method="post" onsubmit="return confirm('¿Eliminar?');">
+                                <form th:action="@{/admin/usuarios/{id}/eliminar(id=${usuario.id})}" 
+                                    method="post" onsubmit="return confirm('¿Eliminar usuario definitivamente?');" 
+                                    style="display:inline;">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                    <button type="submit" class="btn-actions btn-delete" title="Eliminar"><i class="fas fa-user-minus"></i></button>
+                                    <button type="submit" class="btn-actions btn-delete" title="Eliminar">
+                                        <i class="fas fa-user-minus"></i>
+                                    </button>
                                 </form>
                             </div>
                         </td>
