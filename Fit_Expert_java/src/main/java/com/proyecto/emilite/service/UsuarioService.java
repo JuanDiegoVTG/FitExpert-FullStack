@@ -225,9 +225,7 @@ public class UsuarioService {
     }
 
     /**
-     * Registra un nuevo usuario asociando el ID de MongoDB del CV.
-     * @param dto Datos del formulario de registro
-     * @param mongoId ID del PDF almacenado en MongoDB
+     * Registra un nuevo usuario asociando el ID de MongoDB y asignando el rol correctamente.
      */
     public void registrarConCv(UsuarioRegistroDTO dto, String mongoId) {
         // 1. Instancia del modelo
@@ -241,35 +239,34 @@ public class UsuarioService {
         usuario.setFechaNacimiento(dto.getFechaNacimiento());
         usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
         
-        // 3. Asignación del identificador de MongoDB (persistente en la nube)
+        // 3. Asignación del identificador de MongoDB
         usuario.setHojaVidaMongoId(mongoId);
 
-        // 4. Lógica robusta de asignación de roles (Resuelve el problema de N/A)
+        // 4. Lógica robusta de asignación de roles (Declaramos 'rol' una sola vez)
         Rol rol = null;
+        
+        // A. Intentar buscar por ID si viene del formulario
         if (dto.getRolId() != null) {
-            // Intentamos buscar el rol seleccionado
             rol = rolRepository.findById(dto.getRolId()).orElse(null);
         }
         
-        // Si no se encontró el rol o viene nulo, forzamos ROLE_CLIENTE por seguridad
+        // B. Si no se encontró el rol, forzamos ROLE_CLIENTE por seguridad
         if (rol == null) {
             rol = rolRepository.findByNombre("ROLE_CLIENTE").stream().findFirst().orElse(null);
         }
         
-        usuario.setRol(rol); // Asumimos que tu entidad Usuario tiene setRol(Rol rol)
-
-        // 5. Lógica de validación de estados
-        // Si el rol es Entrenador (asumimos id 2), queda inactivo hasta que el admin apruebe
+        // 5. Asignar rol y configurar estados (Validado/Activo)
+        usuario.setRol(rol);
+        
         if (rol != null && "ROLE_ENTRENADOR".equals(rol.getNombre())) {
-            usuario.setValidado(false);
+            usuario.setValidado(false); // Entrenador requiere aprobación
             usuario.setActivo(false); 
         } else {
             usuario.setValidado(true);
             usuario.setActivo(true);
         }
 
-        // 6. ¡GUARDADO ÚNICO! 
-        // Solo guardamos una vez al final para mantener la integridad de la base de datos
+        // 6. Guardado único (Solo se guarda una vez para mantener la integridad)
         usuarioRepository.save(usuario);
     }
 }
