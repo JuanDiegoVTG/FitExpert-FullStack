@@ -183,13 +183,15 @@
     </div>
     
     <script>
-        const hostnameActual = window.location.hostname;
-        const botonPhp = document.getElementById('btnGestorPhp');
-        if (hostnameActual === 'localhost' || hostnameActual === '127.0.0.1') {
-            botonPhp.href = "http://localhost:8080/fitexpert-api/upload_pdf.php";
-        } else {
-            botonPhp.href = "https://fitexpert-fullstack-m8vv.onrender.com/fitexpert-api/upload_pdf.php";
-        }
-    </script>
+    const hostnameActual = window.location.hostname;
+    const botonPhp = document.getElementById('btnGestorPhp');
+    if (hostnameActual === 'localhost' || hostnameActual === '127.0.0.1') {
+        // En local SÍ lleva la carpeta
+        botonPhp.href = "http://localhost:8080/fitexpert-api/upload_pdf.php";
+    } else {
+        // En Render NO lleva la carpeta
+        botonPhp.href = "https://fitexpert-fullstack-m8vv.onrender.com/upload_pdf.php";
+    }
+</script>
 </body>
 </html>
