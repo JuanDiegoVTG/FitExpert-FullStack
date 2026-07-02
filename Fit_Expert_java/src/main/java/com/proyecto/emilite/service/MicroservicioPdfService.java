@@ -1,35 +1,44 @@
 package com.proyecto.emilite.service;
 
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.*; // Importa HttpHeaders, HttpEntity, ResponseEntity, MediaType, HttpMethod
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.core.ParameterizedTypeReference; // Necesario para el Map
 
 @SuppressWarnings("null")
 @Service
 public class MicroservicioPdfService {
 
-    private final String URL_BASE = "https://fitexpert-fullstack-m8vv.onrender.com/fitexpert-api";
+    // Lee la propiedad desde application.properties
+    @Value("${api.php.url}")
+    private String urlBase;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     public String subirPdfAMongo(MultipartFile archivoPdf) {
         if (archivoPdf == null || archivoPdf.isEmpty()) {
+            System.out.println("❌ ERROR: Archivo vacío recibido en el servicio.");
             return null;
         }
 
         try {
+            // Construimos la URL completa usando la propiedad inyectada
+            String urlFinal = urlBase + "/upload_pdf.php";
+            System.out.println("🚀 Intentando conectar a: " + urlFinal);
+
             HttpHeaders headers = new HttpHeaders();
-            // Ya no forzamos setContentType aquí para dejar que Spring genere el boundary
-            
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            // Crear recurso para el archivo
             ByteArrayResource recursoArchivo = new ByteArrayResource(archivoPdf.getBytes()) {
                 @Override
-                public String getFilename() {
-                    return archivoPdf.getOriginalFilename();
-                }
+                public String getFilename() { return archivoPdf.getOriginalFilename(); }
             };
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -37,22 +46,25 @@ public class MicroservicioPdfService {
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            // CORRECCIÓN: Usamos 'exchange' en lugar de 'postForEntity' para soportar el Map genérico
+            // Llamada al microservicio PHP
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-                    URL_BASE + "/upload_pdf.php",
+                    urlFinal,
                     HttpMethod.POST,
                     requestEntity,
                     new ParameterizedTypeReference<Map<String, Object>>() {}
             );
 
-            Map<String, Object> jsonResponse = response.getBody();
-
-            if (response.getStatusCode().is2xxSuccessful() && jsonResponse != null) {
-                Object idObj = jsonResponse.get("id_mongo");
-                return (idObj != null) ? idObj.toString() : null;
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                Object idMongo = response.getBody().get("id_mongo");
+                System.out.println("✅ ÉXITO: ID obtenido de Mongo: " + idMongo);
+                return (idMongo != null) ? idMongo.toString() : null;
+            } else {
+                System.out.println("⚠️ PHP respondió con error: " + response.getStatusCode());
             }
+
         } catch (Exception e) {
-            System.err.println("❌ ERROR: " + e.getMessage());
+            System.err.println("❌ EXCEPCIÓN EN SERVICIO: " + e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
@@ -61,10 +73,11 @@ public class MicroservicioPdfService {
         if (mongoId == null || mongoId.isEmpty()) return null;
         
         try {
-            String url = URL_BASE + "/get_pdf.php?id=" + mongoId;
+            // Ajustar según la estructura de tu PHP
+            String url = urlBase + "/get_pdf.php?id=" + mongoId;
             return restTemplate.getForObject(url, byte[].class);
         } catch (Exception e) {
-            System.err.println("❌ Error recuperando PDF de Mongo: " + e.getMessage());
+            System.err.println("❌ Error recuperando PDF: " + e.getMessage());
             return null;
         }
     }
