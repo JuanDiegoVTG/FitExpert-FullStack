@@ -1,14 +1,18 @@
 package com.proyecto.emilite.controller;
 
+import java.beans.PropertyEditorSupport;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,24 +61,37 @@ public class UsuarioController {
         return "registro_publico"; 
     }
 
-   @PostMapping("/usuarios/crear-publico")
+   @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(LocalDate.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                setValue(LocalDate.parse(text, DateTimeFormatter.ISO_DATE));
+            }
+        });
+    }
+
+    @PostMapping("/usuarios/crear-publico")
     public String crearUsuarioPublico(
             @Valid @ModelAttribute("usuarioForm") UsuarioRegistroDTO usuarioForm,
             BindingResult result,
             @RequestParam(value = "archivoCv", required = false) MultipartFile archivoCv, 
             Model model) {
 
-        // 1. Validaciones de fecha de nacimiento
+        // 1. Validaciones de fecha de nacimiento (Solo si Spring logró convertirla)
         if (usuarioForm.getFechaNacimiento() != null) {
             int edadCalculada = Period.between(usuarioForm.getFechaNacimiento(), LocalDate.now()).getYears();
             if (edadCalculada < 16) {
                 result.rejectValue("fechaNacimiento", "error.usuarioForm", "Debes tener al menos 16 años.");
             }
         } else {
-            result.rejectValue("fechaNacimiento", "error.usuarioForm", "Selecciona tu fecha de nacimiento.");
+            // Si llega nula, es probable que la conversión falló, pero BindingResult ya tiene el error
+            if(!result.hasFieldErrors("fechaNacimiento")) {
+                result.rejectValue("fechaNacimiento", "error.usuarioForm", "Selecciona tu fecha de nacimiento.");
+            }
         }
 
-        // Si hay errores (validaciones de anotaciones o edad), recargamos los roles y volvemos
+        // Si hay errores de validación (incluyendo formato de fecha), volvemos al form
         if (result.hasErrors()) {
             model.addAttribute("roles", rolService.findAll());
             return "registro_publico";

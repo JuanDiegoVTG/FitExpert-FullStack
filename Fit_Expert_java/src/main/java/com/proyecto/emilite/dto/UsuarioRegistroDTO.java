@@ -1,15 +1,15 @@
 package com.proyecto.emilite.dto;
 
+import java.time.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Data; 
 import jakarta.validation.constraints.Pattern;
-
-import java.time.LocalDate;
-
-import org.springframework.web.multipart.MultipartFile;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 @Data 
 public class UsuarioRegistroDTO {
@@ -42,18 +42,16 @@ public class UsuarioRegistroDTO {
 
     private String direccion; 
 
-    private LocalDate fechaNacimiento; 
+    @DateTimeFormat(pattern = "yyyy-MM-dd") 
+    private LocalDate fechaNacimiento
+    ; 
     private String descripcion;
 
     @NotNull(message = "El rol es obligatorio")
     private Long rolId;
     
-    private Double cvScore;
-    
     public Long getRolId() { return rolId; }
     public void setRolId(Long rolId) { this.rolId = rolId; }
-
-    private MultipartFile fileHojaVida;
-
+    
     private String Edad;
 }
