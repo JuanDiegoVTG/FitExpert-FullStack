@@ -142,27 +142,38 @@
                                   th:text="${usuario.activo ? '● Activo' : '○ Inactivo'}"></span>
                         </td>
                         
-                        <td style="text-align: center; border: 2px solid red;"> 
+                        <td style="text-align: center;"> 
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                                 
-                                <span style="color: red; font-size: 10px;" th:text="'ID:' + ${usuario.hojaVidaMongoId}">DEBUG</span>
-                                
-                                <a th:if="${usuario.hojaVidaMongoId != null}" 
-                                th:href="@{/admin/usuarios/ver-cv-mongo/{id}(id=${usuario.hojaVidaMongoId})}" 
-                                target="_blank" class="btn-actions btn-pdf" title="Ver CV">
+                                <a th:href="${usuario.hojaVidaMongoId != null} ? @{/admin/usuarios/ver-cv-mongo/{id}(id=${usuario.hojaVidaMongoId})} : '#'"
+                                th:style="${usuario.hojaVidaMongoId == null} ? 'opacity: 0.3; cursor: not-allowed;' : ''"
+                                class="btn-actions btn-pdf" title="Ver CV">
                                 <i class="fas fa-file-pdf"></i>
-                            </a>
-                            
-                            <div th:if="${usuario.rol != null and usuario.rol.nombre == 'ROLE_ENTRENADOR' and !usuario.validado}">
-                                <a th:href="@{/admin/usuarios/aprobar/{id}(id=${usuario.id})}" 
-                                class="btn-actions btn-approve" title="Verificar Entrenador">
-                                <i class="fas fa-user-check"></i>
-                            </a>
-                        </div>
-                            <a th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" 
-                            class="btn-actions btn-edit" title="Editar Perfil">
-                            <i class="fas fa-pen-nib"></i>
-                            </a>
+                                </a>
+                                
+                                <div th:if="${usuario.rol != null and usuario.rol.nombre == 'ROLE_ENTRENADOR' and !usuario.validado}">
+                                    <a th:href="@{/admin/usuarios/aprobar/{id}(id=${usuario.id})}" 
+                                    class="btn-actions btn-approve" title="Verificar Entrenador">
+                                    <i class="fas fa-user-check"></i>
+                                    </a>
+                                </div>
+
+                                <a th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" 
+                                class="btn-actions btn-edit" title="Editar Perfil">
+                                <i class="fas fa-pen-nib"></i>
+                                </a>
+
+                                <form th:action="@{/admin/usuarios/eliminar/{id}(id=${usuario.id})}" 
+                                    method="post" 
+                                    style="display:inline;"
+                                    onsubmit="return confirm('⚠️ ¿Estás seguro de eliminar a ' + '[[${usuario.userName}]]' + '? Esta acción es irreversible.');">
+                                    
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <button type="submit" class="btn-actions btn-delete" title="Eliminar Usuario">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+
                             </div>
                         </td>
                     </tr>
