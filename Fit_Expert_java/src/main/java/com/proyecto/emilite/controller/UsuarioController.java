@@ -1,12 +1,8 @@
 package com.proyecto.emilite.controller;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -52,27 +48,25 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+
     @GetMapping("/usuarios/registro-publico")
     public String mostrarFormularioRegistroPublico(Model model) {
         List<Rol> rolesDisponibles = rolService.findAll(); 
-        UsuarioRegistroDTO usuarioForm = new UsuarioRegistroDTO();
-        
-        model.addAttribute("usuarioForm", usuarioForm);
+        model.addAttribute("usuarioForm", new UsuarioRegistroDTO());
         model.addAttribute("roles", rolesDisponibles); 
         return "registro_publico"; 
     }
 
-    @PostMapping("/usuarios/crear-publico")
+   @PostMapping("/usuarios/crear-publico")
     public String crearUsuarioPublico(
             @Valid @ModelAttribute("usuarioForm") UsuarioRegistroDTO usuarioForm,
             BindingResult result,
             @RequestParam(value = "archivoCv", required = false) MultipartFile archivoCv, 
             Model model) {
 
-        // 1. VALIDACIONES DE FORMULARIO
+        // 1. Validaciones iniciales
         if (usuarioForm.getFechaNacimiento() != null) {
-            LocalDate hoy = LocalDate.now();
-            int edadCalculada = Period.between(usuarioForm.getFechaNacimiento(), hoy).getYears();
+            int edadCalculada = Period.between(usuarioForm.getFechaNacimiento(), LocalDate.now()).getYears();
             if (edadCalculada < 16) {
                 result.rejectValue("fechaNacimiento", "error.usuarioForm", "Debes tener al menos 16 años.");
             }
@@ -85,82 +79,76 @@ public class UsuarioController {
             return "registro_publico";
         }
 
-        Double scoreObtenido = 0.0; 
-        String nombreArchivoFinal = null;
+        // 2. DECLARACIÓN DE VARIABLES (Aquí está la clave: scope correcto)
+        String mongoId = null;
+        Double scoreObtenido = 0.0;
 
+        /**
+         * Todo dentro del try-catch
+         */
+    
         try {
-            // 2. PROCESO DE PDF E IA
-            if (usuarioForm.getRolId() == 2) { 
-                if (archivoCv != null && !archivoCv.isEmpty()) {
-                    
-                    // Ruta absoluta dinámica - ¡ESTO ES LO QUE FUNCIONA EN RENDER!
-                    Path directorioUploads = Paths.get("uploads", "cvs").toAbsolutePath().normalize();
-                    Files.createDirectories(directorioUploads);
-
-                    // Generar nombre seguro
-                    String originalFilename = archivoCv.getOriginalFilename() != null ? archivoCv.getOriginalFilename() : "cv.pdf";
-                    nombreArchivoFinal = UUID.randomUUID().toString() + "_" + originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_");
-                    
-                    Path rutaCompleta = directorioUploads.resolve(nombreArchivoFinal);
-                    Files.write(rutaCompleta, archivoCv.getBytes());
-                    
-                    // Llamada al servicio Python (¡OJO! Aquí es donde podría tardar la IA)
-                    scoreObtenido = pythonService.validarCvConPython(archivoCv, usuarioForm.getUserName());
-                }
+            // A. Subida a Mongo y validación IA
+            if (archivoCv != null && !archivoCv.isEmpty()) {
+                mongoId = pdfService.subirPdfAMongo(archivoCv);
+                scoreObtenido = pythonService.validarCvConPython(archivoCv, usuarioForm.getUserName());
             }
 
-            // 3. REGISTRO EN BD
-            usuarioService.registrarConCv(usuarioForm, nombreArchivoFinal);
+            // B. Registro en Base de Datos (Ya tienes el mongoId listo aquí)
+            usuarioService.registrarConCv(usuarioForm, mongoId);
             
-            // 4. CORREO (Async)
+            // C. Correo (Opcional, no rompe el flujo)
             try {
                 emailService.enviarNotificacionRegistro(usuarioForm.getEmail(), usuarioForm.getNombres(), scoreObtenido);
             } catch (Exception mailError) {
-                System.err.println("⚠️ Aviso: Correo no enviado: " + mailError.getMessage());
+                System.err.println("Aviso: Correo no enviado: " + mailError.getMessage());
             }
             
-            // ¡REDIRECT! Esto le dice al navegador que pare de esperar y cambie de página
             return "redirect:/login?exito=true";
 
         } catch (Exception e) {
-            model.addAttribute("error", "Error crítico: " + e.getMessage());
+            // Captura cualquier error de subida, base de datos o lógica
+            model.addAttribute("error", "Error crítico al registrar: " + e.getMessage());
             model.addAttribute("roles", rolService.findAll());
             return "registro_publico";
         }
     }
+    
 
     @PostMapping("/usuarios/actualizar")
     public String actualizarUsuario(@ModelAttribute Usuario usuarioForm) {
         Usuario entrenador = usuarioService.findById(usuarioForm.getId());
 
-        entrenador.setDescripcion(usuarioForm.getDescripcion());
-        entrenador.setNombres(usuarioForm.getNombres());
-        entrenador.setApellidos(usuarioForm.getApellidos());
-        entrenador.setEmail(usuarioForm.getEmail());
+        // Verificación de seguridad para evitar NullPointerException si el ID no existe
+        if (entrenador != null) {
+            entrenador.setDescripcion(usuarioForm.getDescripcion());
+            entrenador.setNombres(usuarioForm.getNombres());
+            entrenador.setApellidos(usuarioForm.getApellidos());
+            entrenador.setEmail(usuarioForm.getEmail());
 
-        usuarioService.save(entrenador);
+            usuarioService.save(entrenador);
+        }
+        
         return "redirect:/catalogo?exito=true";
     }
 
-    // 🛡️ MÉTODO CORREGIDO CON ID LONG PARA TU REPOSITORIO NATIVO
+    // 🛡️ MÉTODO SEGURO CON ID LONG PARA EL REPOSITORIO NATIVO
     @PostMapping("/guardar-hoja-vida")
     public String guardarHojaVidaEntrenador(@RequestParam("usuarioId") Long usuarioId, 
                                             @RequestParam("archivoHojaVida") MultipartFile archivo) {
         
-        // 1. Ahora que el ID es Long, el findById va a cuadrar perfectamente sin errores
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con el ID: " + usuarioId));
         
-        // 2. Enviar el PDF a MongoDB a través del microservicio PHP
+        // Enviar el PDF a MongoDB a través del microservicio PHP
         String mongoId = pdfService.subirPdfAMongo(archivo);
         
-        // 3. Si la subida fue exitosa, le asociamos el ID NoSQL a su perfil de usuario
-        if (mongoId != null) {
+        // Asocia el ID NoSQL si la subida fue exitosa
+        if (mongoId != null && !mongoId.isEmpty()) {
             usuario.setHojaVidaMongoId(mongoId);
             usuarioRepository.save(usuario);
         }
         
-        // Redirecciona al panel de tus usuarios
         return "redirect:/admin/usuarios"; 
     }
 }

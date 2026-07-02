@@ -430,50 +430,7 @@ function checkTrainer() {
     }
 }
 
-// 🔥 UNIFICADO: Un solo submit interceptor con mensajes secuenciales de IA
-document.getElementById('registroForm').addEventListener('submit', function(e) {
-    if (!this.checkValidity()) {
-        return; 
-    }
 
-    // Mostrar overlay
-    const overlay = document.getElementById('loading-overlay');
-    overlay.style.display = 'flex';
-
-    // Desactivar botón principal
-    const btnLanzar = document.getElementById('btn-lanzar');
-    if (btnLanzar) {
-        btnLanzar.disabled = true;
-        btnLanzar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analizando CV...';
-    }
-
-    const titulos = [
-        "🧠 Extrayendo información de tu CV...",
-        "⚡ Evaluando compatibilidad FitExpert...",
-        "📊 Generando score de rendimiento...",
-        "🚀 Sincronizando datos con el panel Admin..."
-    ];
-    
-    const subtitulos = [
-        "El modelo de lenguaje está procesando el documento de texto.",
-        "Analizando tus habilidades, certificaciones y experiencia como Coach.",
-        "Casi listo. Nuestro algoritmo está calculando el porcentaje de afinidad.",
-        "Guardando tu postulación de forma segura en la base de datos."
-    ];
-
-    let paso = 0;
-    const intervaloIA = setInterval(() => {
-        if (paso < titulos.length) {
-            document.getElementById('loading-title').innerText = titulos[paso];
-            document.getElementById('loading-sub').innerText = subtitulos[paso];
-            paso++;
-        } else {
-            document.getElementById('loading-title').innerText = "⏳ Un momento más, por favor...";
-            document.getElementById('loading-sub').innerText = "El servidor en la nube está finalizando el despliegue del reporte.";
-            clearInterval(intervaloIA);
-        }
-    }, 4000);
-});
 </script>
 </body>
 </html>

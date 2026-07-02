@@ -7,8 +7,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/estilo_admin.css}">
     <style>
+        :root {
+            --primary: #3169B2;
+            --accent: #00D4FF;
+            --bg-dark: #0b1f3a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s ease;
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+        body { padding: 20px; display: flex; justify-content: center; min-height: 100vh; background: #060e1a; color: var(--text-main); font-family: sans-serif;}
+        
         .container {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -35,26 +48,32 @@
         
         /* --- Badges de Activa --- */
         .status-badge { padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; }
-        .status-on { background: rgba(16, 185, 129, 0.1); color: var(--accent); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-on { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
         .status-off { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); border: 1px solid var(--border); }
 
-        .btn-create { background: var(--primary); color: white; padding: 14px 28px; border-radius: 14px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; }
-        .action-btns { display: flex; gap: 10px; justify-content: flex-end; }
-        .btn-icon { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid var(--border); color: var(--text-muted); background: rgba(255, 255, 255, 0.03); cursor: pointer; text-decoration: none; }
-        
-        @media (max-width: 768px) { .container { padding: 20px; } .header-section { flex-direction: column; gap: 20px; } }
+        .header-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
-        .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+        /* --- Estilos de Botones Mejorados --- */
+        .btn-create { 
+            background: var(--primary); 
+            color: white; 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            text-decoration: none; 
+            font-weight: 700; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+        .btn-create:hover { background: var(--accent); color: var(--bg-dark); transform: translateY(-2px); }
 
-.btn-filter {
-            background: var(--primary);
+        .btn-filter {
+            background: rgba(255,255,255,0.05);
             color: white;
-            border: none;
-            padding: 12px 25px;
+            border: 1px solid var(--border);
+            padding: 12px 24px;
             border-radius: 10px;
             font-weight: 700;
             text-decoration: none;
@@ -64,7 +83,29 @@
             align-items: center;
             gap: 10px;
         }
-        .btn-filter:hover { background: var(--accent); color: var(--bg-dark); transform: translateY(-2px); }
+        .btn-filter:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+        .btn-logout-pro {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-logout-pro:hover { background: #ef4444; color: white; transform: translateY(-2px); }
+
+        .action-btns { display: flex; gap: 10px; justify-content: flex-end; }
+        .btn-icon { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid var(--border); color: var(--text-muted); background: rgba(255, 255, 255, 0.03); cursor: pointer; text-decoration: none; transition: var(--transition); }
+        .btn-icon:hover { background: rgba(255, 255, 255, 0.1); color: white; transform: scale(1.1); }
+        .btn-icon-delete:hover { background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.3); }
+        
+        @media (max-width: 768px) { .container { padding: 20px; } .header-section { flex-direction: column; gap: 20px; align-items: flex-start; } }
     </style>
 </head>
 <body>
@@ -80,7 +121,7 @@
             
             <div class="header-actions">
                 
-                <a th:href="@{/admin/dashboard}" class="btn-filter" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-light);">
+                <a th:href="@{/dashboard}" class="btn-filter">
                     <i class="fas fa-arrow-left"></i> Volver al Dashboard
                 </a>
 
@@ -91,7 +132,7 @@
                 <form th:action="@{/logout}" method="post" style="margin: 0;">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <button type="submit" class="btn-logout-pro" title="Cerrar Sesión">
-                        <i class="fas fa-power-off"></i>
+                        <i class="fas fa-power-off"></i> Salir
                     </button>
                 </form>
                 
@@ -126,11 +167,10 @@
                         <td style="text-align: right;">
                             <div class="action-btns" sec:authorize="hasRole('ADMIN')">
                                 <a th:href="@{/admin/servicios/{id}/editar(id=${servicio.id})}" class="btn-icon" title="Editar"><i class="fas fa-edit"></i></a>
+                                
                                 <form th:action="@{/admin/servicios/{id}/eliminar(id=${servicio.id})}" method="post" style="display:inline;">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                    <button type="submit" class="btn-icon" title="Eliminar" onclick="return confirm('¿Confirmar eliminación?')"><i class="fas fa-trash-alt"></i></button>
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                    
+                                    <button type="submit" class="btn-icon btn-icon-delete" title="Eliminar" onclick="return confirm('¿Confirmar eliminación?')"><i class="fas fa-trash-alt"></i></button>
                                 </form>
                             </div>
                         </td>
@@ -138,6 +178,6 @@
                 </tbody>
             </table>
         </div>
-        </div>
+    </div>
 </body>
 </html>
