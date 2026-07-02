@@ -230,6 +230,7 @@ public class UsuarioService {
      */
     @Transactional
     public void registrarConCv(UsuarioRegistroDTO dto, String mongoId) {
+        System.out.println("DEBUG: El Servicio recibió este ID para guardar: " + mongoId);
         // 1. Instancia del modelo
         Usuario usuario = new Usuario();
 
@@ -243,6 +244,8 @@ public class UsuarioService {
         
         // 3. Persistencia del ID de MongoDB (Esto es lo que hace que sea permanente)
         usuario.setHojaVidaMongoId(mongoId);
+        System.out.println("DEBUG: Guardando usuario: " + usuario.getUserName() + " con ID: " + usuario.getHojaVidaMongoId());
+        usuarioRepository.save(usuario);
 
         // 4. Asignación robusta de Rol (Soluciona el N/A)
         Rol rol = null;

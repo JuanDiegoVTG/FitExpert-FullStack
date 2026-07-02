@@ -89,6 +89,9 @@ public class UsuarioController {
             if (archivoCv != null && !archivoCv.isEmpty()) {
                 mongoId = pdfService.subirPdfAMongo(archivoCv);
                 scoreObtenido = pythonService.validarCvConPython(archivoCv, usuarioForm.getUserName());
+                System.out.println("DEBUG: ID recibido del microservicio PHP: " + mongoId);
+            } else {
+                System.out.println("DEBUG: El archivo cv es nulo o vacío.");
             }
 
             // B. Registro del usuario (El Service manejará la asignación de rol internamente)
