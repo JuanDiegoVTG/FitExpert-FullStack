@@ -29,92 +29,66 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-        .csrf(csrf -> csrf
-            // 1. IGNORAR CSRF: Vital para que Mercado Pago y el Fetch de JS funcionen
-            .ignoringRequestMatchers(
-                "/pagos/**", 
-                "/admin/pagos/crear-preferencia/**", 
-                "/admin/pagos/pago-exitoso/**",
-                "/catalogo/crear-preferencia",
-                "/catalogo/pago-exitoso/**",
-                "/api/chat/enviar",
-                "/api/generar-diagnostico",
-                "/generar-diagnostico",
-                "/api/notificaciones/**"
+            .csrf(csrf -> csrf
+                // Ignoramos CSRF solo en APIs externas que no pueden enviar el token
+                .ignoringRequestMatchers(
+                    "/pagos/**", 
+                    "/admin/pagos/crear-preferencia/**", 
+                    "/admin/pagos/pago-exitoso/**",
+                    "/catalogo/crear-preferencia",
+                    "/catalogo/pago-exitoso/**",
+                    "/api/chat/enviar",
+                    "/api/generar-diagnostico",
+                    "/generar-diagnostico",
+                    "/api/notificaciones/**",
+                    "/pagos/webhook"
+                )
             )
-        )
-        .authorizeHttpRequests(authorize -> authorize
-            // 2. RUTAS PÚBLICAS: Acceso total sin loguearse
-            .requestMatchers(
-                "/", 
-                "/login", 
-                "/usuarios/registro-publico", 
-                "/usuarios/crear-publico", 
-                "/css/**", 
-                "/js/**", 
-                "/images/**", 
-                "/webjars/**",
-                "/error",
-                "/catalogo/**",
-                "/catalogo/pago-exitoso/**",
-                "/pagos/respuesta", 
-                "/api/generar-diagnostico",
-                "/generar-diagnostico",
-                "/pagos/webhook"
-            ).permitAll()
+            .authorizeHttpRequests(auth -> auth
+                // 1. RUTAS PÚBLICAS (Registro y creación obligatorios sin logueo)
+                .requestMatchers(
+                    "/", "/login", "/registro", 
+                    "/usuarios/registro-publico", 
+                    "/usuarios/crear-publico", 
+                    "/css/**", "/js/**", "/images/**", "/webjars/**", "/error"
+                ).permitAll()
 
-            // RUTAS DE CHAT Y NOTIFICACIONES (Para que ambos roles entren)
-            .requestMatchers("/api/chat/**", "/api/notificaciones/**").authenticated()
-            
-            // 3. EXCEPCIÓN DE PASARELA 
-            // Permitimos que el CLIENTE entre a estas rutas de "admin" específicas para pagar.
-            .requestMatchers("/admin/pagos/crear-preferencia/**").hasAnyRole("ADMIN", "CLIENTE")
-            .requestMatchers("/admin/pagos/pago-exitoso/**").hasAnyRole("ADMIN", "CLIENTE")
-            
-            //RUTAS DE CHAT (Para que ambos roles entren)
-            .requestMatchers("/api/chat/**").authenticated()
+                // 2. RUTAS DE ADMIN
+                .requestMatchers("/admin/**", "/api/usuarios/**", "/reportes/**").hasRole("ADMIN")
 
-            //RUTA: ACTIVAR ENTRENADOR 
-            .requestMatchers("/activar-entrenador").authenticated()
+                // 3. RUTAS DE ENTRENADOR
+                .requestMatchers("/entrenador/**").hasRole("ENTRENADOR")
 
-            // 4. RUTAS DE ADMIN: Solo personal autorizado
-            .requestMatchers("/admin/**", "/api/usuarios/**", "/reportes/**").hasRole("ADMIN")
+                // 4. RUTAS DE CLIENTE
+                .requestMatchers("/cliente/**", "/api/rutina-real/**", "/cliente/entrenador/**").hasRole("CLIENTE")
 
-            // 5. RUTAS DE ENTRENADOR
-            .requestMatchers("/entrenador/**").hasRole("ENTRENADOR")
+                // 5. RUTAS COMPARTIDAS Y API
+                .requestMatchers("/dashboard").hasAnyRole("CLIENTE", "ENTRENADOR", "ADMIN")
+                .requestMatchers("/api/chat/**", "/api/notificaciones/**", "/activar-entrenador").authenticated()
+                .requestMatchers("/api/valoracion", "/api/generar-diagnostico").hasRole("CLIENTE")
 
-            // 6. RUTAS DE CLIENTE
-            .requestMatchers("/cliente/**", "/api/rutina-real/**","/cliente/entrenador/" ).hasRole("CLIENTE")
-
-            // 7. RUTAS COMPARTIDAS
-            .requestMatchers("/dashboard").hasAnyRole("CLIENTE", "ENTRENADOR", "ADMIN")
-
-            // 8. Rutas del Diagnóstico (Solo para Clientes)
-            .requestMatchers("/api/valoracion", "/api/generar-diagnostico").hasRole("CLIENTE")              
-
-            .anyRequest().authenticated()
-        )
-        .formLogin(formLogin -> formLogin
-            .loginPage("/login")
-            .defaultSuccessUrl("/dashboard", true) 
-            .failureUrl("/login?error=true")
-            .permitAll()
-        )
-        .logout(logout -> logout
-            .logoutUrl("/logout")
-            .logoutSuccessUrl("/login?logout=true")
-            .invalidateHttpSession(true)
-            .deleteCookies("JSESSIONID")
-            .permitAll()
-        )
-        .exceptionHandling(exception -> exception
-            .accessDeniedPage("/error/403")
-        );
+                // 6. CUALQUIER OTRA RUTA REQUIERE LOGIN
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard", true) 
+                .failureUrl("/login?error=true")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=true")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+            )
+            .exceptionHandling(ex -> ex.accessDeniedPage("/error/403"));
 
         return http.build();
     }
 
-   @Bean
+    @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
             Usuario usuario = usuarioRepository.findByUserNameWithRol(username)
@@ -122,15 +96,13 @@ public class SecurityConfig {
 
             String nombreRol = usuario.getRol().getNombre().toUpperCase().trim();
 
-            //  VALIDACIÓN REFORZADA
             if (nombreRol.equals("ROLE_ENTRENADOR") && !usuario.isValidado()) {
-                throw new DisabledException("Tu cuenta aún no ha sido aprobada por el administrador.");
+                throw new DisabledException("Tu cuenta aún no ha sido aprobada.");
             }
 
-            // usamos los datos reales de la BD
             return new User(
                 usuario.getUserName(),
-                usuario.getPassword(), // Usa el hash 
+                usuario.getPassword(),
                 usuario.isEnabled(),
                 true, true, true, 
                 Collections.singletonList(new SimpleGrantedAuthority(nombreRol))

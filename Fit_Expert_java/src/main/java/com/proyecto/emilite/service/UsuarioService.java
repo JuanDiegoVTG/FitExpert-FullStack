@@ -245,7 +245,7 @@ public class UsuarioService {
         // 3. Persistencia del ID de MongoDB (Esto es lo que hace que sea permanente)
         usuario.setHojaVidaMongoId(mongoId);
         System.out.println("DEBUG: Guardando usuario: " + usuario.getUserName() + " con ID: " + usuario.getHojaVidaMongoId());
-        usuarioRepository.save(usuario);
+    
 
         // 4. Asignación robusta de Rol (Soluciona el N/A)
         Rol rol = null;
@@ -271,5 +271,6 @@ public class UsuarioService {
 
         // 6. GUARDADO ÚNICO
         usuarioRepository.save(usuario);
+        System.out.println("✅ DEBUG: Usuario guardado con ID Mongo: " + usuario.getHojaVidaMongoId());
     }
 }
