@@ -126,9 +126,14 @@ public class AdminUsuarioController {
         }
     }
 
-    @PostMapping("/{id}/eliminar")
-    public String eliminarUsuario(@PathVariable Long id, Model model) {
-        try { usuarioService.deleteById(id); } catch (RuntimeException e) { model.addAttribute("error", e.getMessage()); }
+    @PostMapping("/eliminar/{id}")
+    public String eliminarUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try { 
+            usuarioService.deleteById(id); 
+            redirectAttributes.addFlashAttribute("mensaje", "✅ Usuario eliminado con éxito.");
+        } catch (RuntimeException e) { 
+            redirectAttributes.addFlashAttribute("error", "❌ Error al eliminar: " + e.getMessage()); 
+        }
         return "redirect:/admin/usuarios";
     }
 

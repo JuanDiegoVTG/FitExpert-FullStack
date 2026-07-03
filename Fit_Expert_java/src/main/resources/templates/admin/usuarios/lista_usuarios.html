@@ -108,8 +108,7 @@
                     <tr>
                         <th>Username</th>
                         <th>Nombre Completo</th>
-                        <th>Rol / Nivel</th>
-                        <th>Score IA</th>
+                        <th>Rol / Nivel</th>   
                         <th>Estado</th>
                         <th style="text-align: center;">Acciones</th>
                     </tr>
@@ -126,15 +125,6 @@
                                       class="badge" th:text="${roleName}"></span>
                             </div>
                             <span th:if="${usuario.rol == null}" class="badge badge-client">ROLE_CLIENTE</span>
-                        </td>
-
-                        <td>
-                            <div th:if="${usuario.cvScore != null}">
-                                <span th:classappend="${usuario.cvScore >= 80 ? 'score-high' : (usuario.cvScore >= 50 ? 'score-med' : 'score-low')}" class="badge-score">
-                                    [[${usuario.cvScore}]]%
-                                </span>
-                            </div>
-                            <div th:if="${usuario.cvScore == null}" class="score-none">N/A</div>
                         </td>
 
                         <td>
