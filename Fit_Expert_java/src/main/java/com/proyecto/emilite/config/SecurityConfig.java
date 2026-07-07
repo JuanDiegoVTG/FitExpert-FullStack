@@ -55,13 +55,15 @@ public class SecurityConfig {
 
                 // 2. RUTAS DE ADMIN
                 .requestMatchers("/admin/**", "/api/usuarios/**", "/reportes/**").hasRole("ADMIN")
-                .requestMatchers("/admin/usuarios/ver-cv-mongo/").hasRole("ADMIN")
+                .requestMatchers("/admin/usuarios/ver-cv-mongo/**").hasRole("ADMIN")
 
                 // 3. RUTAS DE ENTRENADOR
                 .requestMatchers("/entrenador/**").hasRole("ENTRENADOR")
 
                 // 4. RUTAS DE CLIENTE
                 .requestMatchers("/cliente/**", "/api/rutina-real/**", "/cliente/entrenador/**").hasRole("CLIENTE")
+                .requestMatchers("/valoracion/**").authenticated()
+                .requestMatchers("/generar-diagnostico").authenticated()
 
                 // 5. RUTAS COMPARTIDAS Y API
                 .requestMatchers("/dashboard").hasAnyRole("CLIENTE", "ENTRENADOR", "ADMIN")
