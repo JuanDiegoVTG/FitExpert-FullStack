@@ -41,6 +41,7 @@ public class SecurityConfig {
                     "/api/generar-diagnostico",
                     "/generar-diagnostico",
                     "/api/notificaciones/**",
+                    "/admin/usuarios/ver-cv-mongo/**",
                     "/pagos/webhook"
                 )
             )

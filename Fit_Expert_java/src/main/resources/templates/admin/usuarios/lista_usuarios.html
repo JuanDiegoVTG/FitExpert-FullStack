@@ -135,12 +135,13 @@
                         <td style="text-align: center;"> 
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                                 
-                               <a th:if="${usuario.rol != null and usuario.rol.nombre == 'ROLE_ENTRENADOR'}"
-                                th:href="@{/admin/usuarios/ver-cv-mongo/{id}(id=${usuario.hojaVidaMongoId})}"
-                                class="btn-actions btn-pdf" 
-                                title="Ver CV" 
-                                target="_blank"> <i class="fas fa-file-pdf"></i>
-                                </a>
+                               <button type="button" 
+                                        class="btn-actions btn-pdf" 
+                                        title="Ver CV" 
+                                        onclick="window.open('/admin/usuarios/ver-cv-mongo/' + '${usuario.hojaVidaMongoId}', '_blank');"
+                                        style="background: none; border: none; cursor: pointer; color: inherit;">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
 
                                 <a th:if="${usuario.rol != null and usuario.rol.nombre == 'ROLE_ENTRENADOR' and !usuario.validado}"
                                 th:href="@{/admin/usuarios/aprobar/{id}(id=${usuario.id})}" 
