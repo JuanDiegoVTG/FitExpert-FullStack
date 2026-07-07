@@ -37,10 +37,9 @@ public class SecurityConfig {
                     "/admin/pagos/pago-exitoso/**",
                     "/catalogo/crear-preferencia",
                     "/catalogo/pago-exitoso/**",
-                    "/api/chat/enviar",
-                    "/api/generar-diagnostico",
-                    "/generar-diagnostico",
-                    "/api/notificaciones/**",
+                    "/chat/enviar",            // <--- Quitamos /api/
+                    "/generar-diagnostico",    // <--- Ya estaba limpio, se queda igual
+                    "/notificaciones/**",      // <--- Quitamos /api/
                     "/pagos/webhook"
                 )
             )
@@ -53,25 +52,24 @@ public class SecurityConfig {
                     "/css/**", "/js/**", "/images/**", "/webjars/**", "/error"
                 ).permitAll()
 
-                // 2. RUTAS DE ADMIN
-                .requestMatchers("/admin/**", "/api/usuarios/**", "/reportes/**").hasRole("ADMIN")
-                .requestMatchers("/admin/usuarios/ver-cv-mongo/").hasRole("ADMIN")
+                // 2. RUTAS DE ADMIN 
+                .requestMatchers("/admin/**", "/usuarios/**", "/reportes/**").hasRole("ADMIN")
 
                 // 3. RUTAS DE ENTRENADOR
                 .requestMatchers("/entrenador/**").hasRole("ENTRENADOR")
 
                 // 4. RUTAS DE CLIENTE
-                .requestMatchers("/cliente/**", "/api/rutina-real/**", "/cliente/entrenador/**").hasRole("CLIENTE")
-                .requestMatchers("/valoracion/**").authenticated()
-                .requestMatchers("/generar-diagnostico").authenticated()
+                .requestMatchers("/cliente/**", "/rutina-real/**").hasRole("CLIENTE")
 
+                // 5. RUTAS DE VALORACIÓN (Nueva estructura limpia)
+                .requestMatchers("/valoracion/**", "/generar-diagnostico").authenticated()
 
-                // 5. RUTAS COMPARTIDAS Y API
+                // 6. RUTAS DE CHAT Y API (Si mantienes rutas que empiezan por /api, déjalas aquí)
+                .requestMatchers("/chat/**", "/notificaciones/**").authenticated()
+
+                // 7. DASHBOARD
                 .requestMatchers("/dashboard").hasAnyRole("CLIENTE", "ENTRENADOR", "ADMIN")
-                .requestMatchers("/api/chat/**", "/api/notificaciones/**", "/activar-entrenador").authenticated()
-                .requestMatchers("/api/valoracion", "/api/generar-diagnostico").hasRole("CLIENTE")
 
-                // 6. CUALQUIER OTRA RUTA REQUIERE LOGIN
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

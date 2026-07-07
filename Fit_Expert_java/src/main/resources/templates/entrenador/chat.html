@@ -187,7 +187,7 @@
             <div class="contacts-list">
                 <div th:each="alunmo : ${clientes}" 
                      th:classappend="${alunmo.id == chatId} ? 'contact-item active' : 'contact-item'"
-                     th:onclick="|window.location.href='/api/chat/' + ${alunmo.id}|">
+                     th:onclick="|window.location.href='/chat/' + ${alunmo.id}|">
                     <strong th:text="${alunmo.nombres}">Nombre</strong>
                     <p style="margin: 0; font-size: 0.8rem; color: #94a3b8;" th:text="${alunmo.perfil?.objetivo}">Objetivo</p>
                 </div>
@@ -217,7 +217,7 @@
 
         async function loadMessages() {
         try {
-            const res = await fetch(`/api/chat/mensajes/${chatId}`);
+            const res = await fetch(`/chat/mensajes/${chatId}`);
             if (!res.ok) throw new Error("Error en la respuesta");
             
             const data = await res.json();
@@ -252,7 +252,7 @@
             const input = document.getElementById("messageInput");
             if(!input.value.trim()) return;
             
-            await fetch("/api/chat/enviar", {
+            await fetch("/chat/enviar", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({

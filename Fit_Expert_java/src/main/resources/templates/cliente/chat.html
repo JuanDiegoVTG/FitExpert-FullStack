@@ -236,7 +236,7 @@
 
     async function loadMessages() {
         try {
-            const res = await fetch(`/api/chat/mensajes/${chatId}`);
+            const res = await fetch(`/chat/mensajes/${chatId}`);
             if (!res.ok) throw new Error("Error en la respuesta");
             
             const data = await res.json();
@@ -274,7 +274,7 @@
         input.value = ""; 
 
         try {
-            await fetch("/api/chat/enviar", {
+            await fetch("/chat/enviar", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

@@ -201,7 +201,7 @@
                 <i class="fas fa-arrow-left"></i> Volver al Panel
             </a>
             
-            <form th:action="@{/api/rutinas/{id}/favorita(id=${rutina.id})}" method="post">
+            <form th:action="@{/rutinas/{id}/favorita(id=${rutina.id})}" method="post">
                 <button type="submit" class="btn btn-fav">
                     <i class="fas fa-heart"></i> Guardar en Favoritos
                 </button>

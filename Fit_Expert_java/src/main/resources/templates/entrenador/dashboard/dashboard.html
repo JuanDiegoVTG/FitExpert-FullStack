@@ -308,7 +308,7 @@
                     <p class="text-muted">Responde a las dudas técnicas de tus atletas para asegurar su progreso óptimo.</p>
                 </div>
                 <div class="col-lg-4">
-                    <a th:href="@{/api/chat/bandeja}" class="btn-chat-entrenador">
+                    <a th:href="@{/chat/bandeja}" class="btn-chat-entrenador">
                         <i class="fab fa-whatsapp fs-5"></i> ABRIR CHAT TÉCNICO
                     </a>
                 </div>
@@ -321,7 +321,7 @@
     <script th:inline="javascript">
    // --- MOTOR DE NOTIFICACIONES ENTRENADOR ---
     function verificarNotificaciones() {
-        fetch('/api/notificaciones/unread-count')
+        fetch('/notificaciones/unread-count')
             .then(res => res.json())
             .then(count => {
                 const badge = document.getElementById('global-badge');
@@ -333,7 +333,7 @@
     }
 
     function cargarListaNotificaciones() {
-        fetch('/api/notificaciones/list')
+        fetch('/notificaciones/list')
             .then(res => res.json())
             .then(notis => {
                 const container = document.getElementById('notif-items-container');
@@ -352,7 +352,7 @@
 
     // NUEVA: Para limpiar la campana del Coach
     function marcarTodasComoLeidas() {
-        fetch('/api/notificaciones/mark-all-read', { method: 'POST' })
+        fetch('/notificaciones/mark-all-read', { method: 'POST' })
             .then(res => {
                 if (res.ok) {
                     verificarNotificaciones();
@@ -368,7 +368,7 @@
 
     // --- FUNCIÓN PARA MARCAR UNA SOLA NOTI COMO LEÍDA (Al hacer clic) ---
     function marcarComoLeida(id) {
-        fetch(`/api/notificaciones/${id}/marcar-leida`, { 
+        fetch(`/notificaciones/${id}/marcar-leida`, { 
             method: 'POST' 
         })
         .then(res => {

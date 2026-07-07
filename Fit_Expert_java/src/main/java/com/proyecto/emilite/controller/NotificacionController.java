@@ -18,7 +18,7 @@ import com.proyecto.emilite.repository.UsuarioRepository;
 
 @SuppressWarnings("null")
 @RestController
-@RequestMapping("/api/notificaciones")
+@RequestMapping("/notificaciones")
 public class NotificacionController {
 
     @Autowired
@@ -30,7 +30,7 @@ public class NotificacionController {
     /**
      * 1. CONTEO DE NO LEÍDAS
      * Se usa para el numerito rojo de la campana.
-     * Ruta: GET /api/notificaciones/unread-count
+     * Ruta: GET /notificaciones/unread-count
      */
     @GetMapping("/unread-count")
     public ResponseEntity<Long> obtenerContador(Authentication auth) {
@@ -47,7 +47,7 @@ public class NotificacionController {
     /**
      * 2. LISTA PARA EL DESPLEGABLE
      * Trae las últimas notificaciones para mostrar en el dropdown.
-     * Ruta: GET /api/notificaciones/list
+     * Ruta: GET /notificaciones/list
      */
     @GetMapping("/list")
     public ResponseEntity<List<Notificacion>> listarMisNotificaciones(Authentication auth) {
@@ -64,7 +64,7 @@ public class NotificacionController {
     /**
      * 3. MARCAR UNA COMO LEÍDA
      * Se activa cuando el usuario hace clic en una notificación específica.
-     * Ruta: POST /api/notificaciones/{id}/marcar-leida
+     * Ruta: POST /notificaciones/{id}/marcar-leida
      */
     @PostMapping("/{id}/marcar-leida")
     public ResponseEntity<?> marcarLeida(@PathVariable Long id) {
