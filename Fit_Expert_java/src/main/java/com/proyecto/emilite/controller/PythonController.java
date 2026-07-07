@@ -265,7 +265,7 @@ public class PythonController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/api/valoracion/inicial?error=true";
+            return "redirect:/api/valoracion?error=true";
         }
     }
 

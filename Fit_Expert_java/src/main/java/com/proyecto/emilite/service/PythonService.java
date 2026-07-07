@@ -104,14 +104,11 @@ public class PythonService {
     /**
      * Envía los datos antropométricos a Flask y recibe el diagnóstico de la IA.
      */
-    /**
- * Envía los datos antropométricos a Flask y recibe el diagnóstico de la IA.
- * Incluye reintentos automáticos ante 429 (típico de un cold start en Render free tier).
- */
-    public Map<String, Object> obtenerDiagnosticoDesdePython(Map<String, Object> datos) {
+    
+   public Map<String, Object> obtenerDiagnosticoDesdePython(Map<String, Object> datos) {
         String url = flaskUrl;
-        int maxIntentos = 3;
-        int esperaMs = 5000;
+        int maxIntentos = 6;
+        int esperaMs = 10000; // 10s entre intentos → hasta 60s de margen total
 
         for (int intento = 1; intento <= maxIntentos; intento++) {
             try {
@@ -120,27 +117,21 @@ public class PythonService {
                 HttpEntity<Map<String, Object>> request = new HttpEntity<>(datos, headers);
 
                 ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    request,
+                    url, HttpMethod.POST, request,
                     new ParameterizedTypeReference<Map<String, Object>>() {}
                 );
-
                 return response.getBody();
 
             } catch (org.springframework.web.client.HttpClientErrorException.TooManyRequests e) {
                 System.out.println("⚠️ Intento " + intento + "/" + maxIntentos
-                    + ": Flask devolvió 429 (probable cold start). Reintentando en " + (esperaMs / 1000) + "s...");
+                    + ": Flask devolvió 429. Reintentando en " + (esperaMs / 1000) + "s...");
 
                 if (intento == maxIntentos) {
                     throw new RuntimeException(
-                        "El servicio de IA no respondió tras " + maxIntentos + " intentos (posible cold start prolongado)."
+                        "El servicio de IA no respondió tras " + maxIntentos + " intentos (~" + (maxIntentos * esperaMs / 1000) + "s de espera total)."
                     );
                 }
-
-                try {
-                    Thread.sleep(esperaMs);
-                } catch (InterruptedException ie) {
+                try { Thread.sleep(esperaMs); } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException("Reintento interrumpido: " + ie.getMessage());
                 }
@@ -149,9 +140,6 @@ public class PythonService {
                 throw new RuntimeException("Error al conectar: " + e.getMessage());
             }
         }
-
-        // Este punto es inalcanzable en la práctica (el for siempre retorna o lanza),
-        // pero se deja por completitud del compilador.
         throw new RuntimeException("No se pudo obtener diagnóstico tras reintentos.");
     }
 }
