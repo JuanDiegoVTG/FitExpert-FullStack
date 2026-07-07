@@ -52,6 +52,19 @@
             cursor: pointer;
         }
         .btn-update:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 255, 136, 0.3); }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.05);
+            color: #AFC6E9 !important; /* Azul clarito */
+            border: 1px solid rgba(175, 198, 233, 0.3);
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex; align-items: center; gap: 10px;
+        }
     </style>
 
     <div class="profile-container">
@@ -164,8 +177,11 @@
             </div>
 
             <button type="submit" class="btn-update w-100 mt-3">
-                Guardar y Volver al Panel <i class="fas fa-rocket ms-2"></i>
+                Guardar <i class="fas fa-rocket ms-2"></i>
             </button>
+            <a th:href="@{/dashboard}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver al Panel
+            </a>
         </form>
     </div>
 </div>
