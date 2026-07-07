@@ -343,15 +343,6 @@
                 </div>
             </div>
 
-            <div class="switch-container">
-                <div class="switch-label">
-                    <i class="fas fa-power-off" style="color: #00D4FF;"></i> Estado de la Rutina
-                </div>
-                <label class="switch">
-                    <input type="checkbox" th:field="*{activa}">
-                    <span class="slider"></span>
-                </label>
-            </div>
 
             <button type="submit" class="btn-submit">
                 <i class="fas fa-save me-2"></i> <span th:text="${rutinaId} ? 'Actualizar Rutina' : 'Guardar Rutina'"></span>
