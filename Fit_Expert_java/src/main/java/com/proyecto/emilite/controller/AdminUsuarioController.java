@@ -100,11 +100,13 @@ public class AdminUsuarioController {
 
     @PostMapping("/{id}")
     public String actualizarUsuario(@PathVariable Long id, 
-                                    @Valid @ModelAttribute("usuarioForm") UsuarioRegistroDTO usuarioForm, 
+                                    @ModelAttribute("usuarioForm") UsuarioRegistroDTO usuarioForm, // 👈 LE QUITAMOS EL @Valid
                                     BindingResult result, 
                                     Model model) {
         
-        // 1. Si hay errores de validación, volvemos a mostrar el formulario
+        // Colocamos este print temporal para que veas en tu consola de Render si el formulario responde
+        System.out.println("🚀 ¡PROCESANDO EDICIÓN! Recibido teléfono: " + usuarioForm.getTelefono());
+
         if (result.hasErrors()) {
             model.addAttribute("usuarioId", id);
             model.addAttribute("roles", rolService.findAll());
@@ -112,40 +114,34 @@ public class AdminUsuarioController {
         }
         
         try {
-            // 2. Recuperamos el usuario de la BD
             Usuario usuarioExistente = usuarioService.findById(id);
             
-            // 3. Mapeamos los datos básicos
+            // Actualización de campos
             usuarioExistente.setUserName(usuarioForm.getUserName());
             usuarioExistente.setEmail(usuarioForm.getEmail());
             usuarioExistente.setNombres(usuarioForm.getNombres());
             usuarioExistente.setApellidos(usuarioForm.getApellidos());
-            usuarioExistente.setTelefono(usuarioForm.getTelefono());
+            usuarioExistente.setTelefono(usuarioForm.getTelefono()); // Ahora sí se guardará
             usuarioExistente.setDireccion(usuarioForm.getDireccion());
             usuarioExistente.setFechaNacimiento(usuarioForm.getFechaNacimiento());
             
-            // 4. Lógica de Contraseña: Solo encriptar y actualizar si el admin ingresó una nueva
+            // Lógica de Contraseña: Solo cambia si el admin digitó una nueva
             if (usuarioForm.getPassword() != null && !usuarioForm.getPassword().trim().isEmpty()) {
-                // AQUÍ ES DONDE USAMOS EL ENCODER
-                String passwordEncriptada = passwordEncoder.encode(usuarioForm.getPassword());
-                usuarioExistente.setPassword(passwordEncriptada);
+                usuarioExistente.setPassword(passwordEncoder.encode(usuarioForm.getPassword()));
             }
             
-            // 5. Manejo del Rol y la Descripción
             Rol rol = rolService.findByIdOrThrow(usuarioForm.getRolId());
             
-            // Lógica de FitExpert: La descripción solo es válida para Entrenadores
             if (rol.getNombre().toUpperCase().contains("ENTRENADOR")) {
                 usuarioExistente.setDescripcion(usuarioForm.getDescripcion());
             } else {
-                usuarioExistente.setDescripcion(null); // Limpiar si lo pasaron a cliente
+                usuarioExistente.setDescripcion(null);
             }
             
             usuarioExistente.setRol(rol);
-            
-            // 6. Guardamos los cambios llamando al servicio
             usuarioService.save(usuarioExistente);
             
+            System.out.println("✅ ¡Usuario actualizado con éxito en la Base de Datos!");
             return "redirect:/admin/usuarios";
             
         } catch (RuntimeException e) {
