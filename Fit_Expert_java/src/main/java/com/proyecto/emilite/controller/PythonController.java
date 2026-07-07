@@ -35,7 +35,7 @@ import com.proyecto.emilite.repository.UsuarioRepository;
 import com.proyecto.emilite.service.PythonService;
 import com.proyecto.emilite.service.UsuarioService;
 
-@SuppressWarnings("null")
+
 @Controller
 @RequestMapping("/api") 
 public class PythonController {

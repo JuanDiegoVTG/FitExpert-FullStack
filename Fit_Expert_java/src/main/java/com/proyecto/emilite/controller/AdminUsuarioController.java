@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/admin/usuarios")
-@SuppressWarnings("null")
+
 public class AdminUsuarioController {
 
     @Autowired private UsuarioService usuarioService;

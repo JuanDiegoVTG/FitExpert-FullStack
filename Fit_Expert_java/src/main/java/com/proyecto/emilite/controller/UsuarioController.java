@@ -30,7 +30,7 @@ import com.proyecto.emilite.service.UsuarioService;
 
 import jakarta.validation.Valid;
 
-@SuppressWarnings("null")
+
 @Controller
 public class UsuarioController {
 

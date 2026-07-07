@@ -16,7 +16,7 @@ import com.proyecto.emilite.repository.UsuarioRepository;
 
 
 @Service
-@SuppressWarnings("null")
+
 public class UsuarioService {
 
     @Autowired

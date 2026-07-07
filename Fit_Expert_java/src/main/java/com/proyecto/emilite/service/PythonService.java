@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-@SuppressWarnings("null")
 public class PythonService {
 
     @Autowired
@@ -105,26 +104,54 @@ public class PythonService {
     /**
      * Envía los datos antropométricos a Flask y recibe el diagnóstico de la IA.
      */
+    /**
+ * Envía los datos antropométricos a Flask y recibe el diagnóstico de la IA.
+ * Incluye reintentos automáticos ante 429 (típico de un cold start en Render free tier).
+ */
     public Map<String, Object> obtenerDiagnosticoDesdePython(Map<String, Object> datos) {
-        // Usa la variable tal cual viene del properties, sin añadirle nada más
-        String url = flaskUrl; 
+        String url = flaskUrl;
+        int maxIntentos = 3;
+        int esperaMs = 5000;
 
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(datos, headers);
+        for (int intento = 1; intento <= maxIntentos; intento++) {
+            try {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                HttpEntity<Map<String, Object>> request = new HttpEntity<>(datos, headers);
 
-            // Ya no concatenas nada, usas la URL limpia
-            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                request,
-                new ParameterizedTypeReference<Map<String, Object>>() {} 
-            );
-            
-            return response.getBody();
-        } catch (Exception e) {
-            throw new RuntimeException("Error al conectar: " + e.getMessage());
+                ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    request,
+                    new ParameterizedTypeReference<Map<String, Object>>() {}
+                );
+
+                return response.getBody();
+
+            } catch (org.springframework.web.client.HttpClientErrorException.TooManyRequests e) {
+                System.out.println("⚠️ Intento " + intento + "/" + maxIntentos
+                    + ": Flask devolvió 429 (probable cold start). Reintentando en " + (esperaMs / 1000) + "s...");
+
+                if (intento == maxIntentos) {
+                    throw new RuntimeException(
+                        "El servicio de IA no respondió tras " + maxIntentos + " intentos (posible cold start prolongado)."
+                    );
+                }
+
+                try {
+                    Thread.sleep(esperaMs);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Reintento interrumpido: " + ie.getMessage());
+                }
+
+            } catch (Exception e) {
+                throw new RuntimeException("Error al conectar: " + e.getMessage());
+            }
         }
+
+        // Este punto es inalcanzable en la práctica (el for siempre retorna o lanza),
+        // pero se deja por completitud del compilador.
+        throw new RuntimeException("No se pudo obtener diagnóstico tras reintentos.");
     }
 }
