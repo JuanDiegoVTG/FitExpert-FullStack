@@ -227,6 +227,6 @@ public class CatalogoController {
         e.printStackTrace();
     }
     
-    return "redirect:/chat/" + entrenadorId;
+    return "redirect:/api/chat/" + entrenadorId;
     }
 }

@@ -179,7 +179,7 @@
                     Ver Detalles
                 </button>
 
-                <form th:action="@{/rutinas/{id}/eliminar(id=${rutina.id})}" method="post" 
+                <form th:action="@{/api/rutinas/{id}/eliminar(id=${rutina.id})}" method="post" 
                       onsubmit="return confirm('¿Seguro que quieres borrarla?');">
                     <button type="submit" class="btn-delete">
                         <i class="fas fa-trash"></i>

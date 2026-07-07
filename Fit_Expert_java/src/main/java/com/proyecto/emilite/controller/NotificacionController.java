@@ -18,7 +18,7 @@ import com.proyecto.emilite.repository.UsuarioRepository;
 
 @SuppressWarnings("null")
 @RestController
-@RequestMapping("/notificaciones")
+@RequestMapping("/api/notificaciones")
 public class NotificacionController {
 
     @Autowired

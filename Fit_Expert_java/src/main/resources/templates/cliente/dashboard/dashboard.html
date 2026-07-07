@@ -278,7 +278,7 @@
                     <p class="text-muted small mb-0">Obtén tu análisis biomecánico y metabólico para tu plan personalizado.</p>
                 </div>
                 <div class="col-md-4 text-md-end">
-                    <a th:href="@{/valoracion}" class="btn-neon-action">NUEVA VALORACIÓN <i class="fas fa-rocket"></i></a>
+                    <a th:href="@{/api/valoracion}" class="btn-neon-action">NUEVA VALORACIÓN <i class="fas fa-rocket"></i></a>
                 </div>
             </div>
         </section>
@@ -310,7 +310,7 @@
             </div>
 
             <div class="col-6 col-md-3">
-                <a th:href="@{/chat/bandeja}" class="text-decoration-none">
+                <a th:href="@{/api/chat/bandeja}" class="text-decoration-none">
                     <div class="glass-card text-center p-3 h-100" 
                         style="border-radius: 20px; transition: all 0.3s ease; border: 1px solid rgba(0, 210, 255, 0.3);"
                         onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 20px rgba(0, 210, 255, 0.2)'"
@@ -439,7 +439,7 @@
 
         // --- Lógica de Notificaciones CLIENTE ---
 function verificarNotificaciones() {
-    fetch('/notificaciones/unread-count')
+    fetch('/api/notificaciones/unread-count')
         .then(res => res.json())
         .then(count => {
             const badge = document.getElementById('global-badge');
@@ -451,7 +451,7 @@ function verificarNotificaciones() {
 }
 
 function cargarListaNotificaciones() {
-    fetch('/notificaciones/list')
+    fetch('/api/notificaciones/list')
         .then(res => res.json())
         .then(notis => {
             const container = document.getElementById('notif-items-container');
@@ -471,7 +471,7 @@ function cargarListaNotificaciones() {
 
 // NUEVA: Para limpiar la campana del cliente
 function marcarTodasComoLeidas() {
-    fetch('/notificaciones/mark-all-read', { method: 'POST' })
+    fetch('/api/notificaciones/mark-all-read', { method: 'POST' })
         .then(res => {
             if (res.ok) {
                 verificarNotificaciones();
@@ -487,7 +487,7 @@ document.addEventListener("DOMContentLoaded", verificarNotificaciones);
 
 // --- FUNCIÓN PARA MARCAR UNA SOLA NOTI COMO LEÍDA (Al hacer clic) ---
 function marcarComoLeida(id) {
-    fetch(`/notificaciones/${id}/marcar-leida`, { 
+    fetch(`/api/notificaciones/${id}/marcar-leida`, { 
         method: 'POST' 
     })
     .then(res => {

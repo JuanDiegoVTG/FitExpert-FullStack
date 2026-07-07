@@ -88,7 +88,7 @@ public class PythonService {
 
     public String generarDiagnostico(Map<String, Object> payload) {
         // Usamos flaskUrl y la ruta EXACTA de Python
-        String url = flaskUrl + "/generar-diagnostico"; 
+        String url = flaskUrl + "/api/generar-diagnostico"; 
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
