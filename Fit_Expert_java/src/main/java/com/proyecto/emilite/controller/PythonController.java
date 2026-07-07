@@ -261,11 +261,11 @@ public class PythonController {
             redirectAttributes.addFlashAttribute("diagnostico", diagnosticoIA);
             redirectAttributes.addFlashAttribute("perfil", perfil);
             
-            return "redirect:/valoracion/resultado";
+            return "redirect:/api/valoracion/resultado";
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/valoracion/inicial?error=true";
+            return "redirect:/api/valoracion/inicial?error=true";
         }
     }
 

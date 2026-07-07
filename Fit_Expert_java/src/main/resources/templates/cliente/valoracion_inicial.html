@@ -195,7 +195,7 @@
             btn.innerText = "PROCESANDO IA...";
             btn.disabled = true;
 
-            fetch('/generar-diagnostico', {
+            fetch('/api/generar-diagnostico', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
