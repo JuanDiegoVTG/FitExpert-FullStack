@@ -209,7 +209,7 @@
                 window.location.href = response.url;
             } else if (response.ok) {
                 // Si el servidor responde 200 pero no redirige, vamos nosotros
-                window.location.href = '/valoracion/resultado';
+                window.location.href = '/api/valoracion/resultado';
             } else {
                 alert("Error en el servidor. Revisa los logs.");
             }
