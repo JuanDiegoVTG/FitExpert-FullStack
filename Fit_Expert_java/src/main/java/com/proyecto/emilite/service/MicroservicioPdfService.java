@@ -73,11 +73,11 @@ public class MicroservicioPdfService {
         if (mongoId == null || mongoId.isEmpty()) return null;
         
         try {
-            // Ajustar según la estructura de tu PHP
             String url = urlBase + "/get_pdf.php?id=" + mongoId;
+            // Usamos byte[].class para asegurar que recibimos el PDF binario
             return restTemplate.getForObject(url, byte[].class);
         } catch (Exception e) {
-            System.err.println("❌ Error recuperando PDF: " + e.getMessage());
+            System.err.println("❌ Error en servicio PDF: " + e.getMessage());
             return null;
         }
     }

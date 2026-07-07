@@ -185,9 +185,8 @@ public class AdminUsuarioController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        // Cambiamos 'inline' por un nombre de archivo limpio y agregamos headers de seguridad
-        headers.add("Content-Disposition", "inline; filename=\"CV_Entrenador.pdf\"");
-        headers.add("X-Content-Type-Options", "nosniff"); // Evita que el navegador adivine el tipo de archivo
+        // Usamos esto para que el navegador lo vea como archivo
+        headers.setContentDispositionFormData("inline", "CV_" + idMongo + ".pdf");
 
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
