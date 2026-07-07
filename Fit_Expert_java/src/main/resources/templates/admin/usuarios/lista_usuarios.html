@@ -135,10 +135,10 @@
                         <td style="text-align: center;"> 
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                                 
-                                <a th:if="${usuario.rol != null and usuario.rol.nombre == 'ROLE_ENTRENADOR' and usuario.hojaVidaMongoId != null and !usuario.hojaVidaMongoId.isEmpty()}"
+                                <a th:if="${usuario.rol != null and usuario.rol.nombre == 'ROLE_ENTRENADOR'}"
                                 th:href="@{/admin/usuarios/ver-cv-mongo/{id}(id=${usuario.hojaVidaMongoId})}"
                                 class="btn-actions btn-pdf" 
-                                title="Descargar CV" 
+                                title="Ver CV" 
                                 download>
                                 <i class="fas fa-file-pdf"></i>
                                 </a>
