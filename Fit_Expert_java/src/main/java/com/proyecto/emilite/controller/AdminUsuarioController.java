@@ -9,6 +9,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -38,6 +39,7 @@ public class AdminUsuarioController {
     @Autowired private UsuarioService usuarioService;
     @Autowired private RolService rolService;
     @Autowired private UsuarioRepository usuarioRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public String listarUsuarios(Model model, @RequestParam(required = false) String rolNombre, @RequestParam(required = false) String activoStr) {
@@ -95,31 +97,57 @@ public class AdminUsuarioController {
     }
 
     @PostMapping("/{id}")
-    public String actualizarUsuario(@PathVariable Long id, @Valid @ModelAttribute("usuarioForm") UsuarioRegistroDTO usuarioForm, BindingResult result, Model model) {
+    public String actualizarUsuario(@PathVariable Long id, 
+                                    @Valid @ModelAttribute("usuarioForm") UsuarioRegistroDTO usuarioForm, 
+                                    BindingResult result, 
+                                    Model model) {
+        
+        // 1. Si hay errores de validación, volvemos a mostrar el formulario
         if (result.hasErrors()) {
             model.addAttribute("usuarioId", id);
             model.addAttribute("roles", rolService.findAll());
             return "admin/usuarios/form_usuario";
         }
+        
         try {
+            // 2. Recuperamos el usuario de la BD
             Usuario usuarioExistente = usuarioService.findById(id);
+            
+            // 3. Mapeamos los datos básicos
             usuarioExistente.setUserName(usuarioForm.getUserName());
-            if (usuarioForm.getPassword() != null && !usuarioForm.getPassword().trim().isEmpty()) {
-                usuarioExistente.setPassword(usuarioForm.getPassword());
-            }
             usuarioExistente.setEmail(usuarioForm.getEmail());
             usuarioExistente.setNombres(usuarioForm.getNombres());
             usuarioExistente.setApellidos(usuarioForm.getApellidos());
             usuarioExistente.setTelefono(usuarioForm.getTelefono());
             usuarioExistente.setDireccion(usuarioForm.getDireccion());
             usuarioExistente.setFechaNacimiento(usuarioForm.getFechaNacimiento());
-            usuarioExistente.setDescripcion(usuarioForm.getDescripcion());
+            
+            // 4. Lógica de Contraseña: Solo encriptar y actualizar si el admin ingresó una nueva
+            if (usuarioForm.getPassword() != null && !usuarioForm.getPassword().trim().isEmpty()) {
+                // AQUÍ ES DONDE USAMOS EL ENCODER
+                String passwordEncriptada = passwordEncoder.encode(usuarioForm.getPassword());
+                usuarioExistente.setPassword(passwordEncriptada);
+            }
+            
+            // 5. Manejo del Rol y la Descripción
             Rol rol = rolService.findByIdOrThrow(usuarioForm.getRolId());
+            
+            // Lógica de FitExpert: La descripción solo es válida para Entrenadores
+            if (rol.getNombre().toUpperCase().contains("ENTRENADOR")) {
+                usuarioExistente.setDescripcion(usuarioForm.getDescripcion());
+            } else {
+                usuarioExistente.setDescripcion(null); // Limpiar si lo pasaron a cliente
+            }
+            
             usuarioExistente.setRol(rol);
+            
+            // 6. Guardamos los cambios llamando al servicio
             usuarioService.save(usuarioExistente);
+            
             return "redirect:/admin/usuarios";
+            
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("error", "Error al actualizar: " + e.getMessage());
             model.addAttribute("usuarioId", id);
             model.addAttribute("roles", rolService.findAll());
             return "admin/usuarios/form_usuario";

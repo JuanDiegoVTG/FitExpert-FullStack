@@ -60,15 +60,19 @@ public class ServicioController {
         return "admin/servicios/form_servicio";
     }
 
-    // Eliminar (ADMIN)
     @PostMapping("/admin/servicios/{id}/eliminar")
-    public String eliminarServicio(@PathVariable Long id) {
+    public String desactivarServicio(@PathVariable Long id) {
         Servicio servicio = servicioService.findById(id);
-        
-        // En lugar de borrarlo, lo desactivamos
-        servicio.setActiva(false); 
+        servicio.setActiva(false); // Desactivar
         servicioService.save(servicio);
-        
+        return "redirect:/admin/servicios";
+    }
+
+    @PostMapping("/admin/servicios/{id}/activar")
+    public String activarServicio(@PathVariable Long id) {
+        Servicio servicio = servicioService.findById(id);
+        servicio.setActiva(true); // Activar
+        servicioService.save(servicio);
         return "redirect:/admin/servicios";
     }
 }

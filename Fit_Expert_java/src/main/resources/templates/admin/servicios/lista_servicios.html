@@ -127,15 +127,7 @@
 
                 <a href="/admin/servicios/nuevo" class="btn-create" sec:authorize="hasRole('ADMIN')">
                     <i class="fas fa-plus-circle"></i> Crear Nuevo
-                </a>
-
-                <form th:action="@{/logout}" method="post" style="margin: 0;">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <button type="submit" class="btn-logout-pro" title="Cerrar Sesión">
-                        <i class="fas fa-power-off"></i> Salir
-                    </button>
-                </form>
-                
+                </a>               
             </div>
         </header>
 
@@ -168,9 +160,17 @@
                             <div class="action-btns" sec:authorize="hasRole('ADMIN')">
                                 <a th:href="@{/admin/servicios/{id}/editar(id=${servicio.id})}" class="btn-icon" title="Editar"><i class="fas fa-edit"></i></a>
                                 
-                                <form th:action="@{/admin/servicios/{id}/eliminar(id=${servicio.id})}" method="post" style="display:inline;">
+                                <form th:action="@{/admin/servicios/{id}/{action}(id=${servicio.id}, action=${servicio.activa ? 'eliminar' : 'activar'})}" 
+                                    method="post" style="display:inline;">
+                                    
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                    <button type="submit" class="btn-icon btn-icon-delete" title="Eliminar" onclick="return confirm('¿Confirmar eliminación?')"><i class="fas fa-trash-alt"></i></button>
+                                    
+                                    <button type="submit" 
+                                            th:class="${servicio.activa ? 'btn-icon btn-icon-delete' : 'btn-icon'}" 
+                                            th:title="${servicio.activa ? 'Desactivar' : 'Activar'}"
+                                            onclick="return confirm('¿Confirmar cambio de estado?')">
+                                        <i th:class="${servicio.activa ? 'fas fa-trash-alt' : 'fas fa-check-circle'}"></i>
+                                    </button>
                                 </form>
                             </div>
                         </td>
