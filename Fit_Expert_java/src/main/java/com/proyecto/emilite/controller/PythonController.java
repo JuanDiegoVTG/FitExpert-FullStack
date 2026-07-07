@@ -199,25 +199,24 @@ public class PythonController {
             @RequestParam Double cintura,
             @RequestParam(required = false) Double cadera,
             @RequestParam String nivelActividad,
-            @RequestParam String sexo, // Agregado: vital para el cálculo de grasa de la IA
+            @RequestParam String sexo,
             Authentication auth, 
-            Model model) {
+            RedirectAttributes redirectAttributes) { // Usamos RedirectAttributes para pasar datos al GET
 
         try {
             // 1. Buscamos al usuario logueado
             Usuario usuarioActual = usuarioRepository.findByUserName(auth.getName())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            // 2. Manejo del Perfil (Blindaje para usuarios nuevos)
+            // 2. Manejo del Perfil
             Perfil perfil = usuarioActual.getPerfil();
             if (perfil == null) {
                 perfil = new Perfil();
                 perfil.setUsuario(usuarioActual);
-                // Inicializamos el nombre para que el perfil no esté vacío
                 perfil.setNombreCompleto(usuarioActual.getNombres() + " " + usuarioActual.getApellidos());
             }
 
-            // 3. Actualizamos los datos físicos en el objeto Perfil
+            // 3. Actualizamos datos
             perfil.setPeso(peso);
             perfil.setAltura(altura);
             perfil.setCintura(cintura);
@@ -226,7 +225,7 @@ public class PythonController {
             perfil.setNivelActividad(nivelActividad);
             perfil.setSexo(sexo);
 
-            // 4. Calculamos la edad usando la fecha de nacimiento (Formato yyyy-MM-dd ya corregido)
+            // 4. Calculamos edad
             int edadCalculada = 0;
             if (usuarioActual.getFechaNacimiento() != null) {
                 edadCalculada = java.time.Period.between(
@@ -235,11 +234,9 @@ public class PythonController {
                 ).getYears();
             }
             perfil.setEdad(edadCalculada);
-
-            // IMPORTANTE: Guardamos el perfil antes de llamar a la IA para asegurar la consistencia
             perfilRepository.save(perfil);
 
-            // 5. Preparar el mapa de datos para el microservicio de Python
+            // 5. Llamada al servicio de Python
             Map<String, Object> datosIA = new HashMap<>();
             datosIA.put("peso", peso);
             datosIA.put("altura", altura);
@@ -250,49 +247,46 @@ public class PythonController {
             datosIA.put("sexo", sexo);
             datosIA.put("edad", edadCalculada);
 
-            // 6. Llamada al servicio de Python
             Map<String, Object> diagnosticoIA = pythonService.obtenerDiagnosticoDesdePython(datosIA);
 
-            // 7. Guardar en el Historial de Progreso
+            // 6. Guardar en Historial
             Progreso nuevoProgreso = new Progreso();
             nuevoProgreso.setUsuario(usuarioActual);
             nuevoProgreso.setPeso(peso);
-            // Parseo seguro de los resultados de la IA
             nuevoProgreso.setGrasa(Double.parseDouble(diagnosticoIA.get("grasa_corporal").toString()));
             nuevoProgreso.setImc(Double.parseDouble(diagnosticoIA.get("imc").toString()));
             progresoRepository.save(nuevoProgreso);
 
-            // 8. Enviamos resultados a la vista
-            model.addAttribute("diagnostico", diagnosticoIA);
-            model.addAttribute("perfil", perfil);
+            // 7. Usamos FlashAttributes para pasar el resultado al GET de forma segura
+            redirectAttributes.addFlashAttribute("diagnostico", diagnosticoIA);
+            redirectAttributes.addFlashAttribute("perfil", perfil);
             
-            return "cliente/resultado_diagnostico";
+            return "redirect:/valoracion/resultado";
 
         } catch (Exception e) {
-            // En caso de error (ej. IA caída), logueamos y devolvemos al form con mensaje
-            e.printStackTrace(); 
-            model.addAttribute("error", "No se pudo generar el diagnóstico. Verifica la conexión con el microservicio.");
-            
-            // Re-enviamos un objeto perfil vacío para que el formulario no se rompa al recargar
-            model.addAttribute("perfil", new Perfil()); 
-            return "cliente/valoracion_inicial";
+            e.printStackTrace();
+            return "redirect:/valoracion/inicial?error=true";
         }
     }
-    
+
+    @GetMapping("/valoracion/resultado")
+    public String mostrarResultado() {
+        // Thymeleaf detectará automáticamente los atributos del FlashAttribute
+        return "cliente/resultado_diagnostico";
+    }
+
     @GetMapping("/valoracion")
     public String mostrarValoracion(Authentication auth, Model model) {
         Usuario usuario = usuarioRepository.findByUserName(auth.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
-        // Obtenemos el perfil. Si es nulo (usuario nuevo), creamos uno vacío.
         Perfil perfil = usuario.getPerfil();
-        if (perfil == null) {
-            perfil = new Perfil();
-        }
+        if (perfil == null) perfil = new Perfil();
         
         model.addAttribute("perfil", perfil);
         return "cliente/valoracion_inicial";
     }
+    
 
     //CONTROL ENTRENADOR
     @GetMapping("/entrenador/cliente/{id}")
