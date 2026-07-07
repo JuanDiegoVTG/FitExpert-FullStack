@@ -2,8 +2,10 @@ package com.proyecto.emilite;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,8 +18,23 @@ public class EmiLiteApplication {
     @Bean
     public RestTemplate restTemplate() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(15000); // 15s para establecer conexión
-        factory.setReadTimeout(60000);    // 60s para esperar respuesta (cubre el cold start de Flask)
-        return new RestTemplate(factory);
+        factory.setConnectTimeout(15000);
+        factory.setReadTimeout(60000);
+
+        RestTemplate restTemplate = new RestTemplate(factory);
+
+        // Interceptor para simular un User-Agent de navegador y evitar el bloqueo de Cloudflare
+        restTemplate.getInterceptors().add(userAgentInterceptor());
+
+        return restTemplate;
+    }
+
+    private ClientHttpRequestInterceptor userAgentInterceptor() {
+        return (HttpRequest request, byte[] body, ClientHttpRequestExecution execution) -> {
+            request.getHeaders().set("User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+            request.getHeaders().set("Accept", "application/json");
+            return execution.execute(request, body);
+        };
     }
 }
