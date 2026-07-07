@@ -195,7 +195,7 @@
             btn.innerText = "PROCESANDO IA...";
             btn.disabled = true;
 
-            fetch('/api/generar-diagnostico', { // Nota: Corregir si tu mapeo es diferente
+            fetch('/generar-diagnostico', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
