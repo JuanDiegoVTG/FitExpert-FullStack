@@ -200,8 +200,6 @@
     <section class="form-panel">
         
         <form th:action="${usuarioId} ? @{/admin/usuarios/{id}(id=${usuarioId})} : @{/admin/usuarios}" th:object="${usuarioForm}" method="post">
-            
-            <input type="hidden" th:field="*{id}" />
 
             <div class="form-grid">
 

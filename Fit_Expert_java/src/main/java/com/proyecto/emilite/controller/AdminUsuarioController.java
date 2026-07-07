@@ -84,7 +84,9 @@ public class AdminUsuarioController {
             usuarioForm.setTelefono(usuario.getTelefono());
             usuarioForm.setDireccion(usuario.getDireccion());
             usuarioForm.setFechaNacimiento(usuario.getFechaNacimiento());
-            usuarioForm.setRolId(usuario.getRol().getId());
+            if (usuario.getRol() != null) {
+                usuarioForm.setRolId(usuario.getRol().getId());
+            }
             usuarioForm.setDescripcion(usuario.getDescripcion());
             model.addAttribute("usuarioForm", usuarioForm);
             model.addAttribute("usuarioId", id);
