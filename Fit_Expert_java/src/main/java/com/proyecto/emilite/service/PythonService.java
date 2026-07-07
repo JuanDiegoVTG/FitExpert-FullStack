@@ -4,9 +4,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpMethod;
 
 @Service
 @SuppressWarnings("null")
@@ -28,7 +27,7 @@ public class PythonService {
     @Autowired
     private RestTemplate restTemplate; // Usaremos siempre este inyectado
 
-    @Value("${flask.api.url:http://localhost:5000}")
+    @Value("${api.ia.url}")
     private String flaskUrl;
 
     public Double validarCvConPython(MultipartFile file, String username) {
@@ -107,29 +106,25 @@ public class PythonService {
      * Envía los datos antropométricos a Flask y recibe el diagnóstico de la IA.
      */
     public Map<String, Object> obtenerDiagnosticoDesdePython(Map<String, Object> datos) {
-        // Usamos flaskUrl y la ruta EXACTA de Python
-        String url = flaskUrl + "/api/generar-diagnostico";
+        // Usa la variable tal cual viene del properties, sin añadirle nada más
+        String url = flaskUrl; 
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(datos, headers);
 
+            // Ya no concatenas nada, usas la URL limpia
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 request,
                 new ParameterizedTypeReference<Map<String, Object>>() {} 
             );
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                return response.getBody(); 
-            } else {
-                throw new RuntimeException("Error en Python: " + response.getStatusCode());
-            }
-
+            
+            return response.getBody();
         } catch (Exception e) {
-            throw new RuntimeException("No se pudo conectar con el servicio de IA: " + e.getMessage());
+            throw new RuntimeException("Error al conectar: " + e.getMessage());
         }
     }
 }
