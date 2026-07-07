@@ -293,6 +293,11 @@
         <div id="trainerUpload" class="form-group" style="display:none; border: 2px dashed var(--primary); padding: 20px; border-radius: 18px; background: rgba(0, 210, 255, 0.05);">
             <label style="color: var(--neon-green);"><i class="fas fa-file-pdf"></i> Certificación / CV</label>
             <input type="file" id="archivoCv" name="archivoCv" class="form-control" accept="application/pdf">
+            
+            <span style="display: block; color: var(--text-muted); font-size: 0.75rem; margin-top: 10px;">
+                <i class="fas fa-info-circle"></i> Formato PDF. Tamaño máximo permitido: <strong>5 MB</strong>.
+            </span>
+            <span id="cv-error-msg" class="error-msg" style="display:none;"></span>
         </div>
 
         <div style="display: flex; gap: 10px;">
@@ -419,6 +424,41 @@ function checkTrainer() {
     }
 }
 
+// 🔥 VALIDACIÓN DE TAMAÑO DEL PDF (MÁXIMO 5MB)
+document.addEventListener('DOMContentLoaded', function() {
+    const inputCv = document.getElementById('archivoCv');
+    const MAX_MB = 5; // Límite en Megabytes
+    const MAX_BYTES = MAX_MB * 1024 * 1024;
+
+    if(inputCv) {
+        inputCv.addEventListener('change', function() {
+            const errorSpan = document.getElementById('cv-error-msg');
+            const file = this.files[0];
+            
+            if (file) {
+                if (file.size > MAX_BYTES) {
+                    const pesoActualMB = (file.size / (1024 * 1024)).toFixed(2);
+                    // Mostrar error
+                    errorSpan.innerHTML = `<i class="fas fa-times-circle"></i> El archivo pesa ${pesoActualMB}MB. Supera el límite de ${MAX_MB}MB.`;
+                    errorSpan.style.display = 'block';
+                    
+                    // Limpiar el input para que no se envíe al servidor
+                    this.value = ''; 
+                    
+                    // Efecto visual de error
+                    const container = document.getElementById('trainerUpload');
+                    container.style.borderColor = '#ff4b2b';
+                    container.classList.add('shake-error');
+                    setTimeout(() => container.classList.remove('shake-error'), 500);
+                } else {
+                    // Todo correcto, ocultar error
+                    errorSpan.style.display = 'none';
+                    document.getElementById('trainerUpload').style.borderColor = 'var(--primary)';
+                }
+            }
+        });
+    }
+});
 
 </script>
 </body>

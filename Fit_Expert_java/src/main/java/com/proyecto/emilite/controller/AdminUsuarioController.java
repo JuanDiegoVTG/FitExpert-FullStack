@@ -1,12 +1,8 @@
 package com.proyecto.emilite.controller;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,13 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.proyecto.emilite.dto.UsuarioRegistroDTO;
 import com.proyecto.emilite.model.Rol;
 import com.proyecto.emilite.model.Usuario;
 import com.proyecto.emilite.repository.UsuarioRepository;
+import com.proyecto.emilite.service.MicroservicioPdfService;
 import com.proyecto.emilite.service.RolService;
 import com.proyecto.emilite.service.UsuarioService;
 
@@ -40,6 +36,7 @@ public class AdminUsuarioController {
     @Autowired private RolService rolService;
     @Autowired private UsuarioRepository usuarioRepository;
     @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private MicroservicioPdfService pdfService;
 
     @GetMapping
     public String listarUsuarios(Model model, @RequestParam(required = false) String rolNombre, @RequestParam(required = false) String activoStr) {
@@ -175,19 +172,22 @@ public class AdminUsuarioController {
         return "redirect:/admin/usuarios";
     }
 
-    @GetMapping("/ver-cv/{nombreArchivo:.+}")
-    @ResponseBody
-    public ResponseEntity<Resource> servirCv(@PathVariable("nombreArchivo") String nombreArchivo) {
-        try {
-            Path ruta = Paths.get("uploads", "cvs", nombreArchivo).toAbsolutePath().normalize();
-            Resource recurso = new UrlResource(ruta.toUri());
-            if (recurso.exists() && recurso.isReadable()) {
-                return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + recurso.getFilename() + "\"")
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(recurso);
-            }
-        } catch (Exception e) { e.printStackTrace(); }
-        return ResponseEntity.notFound().build();
+    @GetMapping("/ver-cv-mongo/{idMongo}")
+    public ResponseEntity<byte[]> verCvMongo(@PathVariable String idMongo) {
+        
+        // Llamamos al microservicio PHP que ya tienes configurado
+        byte[] pdfBytes = pdfService.obtenerPdfDeMongo(idMongo);
+        
+        if (pdfBytes == null || pdfBytes.length == 0) {
+            System.out.println("❌ No se encontró el PDF o el microservicio falló para el ID: " + idMongo);
+            return ResponseEntity.notFound().build();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        // "inline" hace que se abra en el navegador en vez de forzar la descarga
+        headers.add("Content-Disposition", "inline; filename=CV_" + idMongo + ".pdf");
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 }
