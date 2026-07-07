@@ -118,6 +118,20 @@
                         <td th:text="${usuario.userName}" style="font-weight: 800; color: #ffc107;"></td>
                         <td th:text="${usuario.nombres + ' ' + usuario.apellidos}"></td>
                         
+                        <td>
+                            <div th:if="${usuario.rol != null}">
+                                <span th:with="roleName=${usuario.rol.nombre}"
+                                      th:classappend="${roleName == 'ROLE_ADMIN' ? 'badge-admin' : (roleName == 'ROLE_ENTRENADOR' ? 'badge-coach' : 'badge-client')}" 
+                                      class="badge" th:text="${roleName}"></span>
+                            </div>
+                            <span th:if="${usuario.rol == null}" class="badge badge-client">ROLE_CLIENTE</span>
+                        </td>
+
+                        <td>
+                            <span th:class="${usuario.activo ? 'badge-active' : 'badge-inactive'}" 
+                                  th:text="${usuario.activo ? '● Activo' : '○ Inactivo'}"></span>
+                        </td>
+                        
                         <td style="text-align: center;"> 
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                                 
