@@ -195,27 +195,29 @@
             btn.innerText = "PROCESANDO IA...";
             btn.disabled = true;
 
-            fetch('/generar-diagnostico', { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
-                },
-                body: new URLSearchParams(formData)
-            })
-            .then(response => {
-                if (response.redirected) {
-                    window.location.href = response.url;
-                } else {
-                    window.location.href = '/valoracion/resultado';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("Error de conexión. Intenta de nuevo.");
-                btn.innerText = "CALCULAR AHORA";
-                btn.disabled = false;
-            });
+            fetch('/generar-diagnostico', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
+            },
+            body: new URLSearchParams(formData)
+        })
+        .then(response => {
+            // ESTA ES LA CLAVE: forzamos la redirección si el servidor devuelve un 302 o éxito
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else if (response.ok) {
+                // Si el servidor responde 200 pero no redirige, vamos nosotros
+                window.location.href = '/valoracion/resultado';
+            } else {
+                alert("Error en el servidor. Revisa los logs.");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Error de conexión.");
+        });
         }
     </script>
 </div>
