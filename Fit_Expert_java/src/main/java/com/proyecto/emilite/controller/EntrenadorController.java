@@ -185,6 +185,19 @@ public class EntrenadorController {
         return "redirect:/entrenador/rutinas";
     }
 
+    @PostMapping("/rutinas/{id}/eliminar")
+    public String eliminarRutina(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            // Llamamos al método que ya tienes creado en tu RutinaService
+            rutinaService.deleteById(id);
+            redirectAttributes.addFlashAttribute("mensaje", "Rutina eliminada correctamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "No se pudo eliminar la rutina: " + e.getMessage());
+        }
+        
+        return "redirect:/entrenador/rutinas";
+    }
+
     // 1. Mostrar la pantalla de perfil al Entrenador logueado
     @GetMapping("/perfil")
     public String mostrarPerfil(Model model, Principal principal) {
