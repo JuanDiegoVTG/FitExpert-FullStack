@@ -106,7 +106,7 @@ public class PythonService {
      */
     
    public Map<String, Object> obtenerDiagnosticoDesdePython(Map<String, Object> datos) {
-        String url = flaskUrl + "/api/generar-diagnostico";
+        String url = flaskUrl ;
         int maxIntentos = 6;
         int esperaMs = 10000; // 10s entre intentos → hasta 60s de margen total
 
