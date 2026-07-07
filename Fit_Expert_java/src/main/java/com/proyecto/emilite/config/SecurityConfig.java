@@ -55,6 +55,7 @@ public class SecurityConfig {
 
                 // 2. RUTAS DE ADMIN
                 .requestMatchers("/admin/**", "/api/usuarios/**", "/reportes/**").hasRole("ADMIN")
+                .requestMatchers("/admin/usuarios/ver-cv-mongo/").hasRole("ADMIN")
 
                 // 3. RUTAS DE ENTRENADOR
                 .requestMatchers("/entrenador/**").hasRole("ENTRENADOR")

@@ -173,21 +173,21 @@ public class AdminUsuarioController {
         return "redirect:/admin/usuarios";
     }
 
-    @GetMapping("/ver-cv-mongo/{idMongo}")
-    @ResponseBody
+    
+    @GetMapping(value = "/ver-cv-mongo/{idMongo}")
+    @ResponseBody 
     public ResponseEntity<byte[]> verCvMongo(@PathVariable String idMongo) {
+        System.out.println("DEBUG: Intentando acceder al PDF con ID Mongo: " + idMongo);
         
-        // Llamamos al microservicio PHP que ya tienes configurado
         byte[] pdfBytes = pdfService.obtenerPdfDeMongo(idMongo);
         
         if (pdfBytes == null || pdfBytes.length == 0) {
-            System.out.println("❌ No se encontró el PDF o el microservicio falló para el ID: " + idMongo);
+            System.out.println("❌ ERROR: El servicio de PDF devolvió nulo o vacío.");
             return ResponseEntity.notFound().build();
         }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        // "inline" hace que se abra en el navegador en vez de forzar la descarga
         headers.add("Content-Disposition", "inline; filename=CV_" + idMongo + ".pdf");
 
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
