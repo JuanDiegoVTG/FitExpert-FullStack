@@ -172,32 +172,22 @@ public class CatalogoController {
             @RequestParam(name = "payment_id", required = false) String paymentId,
             @RequestParam(name = "external_reference", required = false) String externalReference,
             Model model) {
-        
-        System.out.println("Llegó a la pantalla de éxito. ID Profe: " + externalReference);
-        
-        // 1. Pasar el ID del entrenador al HTML para el botón
-        model.addAttribute("entrenadorId", externalReference);
-        
-        // 2. Pasar el ID del pago que nos da Mercado Pago (para que se vea bonito en el recibo)
-        model.addAttribute("paymentId", paymentId != null ? paymentId : "Pendiente/Prueba");
 
-        // 3. Buscar al entrenador en la BD para mostrar su nombre en el recibo
-        if (externalReference != null && !externalReference.isEmpty()) {
-            try {
-                Long id = Long.valueOf(externalReference);
-                Usuario entrenador = usuarioService.findById(id); 
-                
-                if (entrenador != null) {
-                    model.addAttribute("nombreEntrenador", entrenador.getNombres() + " " + entrenador.getApellidos());
-                } else {
-                    System.out.println("DEBUG: El entrenador con ID " + id + " no existe en BD.");
-                }
-            } catch (NumberFormatException e) {
-                System.err.println("DEBUG: El external_reference no es un número válido: " + externalReference);
-            }
+        // Si por error de dedo en la URL no viene el ID, ponemos un valor por defecto para que no se caiga
+        String idEntrenador = (externalReference != null) ? externalReference : "0";
+        model.addAttribute("entrenadorId", idEntrenador);
+        model.addAttribute("paymentId", (paymentId != null) ? paymentId : "TEST_PAYMENT_123");
+
+        // Buscamos al entrenador
+        try {
+            Usuario entrenador = usuarioService.findById(Long.valueOf(idEntrenador));
+            model.addAttribute("nombreEntrenador", entrenador.getNombres() + " " + entrenador.getApellidos());
+        } catch (Exception e) {
+            model.addAttribute("nombreEntrenador", "Entrenador FitExpert"); // Valor por defecto
         }
-        return "cliente/pago-exitoso"; 
-        }
+        
+        return "cliente/pago-exitoso";
+    }
 
     @PostMapping("/activar-entrenador")
     @Transactional

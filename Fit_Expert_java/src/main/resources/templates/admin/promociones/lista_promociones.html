@@ -254,13 +254,7 @@
 
         <span sec:authorize="hasRole('ADMIN')">
             <a href="/dashboard" class="back-link">Volver al Panel</a>
-        </span>
-
-        <!-- Formulario para cerrar sesión -->
-        <form th:action="@{/logout}" method="post" style="display: inline;">
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <button type="submit" class="logout-link">Cerrar sesión</button>
-        </form>
+        </span>      
     </div>
 </body>
 </html>

@@ -30,6 +30,9 @@ public class PagoController {
     @Autowired
     private ServicioService servicioService;
 
+    @org.springframework.beans.factory.annotation.Value("${app.base-url}")
+    private String baseUrl;
+
     // --- GESTIÓN ADMINISTRATIVA ---
 
     @GetMapping
@@ -99,10 +102,10 @@ public class PagoController {
 
             // 3. BACK URLS (Donde vuelve el cliente)
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("http://localhost:8082/admin/pagos")
-                .pending("http://localhost:8082/admin/pagos")
-                .failure("http://localhost:8082/admin/pagos")
-                .build();
+            .success(baseUrl + "/admin/pagos")
+            .pending(baseUrl + "/admin/pagos")
+            .failure(baseUrl + "/admin/pagos")
+            .build();
 
             // 4. PREFERENCE REQUEST
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()

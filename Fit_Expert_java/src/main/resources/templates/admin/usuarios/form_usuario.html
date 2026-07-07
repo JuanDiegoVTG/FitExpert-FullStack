@@ -304,10 +304,6 @@
     <div class="footer-links">
         <a href="/admin/usuarios" class="back-link">Volver al Panel</a>
 
-        <form th:action="@{/logout}" method="post">
-            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="logout-link">Cerrar sesión</button>
-        </form>
     </div>
 
 </div>

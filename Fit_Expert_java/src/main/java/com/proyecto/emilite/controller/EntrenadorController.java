@@ -198,22 +198,26 @@ public class EntrenadorController {
 
     // 2. Procesar el formulario cuando el entrenador guarda su descripción
    @PostMapping("/perfil/guardar")
-    public String guardarDescripcion(@RequestParam("descripcion") String descripcion, 
-                                    Principal principal, 
-                                    RedirectAttributes redirectAttributes) {
-        String currentUsername = principal.getName();
+    public String guardarPerfil(
+        @RequestParam("nombres") String nombres,
+        @RequestParam("userName") String userName,
+        @RequestParam("telefono") String telefono,
+        @RequestParam("descripcion") String descripcion,
+        Principal principal, 
+        RedirectAttributes redirectAttributes) {
+
+        Usuario entrenador = usuarioService.findByUserName(principal.getName());
         
-        // CORRECCIÓN: Usar findByUserName (con N mayúscula)
-        Usuario entrenador = usuarioService.findByUserName(currentUsername);
-        
-        // Pasamos el texto al objeto
+        // Mapeo de campos
+        entrenador.setNombres(nombres);
+        entrenador.setUserName(userName);
+        entrenador.setTelefono(telefono);
         entrenador.setDescripcion(descripcion);
         
-        // CORRECCIÓN: Usar save() en lugar de guardar()
-        usuarioService.save(entrenador); 
+        usuarioService.save(entrenador);
         
-        redirectAttributes.addFlashAttribute("mensajeExito", "¡Tu descripción profesional se actualizó con éxito!");
-        return "redirect:/entrenador/perfil";
+        redirectAttributes.addFlashAttribute("mensajeExito", "Perfil actualizado");
+        return "redirect:/entrenador/perfil?exito=true";
     }
 
 }
