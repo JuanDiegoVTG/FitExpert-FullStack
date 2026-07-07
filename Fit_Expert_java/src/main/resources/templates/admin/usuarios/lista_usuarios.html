@@ -142,7 +142,14 @@
                                 title="Ver CV" 
                                 target="_blank"> <i class="fas fa-file-pdf" style="color: #ef4444;"></i>
                                 </a>
-                                
+
+                                <a th:href="@{/admin/usuarios/ver-cv-mongo/{id}(id=${usuario.hojaVidaMongoId})}" 
+                                class="btn-icon" 
+                                title="Descargar CV" 
+                                download>
+                                <i class="fas fa-file-pdf" style="color: #ef4444;"></i>
+                                </a>
+                                                                
                                 <div th:if="${usuario.rol != null and usuario.rol.nombre == 'ROLE_ENTRENADOR' and !usuario.validado}">
                                     <a th:href="@{/admin/usuarios/aprobar/{id}(id=${usuario.id})}" 
                                     class="btn-actions btn-approve" title="Verificar Entrenador">

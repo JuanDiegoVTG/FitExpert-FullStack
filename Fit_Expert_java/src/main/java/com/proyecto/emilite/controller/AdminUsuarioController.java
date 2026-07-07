@@ -174,21 +174,20 @@ public class AdminUsuarioController {
     }
 
     
-    @GetMapping(value = "/ver-cv-mongo/{idMongo}")
-    @ResponseBody 
+    @GetMapping("/ver-cv-mongo/{idMongo}")
+    @ResponseBody
     public ResponseEntity<byte[]> verCvMongo(@PathVariable String idMongo) {
-        System.out.println("DEBUG: Intentando acceder al PDF con ID Mongo: " + idMongo);
-        
         byte[] pdfBytes = pdfService.obtenerPdfDeMongo(idMongo);
         
         if (pdfBytes == null || pdfBytes.length == 0) {
-            System.out.println("❌ ERROR: El servicio de PDF devolvió nulo o vacío.");
             return ResponseEntity.notFound().build();
         }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.add("Content-Disposition", "inline; filename=CV_" + idMongo + ".pdf");
+        // Cambiamos 'inline' por un nombre de archivo limpio y agregamos headers de seguridad
+        headers.add("Content-Disposition", "inline; filename=\"CV_Entrenador.pdf\"");
+        headers.add("X-Content-Type-Options", "nosniff"); // Evita que el navegador adivine el tipo de archivo
 
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
